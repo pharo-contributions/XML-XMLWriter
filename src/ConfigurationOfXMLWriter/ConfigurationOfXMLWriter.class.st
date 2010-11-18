@@ -112,15 +112,13 @@ ConfigurationOfXMLWriter >> baseline100: spec [
 	spec for: #common do: [
 		spec
 			blessing: #baseline;
-			repositories: [
-				spec
-					repository: 'http://www.squeaksource.com/XMLWriter';
-					repository: 'http://www.squeaksource.com/CharacterMap'].
+			repository: 'http://www.squeaksource.com/XMLWriter'.
 
 		spec 
+			package: 'Collections-CharacterMap' with: [
+				spec repository: 'http://www.squeaksource.com/CharacterMap'];
 			package: 'XML-Writer' with: [spec requires: 'Collections-CharacterMap'];
-			package: 'XML-Tests-Writer' with: [spec requires: 'XML-Writer'];
-			package: 'Collections-CharacterMap' with: 'Collections-CharacterMap-JAAyer.1'.
+			package: 'XML-Tests-Writer' with: [spec requires: 'XML-Writer'].
 
 		spec
 			group: 'default' with: #('Core');
@@ -146,7 +144,9 @@ ConfigurationOfXMLWriter >> version100: spec [
 	<version: '1.0' imports: #('1.0-baseline') >
 	
 	spec for: #common do: [
+		spec blessing: #development.
+
 		spec
-			blessing: #release;
+			package: 'Collections-CharacterMap' with: 'Collections-CharacterMap-JAAyer.1';
 			package: 'XML-Writer' with: 'XML-Writer-JAAyer.1'].
 ]
