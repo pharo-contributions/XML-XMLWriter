@@ -146,8 +146,7 @@ ConfigurationOfXMLWriter >> baseline101: spec [
 
 		spec
 			group: 'default' with: #('Core');
-			group: 'Core' with: #('XML-Writer');
-			group: 'Tests' with: #('XML-Tests-Writer')].
+			group: 'Core' with: #('XML-Writer')].
 ]
 
 { #category : #accessing }
