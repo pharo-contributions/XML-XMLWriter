@@ -140,7 +140,8 @@ ConfigurationOfXMLWriter >> baseline101: spec [
 				spec repository: 'http://www.squeaksource.com/OrderPreservingDict'];
 			package: 'Collections-CharacterMap' with: [
 				spec repository: 'http://www.squeaksource.com/CharacterMap'];
-			package: 'XML-Writer' with: [spec requires: 'Collections-CharacterMap'];
+			package: 'XML-Writer' with: [
+				spec requires: #('Collections-OrderPreservingDictionary' 'Collections-CharacterMap')];
 			package: 'XML-Tests-Writer' with: [spec requires: 'XML-Writer'].
 
 		spec
