@@ -37,7 +37,7 @@ XMLTagWriter >> attributeAt: aName put: aValue [
 
 { #category : #accessing }
 XMLTagWriter >> attributes [
-	^ attributes ifNil: [attributes := XMLOrderPreservingDictionary new]
+	^ attributes ifNil: [attributes := OrderPreservingDictionary new]
 ]
 
 { #category : #accessing }
@@ -88,7 +88,7 @@ XMLTagWriter >> name: aName [
 
 { #category : #accessing }
 XMLTagWriter >> prefixMappings [
-	^ prefixMappings ifNil: [prefixMappings := XMLOrderPreservingDictionary new]
+	^ prefixMappings ifNil: [prefixMappings := OrderPreservingDictionary new]
 ]
 
 { #category : #private }
