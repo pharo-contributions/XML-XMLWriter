@@ -126,6 +126,29 @@ ConfigurationOfXMLWriter >> baseline100: spec [
 			group: 'Tests' with: #('XML-Tests-Writer')].
 ]
 
+{ #category : #baselines }
+ConfigurationOfXMLWriter >> baseline101: spec [ 
+	<version: '1.0.1-baseline'>
+	
+	spec for: #common do: [
+		spec
+			blessing: #baseline;
+			repository: 'http://www.squeaksource.com/XMLWriter'.
+
+		spec
+			package: 'Collections-OrderPreservingDictionary' with: [
+				spec repository: 'http://www.squeaksource.com/OrderPreservingDict'];
+			package: 'Collections-CharacterMap' with: [
+				spec repository: 'http://www.squeaksource.com/CharacterMap'];
+			package: 'XML-Writer' with: [spec requires: 'Collections-CharacterMap'];
+			package: 'XML-Tests-Writer' with: [spec requires: 'XML-Writer'].
+
+		spec
+			group: 'default' with: #('Core');
+			group: 'Core' with: #('XML-Writer');
+			group: 'Tests' with: #('XML-Tests-Writer')].
+]
+
 { #category : #accessing }
 ConfigurationOfXMLWriter >> project [
 
@@ -149,4 +172,18 @@ ConfigurationOfXMLWriter >> version100: spec [
 		spec
 			package: 'Collections-CharacterMap' with: 'Collections-CharacterMap-JAAyer.1';
 			package: 'XML-Writer' with: 'XML-Writer-JAAyer.1'].
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version101: spec [ 
+	<version: '1.0.1' imports: #('1.0.1-baseline') >
+	
+	spec for: #common do: [
+		spec blessing: #release.
+
+		spec
+			package: 'Collections-OrderPreservingDictionary'
+			with: 'Collections-OrderPreservingDictionary-JAAyer.1';
+			package: 'Collections-CharacterMap' with: 'Collections-CharacterMap-JAAyer.1';
+			package: 'XML-Writer' with: 'XML-Writer-JAAyer.2'].
 ]
