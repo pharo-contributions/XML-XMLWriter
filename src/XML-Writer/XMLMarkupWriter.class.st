@@ -32,8 +32,8 @@ XMLMarkupWriter >> isActiveMarkupWriter [
 ]
 
 { #category : #testing }
-XMLMarkupWriter >> isTagWriter [
-	^ false
+XMLMarkupWriter >> isEmbedded [
+	^ self hasParent
 ]
 
 { #category : #private }

@@ -8,9 +8,9 @@ Class {
 	#superclass : #XMLEmbeddedMarkupWriter,
 	#instVars : [
 		'name',
-		'defaultNamespace',
-		'prefixMappings',
-		'attributes'
+		'attributes',
+		'xmlns',
+		'xmlnsPrefixes'
 	],
 	#category : #'XML-Writer'
 }
@@ -57,25 +57,6 @@ XMLTagWriter >> embedString: aString [
 	self writer string: aString
 ]
 
-{ #category : #private }
-XMLTagWriter >> hasWrittenXmlns: aDefaultNamespace [
-	^ self parent notNil
-		and: [self parent isTagWriter
-			and: [self parent xmlns = aDefaultNamespace]]
-]
-
-{ #category : #private }
-XMLTagWriter >> hasWrittenXmlns: aPrefix uri: aUri [
-	^ self parent notNil
-		and: [self parent isTagWriter
-			and: [(self parent xmlnsAt: aPrefix ifAbsent: [^ false]) = aUri]]
-]
-
-{ #category : #testing }
-XMLTagWriter >> isTagWriter [
-	^ true
-]
-
 { #category : #accessing }
 XMLTagWriter >> name [
 	^ name ifNil: ['']
@@ -84,11 +65,6 @@ XMLTagWriter >> name [
 { #category : #accessing }
 XMLTagWriter >> name: aName [
 	name := aName
-]
-
-{ #category : #accessing }
-XMLTagWriter >> prefixMappings [
-	^ prefixMappings ifNil: [prefixMappings := OrderPreservingDictionary new]
 ]
 
 { #category : #private }
@@ -157,54 +133,54 @@ XMLTagWriter >> writePrologue [
 
 { #category : #private }
 XMLTagWriter >> writeXmlnsDeclarations [
-	self xmlns
-		ifNotEmpty: [
-			(self hasWrittenXmlns: self xmlns)
-				ifFalse: [self writer writeName: 'xmlns' value: self xmlns]].
+	xmlns ifNotNil: [self writer writeName: 'xmlns' value: self xmlns].
 
-	self prefixMappings
+	self xmlnsPrefixes
 		ifNotEmpty: [
 			self
-				writeKeysAndValuesFrom: self prefixMappings
-				with: [:prefix :uri |
-					(self hasWrittenXmlns: prefix uri: uri)
-						ifFalse: [self writer writeName: 'xmlns:', prefix value: uri]]].
+				writeKeysAndValuesFrom: self xmlnsPrefixes
+				with: [:prefix :uri | self writer writeName: 'xmlns:', prefix value: uri]].
 ]
 
 { #category : #accessing }
 XMLTagWriter >> xmlns [
-	^ defaultNamespace ifNil: ['']
+	^ xmlns ifNil: ['']
 ]
 
 { #category : #accessing }
 XMLTagWriter >> xmlns: aUri [
-	defaultNamespace := aUri
+	xmlns := aUri
 ]
 
 { #category : #accessing }
 XMLTagWriter >> xmlnsAt: aPrefix [
-	^ self prefixMappings at: aPrefix ifAbsent: ['']
+	^ self xmlnsPrefixes at: aPrefix ifAbsent: ['']
 ]
 
 { #category : #accessing }
 XMLTagWriter >> xmlnsAt: aPrefix ifAbsent: aBlock [
-	^ self prefixMappings at: aPrefix ifAbsent: aBlock
+	^ self xmlnsPrefixes at: aPrefix ifAbsent: aBlock
 ]
 
 { #category : #accessing }
 XMLTagWriter >> xmlnsAt: aPrefix ifAbsentPut: aUri [
-	^ self prefixMappings at: aPrefix ifAbsentPut: aUri
+	^ self xmlnsPrefixes at: aPrefix ifAbsentPut: aUri
 ]
 
 { #category : #accessing }
 XMLTagWriter >> xmlnsAt: aPrefix put: aValue [
-	^ self prefixMappings at: aPrefix put: aValue
+	^ self xmlnsPrefixes at: aPrefix put: aValue
 ]
 
 { #category : #accessing }
-XMLTagWriter >> xmlnsDeclarations: aDictionaryOrArray [
+XMLTagWriter >> xmlnsPrefixes [
+	^ xmlnsPrefixes ifNil: [xmlnsPrefixes := OrderPreservingDictionary new]
+]
+
+{ #category : #accessing }
+XMLTagWriter >> xmlnsPrefixes: aDictionaryOrArray [
 	aDictionaryOrArray associationsDo: [:each |
-		(each key isEmptyOrNil or: [each key = 'xmlns'])
+		each key isEmptyOrNil
 			ifTrue: [self xmlns: each value]
 			ifFalse: [self xmlnsAt: each key put: each value]]
 ]
