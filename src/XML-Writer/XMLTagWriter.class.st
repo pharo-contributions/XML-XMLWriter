@@ -37,7 +37,7 @@ XMLTagWriter >> attributeAt: aName put: aValue [
 
 { #category : #accessing }
 XMLTagWriter >> attributes [
-	^ attributes ifNil: [attributes := OrderPreservingDictionary new]
+	^ attributes ifNil: [attributes := OrderPreservingDictionary defaultValue: '']
 ]
 
 { #category : #accessing }
@@ -174,7 +174,7 @@ XMLTagWriter >> xmlnsAt: aPrefix put: aValue [
 
 { #category : #accessing }
 XMLTagWriter >> xmlnsPrefixes [
-	^ xmlnsPrefixes ifNil: [xmlnsPrefixes := OrderPreservingDictionary new]
+	^ xmlnsPrefixes ifNil: [xmlnsPrefixes := OrderPreservingDictionary defaultValue: '']
 ]
 
 { #category : #accessing }
