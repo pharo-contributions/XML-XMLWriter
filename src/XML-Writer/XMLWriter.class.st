@@ -63,7 +63,7 @@ Class {
 XMLWriter class >> initialize [
 	"self initialize"
 
-	(CharacterEscapes := CharacterMap new)
+	(CharacterEscapes := Dictionary new)
 		at: $& put: '&amp;';
 		at: $" put: '&quot;';
 		at: $< put: '&lt;';
@@ -412,20 +412,20 @@ XMLWriter >> writeXmlEncoded: aString [
 		ifTrue: [^ self nextPutAll: aString].
 
 	[nextIndex isZero]
-		whileFalse: [| char |
-			self
-				nextPutAll: (aString copyFrom: lastIndex to: nextIndex - 1);
+		whileFalse: [| nextChar |
+			stream
+				next: nextIndex - lastIndex putAll: aString startingAt: lastIndex;
 				nextPutAll:
-					(((char := aString at: nextIndex) == LineFeed or: [char == CarriageReturn])
+					(((nextChar := aString at: nextIndex) == LineFeed or: [nextChar == CarriageReturn])
 						ifTrue: [self lineBreak]
-						ifFalse: [CharacterEscapes at: char]).
+						ifFalse: [CharacterEscapes at: nextChar]).
 			lastIndex := nextIndex + 1.
 			nextIndex := String
 				findFirstInString: aString
 				inSet: SpecialCharacters byteArrayMap
 				startingAt: lastIndex].
 
-	self nextPutAll: (aString copyFrom: lastIndex to: aString size).
+	stream next: aString size - lastIndex + 1 putAll: aString startingAt: lastIndex.
 ]
 
 { #category : #private }
