@@ -168,6 +168,12 @@ ConfigurationOfXMLWriter >> baseline104: spec [
 		spec
 			group: 'default' with: #('Core');
 			group: 'Core' with: #('XML-Writer')].
+		
+	spec for: #gemstone do: [
+		spec
+			package: 'Collections-CharacterSet'.
+		spec 
+			package: 'XML-Writer' with:[spec requires: #('Collections-CharacterSet')]]
 ]
 
 { #category : #accessing }
@@ -248,4 +254,8 @@ ConfigurationOfXMLWriter >> version104: spec [
 			package: 'Collections-OrderPreservingDictionary'
 			with: 'Collections-OrderPreservingDictionary-JAAyer.6';
 			package: 'XML-Writer' with: 'XML-Writer-JAAyer.5'].
+
+	spec for: #gemstone do: [
+		spec 
+			package: 'Collections-CharacterSet' with: 'Collections-CharacterSet-JohanBrichau.1']
 ]
