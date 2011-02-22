@@ -176,6 +176,43 @@ ConfigurationOfXMLWriter >> baseline104: spec [
 			package: 'XML-Writer' with:[spec requires: #('Collections-CharacterSet')]]
 ]
 
+{ #category : #baselines }
+ConfigurationOfXMLWriter >> baseline105: spec [
+	<version: '1.0.5-baseline'>
+	spec
+		for: #common
+			do: [ 
+					spec
+						blessing: #baseline;
+						repository: 'http://www.squeaksource.com/XMLWriter'.
+					spec
+						package: 'Collections-OrderPreservingDictionary'
+							with: [ spec repository: 'http://www.squeaksource.com/OrderPreservingDict' ];
+						package: 'Collections-Support';
+						package: 'XML-Writer' with: [ spec requires: #('Collections-Support' 'Collections-OrderPreservingDictionary') ];
+						package: 'XML-Tests-Writer' with: [ spec requires: 'XML-Writer' ];
+						package: 'Collections-Tests-Support' with: [ spec requires: 'Collections-Support' ].
+					spec
+						group: 'default' with: #('Core');
+						group: 'Core' with: #('XML-Writer');
+						group: 'Tests' with: #('XML-Tests-Writer' 'Collections-Tests-Support') ];
+		for: #squeakCommon
+			do: [ spec package: 'Collections-Support' with: [ spec repository: 'http://www.squeaksource.com/Pharo' ] ];
+		for: #gemstone
+			do: [ 
+					spec
+						package: 'Collections-Support'
+							with: [ 
+									spec
+										file: 'Collections-Support.g';
+										repository: 'http://seaside.gemstone.com/ss/XMLSupport' ];
+						package: 'Collections-Tests-Support'
+							with: [ 
+									spec
+										file: 'Collections-Tests-Support.g';
+										repository: 'http://seaside.gemstone.com/ss/XMLSupport' ] ]
+]
+
 { #category : #accessing }
 ConfigurationOfXMLWriter >> project [
 
@@ -258,4 +295,22 @@ ConfigurationOfXMLWriter >> version104: spec [
 	spec for: #gemstone do: [
 		spec 
 			package: 'Collections-CharacterSet' with: 'Collections-CharacterSet-JohanBrichau.1']
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version105: spec [
+	<version: '1.0.5' imports: #('1.0.5-baseline')>
+	spec
+		for: #common
+			do: [ 
+					spec
+						blessing: #release;
+						package: 'Collections-OrderPreservingDictionary' with: 'Collections-OrderPreservingDictionary-JAAyer.6';
+						package: 'XML-Writer' with: 'XML-Writer-JAAyer.5' ];
+		for: #squeakCommon do: [ spec package: 'Collections-Support' with: 'Collections-Support-StephaneDucasse.35' ];
+		for: #gemstone
+			do: [ 
+					spec
+						package: 'Collections-Support' with: 'Collections-Support.g-OttoBehrens.42';
+						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.2' ]
 ]
