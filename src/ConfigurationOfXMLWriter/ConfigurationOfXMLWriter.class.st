@@ -308,6 +308,6 @@ ConfigurationOfXMLWriter >> version105: spec [
 		for: #gemstone
 			do: [ 
 					spec
-						package: 'Collections-Support' with: 'Collections-Support.g-OttoBehrens.42';
-						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.2' ]
+						package: 'Collections-Support' with: 'Collections-Support.g-OttoBehrens.45';
+						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
