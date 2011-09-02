@@ -150,24 +150,30 @@ ConfigurationOfXMLWriter >> baseline101: spec [
 ]
 
 { #category : #baselines }
-ConfigurationOfXMLWriter >> baseline104: spec [
+ConfigurationOfXMLWriter >> baseline104: spec [ 
 	<version: '1.0.4-baseline'>
-	spec
-		for: #common
-			do: [ 
-					spec
-						blessing: #baseline;
-						repository: 'http://www.squeaksource.com/XMLWriter'.
-					spec
-						package: 'Collections-OrderPreservingDictionary'
-							with: [ spec repository: 'http://www.squeaksource.com/OrderPreservingDict' ];
-						package: 'Collections-Support';
-						package: 'XML-Writer' with: [ spec requires: #('Collections-Support' 'Collections-OrderPreservingDictionary') ];
-						package: 'XML-Tests-Writer' with: [ spec requires: 'XML-Writer' ].
-					spec
-						group: 'default' with: #('Core');
-						group: 'Core' with: #('XML-Writer') ];
-		for: #gemstone do: [ spec package: 'Collections-Support' with: [ spec file: 'Collections-Support.g' ] ]
+	
+	spec for: #common do: [
+		spec
+			blessing: #baseline;
+			repository: 'http://www.squeaksource.com/XMLWriter'.
+
+		spec
+			package: 'Collections-OrderPreservingDictionary' with: [
+				spec repository: 'http://www.squeaksource.com/OrderPreservingDict'];
+			package: 'XML-Writer' with: [
+				spec requires: #('Collections-OrderPreservingDictionary')];
+			package: 'XML-Tests-Writer' with: [spec requires: 'XML-Writer'].
+
+		spec
+			group: 'default' with: #('Core');
+			group: 'Core' with: #('XML-Writer')].
+		
+	spec for: #gemstone do: [
+		spec
+			package: 'Collections-CharacterSet'.
+		spec 
+			package: 'XML-Writer' with:[spec requires: #('Collections-CharacterSet')]]
 ]
 
 { #category : #accessing }
@@ -238,15 +244,18 @@ ConfigurationOfXMLWriter >> version103: spec [
 ]
 
 { #category : #versions }
-ConfigurationOfXMLWriter >> version104: spec [
-	<version: '1.0.4' imports: #('1.0.4-baseline')>
-	spec
-		for: #common
-			do: [ 
-					spec
-						blessing: #release;
-						package: 'Collections-OrderPreservingDictionary' with: 'Collections-OrderPreservingDictionary-JAAyer.6';
-						package: 'XML-Writer' with: 'XML-Writer-JAAyer.5' ];
-		for: #squeakCommon do: [ spec package: 'Collections-Support' with: 'Collections-Support-StephaneDucasse.35' ];
-		for: #gemstone do: [ spec package: 'Collections-Support' with: 'Collections-Support.g-OttoBehrens.42' ]
+ConfigurationOfXMLWriter >> version104: spec [ 
+	<version: '1.0.4' imports: #('1.0.4-baseline') >
+	
+	spec for: #common do: [
+		spec blessing: #release.
+
+		spec
+			package: 'Collections-OrderPreservingDictionary'
+			with: 'Collections-OrderPreservingDictionary-JAAyer.6';
+			package: 'XML-Writer' with: 'XML-Writer-JAAyer.5'].
+
+	spec for: #gemstone do: [
+		spec 
+			package: 'Collections-CharacterSet' with: 'Collections-CharacterSet-JohanBrichau.1']
 ]
