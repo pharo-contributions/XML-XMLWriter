@@ -1,5 +1,11 @@
 "
 (ConfigurationOfXMLWriter project version: '1.0.5') load
+pre smalltalkhub migration
+
+
+
+After SmalltalkHub Migration and the introduction of configuration in other projects. 
+(ConfigurationOfXMLWriter project version: '2.0.0') load
 "
 Class {
 	#name : #ConfigurationOfXMLWriter,
@@ -213,6 +219,54 @@ ConfigurationOfXMLWriter >> baseline105: spec [
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
+{ #category : #baselines }
+ConfigurationOfXMLWriter >> baseline200: spec [
+	<version: '2.0.0-baseline'>
+	spec for: #common do: [ 
+		spec
+			blessing: #baseline;
+			description: 'Migrated to SmalltalkHub and taking into account new configurations of subcomponents';
+			repository: 'http://smalltalkhub.com/mc/Pharo/XMLWriter/main'.
+				
+		spec project: 'OrderPreservingDictionary' with: [
+			spec 
+				versionString: #stable; 
+				repository: 'http://smalltalkhub.com/mc/Pharo/OrderPreservingDictionary/main'].
+			
+		spec 
+			package: 'Collections-Support';
+			package: 'XML-Writer' with: [ 
+				spec requires: #('Collections-Support' 'OrderPreservingDictionary') ].
+		spec
+			group: 'default' with: #('Core');
+			group: 'Core' with: #('XML-Writer');
+			group: 'Tests' with: #() ].
+	
+	
+	
+		
+	spec for: #squeakCommon do: [ 
+		spec package: 'Collections-Support' with: [ 
+			spec repository: 'http://www.squeaksource.com/Pharo' ] ].
+	
+	
+	
+	
+	spec for: #gemstone do: [ 
+		spec
+			package: 'Collections-Support' with: [ 
+				spec
+					file: 'Collections-Support.g';
+					repository: 'http://seaside.gemstone.com/ss/XMLSupport' ];
+			package: 'Collections-Tests-Support' with: [ 
+				spec
+					file: 'Collections-Tests-Support.g';
+					requires: 'Collections-Support';
+					repository: 'http://seaside.gemstone.com/ss/XMLSupport' ].
+		spec
+			group: 'Tests' with: #('Collections-Tests-Support') ]
+]
+
 { #category : #accessing }
 ConfigurationOfXMLWriter >> project [
 
@@ -308,6 +362,24 @@ ConfigurationOfXMLWriter >> version105: spec [
 						package: 'Collections-OrderPreservingDictionary' with: 'Collections-OrderPreservingDictionary-JAAyer.6';
 						package: 'XML-Writer' with: 'XML-Writer-JAAyer.5' ];
 		for: #squeakCommon do: [ spec package: 'Collections-Support' with: 'Collections-Support-StephaneDucasse.35' ];
+		for: #gemstone
+			do: [ 
+					spec
+						package: 'Collections-Support' with: 'Collections-Support.g-OttoBehrens.45';
+						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version200: spec [
+	<version: '2.0.0' imports: #('2.0.0-baseline')>
+	spec
+		for: #common
+			do: [ spec
+					blessing: #release;
+					package: 'XML-Writer' with: 'XML-Writer-JAAyer.5' ];
+		
+		" I do not understand the following line because it means that we would love an older version than the one currently in Pharo
+		for: #squeakCommon do: [ spec package: 'Collections-Support' with: 'Collections-Support-StephaneDucasse.35' ];"
 		for: #gemstone
 			do: [ 
 					spec
