@@ -6,6 +6,8 @@ pre smalltalkhub migration
 
 After SmalltalkHub Migration and the introduction of configuration in other projects. 
 (ConfigurationOfXMLWriter project version: '2.0.0') load
+
+(ConfigurationOfXMLWriter project version: '2.0.0') record loadDirective
 "
 Class {
 	#name : #ConfigurationOfXMLWriter,
@@ -222,21 +224,39 @@ ConfigurationOfXMLWriter >> baseline105: spec [
 { #category : #baselines }
 ConfigurationOfXMLWriter >> baseline200: spec [
 	<version: '2.0.0-baseline'>
+
 	spec for: #common do: [ 
 		spec
 			blessing: #baseline;
 			description: 'Migrated to SmalltalkHub and taking into account new configurations of subcomponents';
 			repository: 'http://smalltalkhub.com/mc/Pharo/XMLWriter/main'.
 				
+		"does not work, should discuss with mariano.
+		
 		spec project: 'OrderPreservingDictionary' with: [
 			spec 
 				versionString: #stable; 
+				loads: #('Core'); 
 				repository: 'http://smalltalkhub.com/mc/Pharo/OrderPreservingDictionary/main'].
 			
+			
 		spec 
-			package: 'Collections-Support';
 			package: 'XML-Writer' with: [ 
-				spec requires: #('Collections-Support' 'OrderPreservingDictionary') ].
+				spec requires: #('OrderPreservingDictionary') ]."
+			
+		spec project: 'OrderPreservingDictionary' with: [
+			spec 
+				versionString: #stable; 
+				loads: #('Core'); 
+				repository: 'http://smalltalkhub.com/mc/Pharo/OrderPreservingDictionary/main'].	
+				
+		spec 
+			package: 'XML-Writer'.	
+			
+			
+			
+			
+			
 		spec
 			group: 'default' with: #('Core');
 			group: 'Core' with: #('XML-Writer');
@@ -378,7 +398,7 @@ ConfigurationOfXMLWriter >> version200: spec [
 					blessing: #release;
 					package: 'XML-Writer' with: 'XML-Writer-JAAyer.5' ];
 		
-		" I do not understand the following line because it means that we would love an older version than the one currently in Pharo
+		" I do not understand the following line because it means that we would load an older version than the one currently in Pharo. Clearly the best way to introduce bugs and losing hours trying to understand why.
 		for: #squeakCommon do: [ spec package: 'Collections-Support' with: 'Collections-Support-StephaneDucasse.35' ];"
 		for: #gemstone
 			do: [ 
