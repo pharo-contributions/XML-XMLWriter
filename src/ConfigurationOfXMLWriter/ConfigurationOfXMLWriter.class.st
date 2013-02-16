@@ -231,7 +231,7 @@ ConfigurationOfXMLWriter >> baseline200: spec [
 			description: 'Migrated to SmalltalkHub and taking into account new configurations of subcomponents';
 			repository: 'http://smalltalkhub.com/mc/Pharo/XMLWriter/main'.
 				
-		"does not work, should discuss with mariano.
+		"Does not work without a className: specification
 		
 		spec project: 'OrderPreservingDictionary' with: [
 			spec 
@@ -242,7 +242,7 @@ ConfigurationOfXMLWriter >> baseline200: spec [
 			
 		spec project: 'OrderPreservingDictionary' with: [
 			spec 
-				spec className: 'ConfigurationOfOrderPreservingDictionary';
+				className: 'ConfigurationOfOrderPreservingDictionary';
 				versionString: #stable; 
 				loads: #('Core'); 
 				repository: 'http://smalltalkhub.com/mc/Pharo/OrderPreservingDictionary/main'].	
@@ -256,7 +256,7 @@ ConfigurationOfXMLWriter >> baseline200: spec [
 	
 	
 	
-		
+	"I removed it because it loads an old version of the pckage and this is a nonsense"	
 	spec for: #squeakCommon do: [ 
 		spec package: 'Collections-Support' with: [ 
 			spec repository: 'http://www.squeaksource.com/Pharo' ] ].
