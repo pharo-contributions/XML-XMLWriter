@@ -238,24 +238,16 @@ ConfigurationOfXMLWriter >> baseline200: spec [
 				versionString: #stable; 
 				loads: #('Core'); 
 				repository: 'http://smalltalkhub.com/mc/Pharo/OrderPreservingDictionary/main'].
-			
-			
-		spec 
-			package: 'XML-Writer' with: [ 
-				spec requires: #('OrderPreservingDictionary') ]."
+		spec package: 'XML-Writer' with: [ spec requires: #('OrderPreservingDictionary') ]."
 			
 		spec project: 'OrderPreservingDictionary' with: [
 			spec 
+				spec className: 'ConfigurationOfOrderPreservingDictionary';
 				versionString: #stable; 
 				loads: #('Core'); 
 				repository: 'http://smalltalkhub.com/mc/Pharo/OrderPreservingDictionary/main'].	
 				
-		spec 
-			package: 'XML-Writer'.	
-			
-			
-			
-			
+		spec package: 'XML-Writer' with: [spec requires: 'OrderPreservingDictionary']. 
 			
 		spec
 			group: 'default' with: #('Core');
