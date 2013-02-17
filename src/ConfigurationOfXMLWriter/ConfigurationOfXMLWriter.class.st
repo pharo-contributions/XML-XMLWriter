@@ -259,7 +259,7 @@ ConfigurationOfXMLWriter >> baseline200: spec [
 	"I removed it because it loads an old version of the pckage and this is a nonsense"	
 	spec for: #squeakCommon do: [ 
 		spec package: 'Collections-Support' with: [ 
-			spec repository: 'http://www.squeaksource.com/Pharo' ] ].
+			spec repository: 'http://ss3.gemstone.com/ss/Pharo20' ] ].
 	
 	
 	
