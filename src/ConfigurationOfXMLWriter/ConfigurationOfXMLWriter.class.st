@@ -3,8 +3,12 @@
 pre smalltalkhub migration
 
 
+Version 2.0.0
+After SmalltalkHub Migration and the introduction of configuration in other projects
 
-After SmalltalkHub Migration and the introduction of configuration in other projects. 
+Version 2.1.0
+Introduced tests and symbolic configurations
+
 (ConfigurationOfXMLWriter project version: '2.1.0') load
 
 (ConfigurationOfXMLWriter project version: '2.1.0') record loadDirective
@@ -329,6 +333,14 @@ ConfigurationOfXMLWriter >> baseline210: spec [
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
+{ #category : #symbolic }
+ConfigurationOfXMLWriter >> development: spec [
+	<symbolicVersion: #'development'>
+	
+	spec for: #'pharo' version: '2.1.0'.
+
+]
+
 { #category : #accessing }
 ConfigurationOfXMLWriter >> project [
 
@@ -340,6 +352,14 @@ ConfigurationOfXMLWriter >> project [
 		project := constructor project.
 		project loadType: #linear. "change to #atomic if desired"
 		project ]
+]
+
+{ #category : #symbolic }
+ConfigurationOfXMLWriter >> stable: spec [
+	<symbolicVersion: #'stable'>
+	
+	spec for: #'pharo' version: '2.1.0'.
+
 ]
 
 { #category : #versions }
