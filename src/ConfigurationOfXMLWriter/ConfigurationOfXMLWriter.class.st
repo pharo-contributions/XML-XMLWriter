@@ -358,7 +358,8 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 		spec package: 'XML-Writer-Tests' with: [spec requires: 'XML-Writer-Core']. 
 		
 		spec
-			group: 'default' with: #('Core');
+			group: 'default' with: #('Core' 'Tests');
+			"default by default is equivalent to loading 'ALL' the packages still we added explicitly Tests to be loaded"
 			group: 'Core' with: #('XML-Writer-Core');
 			group: 'Tests' with: #('XML-Writer-Tests')].
 	
