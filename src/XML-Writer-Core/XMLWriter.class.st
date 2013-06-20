@@ -239,7 +239,7 @@ XMLWriter >> isCanonical: aBoolean [
 
 { #category : #private }
 XMLWriter >> lastChar [
-	^ self stream peekLast
+	^ self stream peekLast asCharacter
 ]
 
 { #category : #accessing }
