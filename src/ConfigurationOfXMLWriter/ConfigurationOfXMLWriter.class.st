@@ -382,7 +382,7 @@ ConfigurationOfXMLWriter >> baseline210: spec [
 		
 	spec for: #squeakCommon do: [ 
 		spec package: 'Collections-Support' with: [ 
-			spec repository: 'http://ss3.gemstone.com/ss/Pharo20' ] ].
+			spec repository: 'http://ss3.gemtalksystems.com/ss/Pharo20' ] ].
 	
 	
 	"I did not touch this part because Ido not know it. On Pharo XMLWriter has its own repository"
@@ -391,12 +391,12 @@ ConfigurationOfXMLWriter >> baseline210: spec [
 			package: 'Collections-Support' with: [ 
 				spec
 					file: 'Collections-Support.g';
-					repository: 'http://seaside.gemstone.com/ss/XMLSupport' ];
+					repository: 'http://seaside.gemtalksystems.com/ss/XMLSupport' ];
 			package: 'Collections-Tests-Support' with: [ 
 				spec
 					file: 'Collections-Tests-Support.g';
 					requires: 'Collections-Support';
-					repository: 'http://seaside.gemstone.com/ss/XMLSupport' ].
+					repository: 'http://seaside.gemtalksystems.com/ss/XMLSupport' ].
 		spec
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
@@ -428,7 +428,7 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 	To be changed when pharo will be managed on SmalltalkHub"
 	spec
 		for: #squeakCommon
-		do: [ spec package: 'Collections-Support' with: [ spec repository: 'http://ss3.gemstone.com/ss/Pharo20' ] ].	"I did not touch this part because Ido not know it. On Pharo XMLWriter has its own repository"
+		do: [ spec package: 'Collections-Support' with: [ spec repository: 'http://ss3.gemtalksystems.com/ss/Pharo20' ] ].	"I did not touch this part because Ido not know it. On Pharo XMLWriter has its own repository"
 	spec
 		for: #gemstone
 		do: [ 
@@ -437,13 +437,13 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 					with: [ 
 							spec
 								file: 'Collections-Support.g';
-								repository: 'http://seaside.gemstone.com/ss/XMLSupport' ];
+								repository: 'http://seaside.gemtalksystems.com/ss/XMLSupport' ];
 				package: 'Collections-Tests-Support'
 					with: [ 
 							spec
 								file: 'Collections-Tests-Support.g';
 								requires: 'Collections-Support';
-								repository: 'http://seaside.gemstone.com/ss/XMLSupport' ].
+								repository: 'http://seaside.gemtalksystems.com/ss/XMLSupport' ].
 			spec group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
