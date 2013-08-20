@@ -1,19 +1,18 @@
 "
 !!!Current loading expressions and dev history
 
-Version 2.2.1 - 2013-07-10
-Merged fix of Camillo for fileSystem interaction.
+- Version 2.2.1 - 2013-07-10 Merged fix of Camillo for fileSystem interaction.
 [[[ 
 	(ConfigurationOfXMLWriter project version: '2.2.1') load
 ]]]
 
-Version 2.2.0 - Migrated to PharoExtras
+- Version 2.2.0 - Migrated to PharoExtras
 
 [[[ 	
 	(ConfigurationOfXMLWriter project version: '2.2.0') load
 ]]]
 	
-Version 2.1.0
+- Version 2.1.0
 Introduced tests and symbolic configurations
 
 [[[ 
@@ -21,10 +20,10 @@ Introduced tests and symbolic configurations
 (ConfigurationOfXMLWriter project version: '2.1.0') record loadDirective
 ]]]
 
-Version 2.0.0
+- Version 2.0.0
 After SmalltalkHub Migration and the introduction of configuration in other projects
 
-pre smalltalkhub migration
+- Pre-smalltalkhub migration
 [[[
 (ConfigurationOfXMLWriter project version: '1.0.5') load
 ]]]
@@ -382,7 +381,7 @@ ConfigurationOfXMLWriter >> baseline210: spec [
 		
 	spec for: #squeakCommon do: [ 
 		spec package: 'Collections-Support' with: [ 
-			spec repository: 'http://ss3.gemtalksystems.com/ss/Pharo20' ] ].
+			spec repository: 'http://ss3.gemstone.com/ss/Pharo20' ] ].
 	
 	
 	"I did not touch this part because Ido not know it. On Pharo XMLWriter has its own repository"
@@ -391,12 +390,12 @@ ConfigurationOfXMLWriter >> baseline210: spec [
 			package: 'Collections-Support' with: [ 
 				spec
 					file: 'Collections-Support.g';
-					repository: 'http://seaside.gemtalksystems.com/ss/XMLSupport' ];
+					repository: 'http://seaside.gemstone.com/ss/XMLSupport' ];
 			package: 'Collections-Tests-Support' with: [ 
 				spec
 					file: 'Collections-Tests-Support.g';
 					requires: 'Collections-Support';
-					repository: 'http://seaside.gemtalksystems.com/ss/XMLSupport' ].
+					repository: 'http://seaside.gemstone.com/ss/XMLSupport' ].
 		spec
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
@@ -428,7 +427,7 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 	To be changed when pharo will be managed on SmalltalkHub"
 	spec
 		for: #squeakCommon
-		do: [ spec package: 'Collections-Support' with: [ spec repository: 'http://ss3.gemtalksystems.com/ss/Pharo20' ] ].	"I did not touch this part because Ido not know it. On Pharo XMLWriter has its own repository"
+		do: [ spec package: 'Collections-Support' with: [ spec repository: 'http://ss3.gemstone.com/ss/Pharo20' ] ].	"I did not touch this part because Ido not know it. On Pharo XMLWriter has its own repository"
 	spec
 		for: #gemstone
 		do: [ 
@@ -437,13 +436,13 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 					with: [ 
 							spec
 								file: 'Collections-Support.g';
-								repository: 'http://seaside.gemtalksystems.com/ss/XMLSupport' ];
+								repository: 'http://seaside.gemstone.com/ss/XMLSupport' ];
 				package: 'Collections-Tests-Support'
 					with: [ 
 							spec
 								file: 'Collections-Tests-Support.g';
 								requires: 'Collections-Support';
-								repository: 'http://seaside.gemtalksystems.com/ss/XMLSupport' ].
+								repository: 'http://seaside.gemstone.com/ss/XMLSupport' ].
 			spec group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
