@@ -92,7 +92,7 @@ ConfigurationOfXMLWriter class >> catalogDescription [
 ]
 
 { #category : #catalog }
-ConfigurationOfXMLWriter class >> catalogExampleOrKeyClasses [
+ConfigurationOfXMLWriter class >> catalogKeyClassesAndExample [
 
 ^ 'The main entry point is the class ==XMLWriter==.
 
