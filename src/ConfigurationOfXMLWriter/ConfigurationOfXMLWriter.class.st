@@ -1,33 +1,31 @@
 "
-!!!Current loading expressions and dev history
+'!!! Current loading expressions and key development history
 
 - Version 2.2.1 - 2013-07-10 Merged fix of Camillo for fileSystem interaction.
 [[[ 
-	(ConfigurationOfXMLWriter project version: '2.2.1') load
+	(ConfigurationOfXMLWriter project version: ''2.2.1'') load
 ]]]
 
 - Version 2.2.0 - Migrated to PharoExtras
 
 [[[ 	
-	(ConfigurationOfXMLWriter project version: '2.2.0') load
+	(ConfigurationOfXMLWriter project version: ''2.2.0'') load
 ]]]
 	
-- Version 2.1.0
-Introduced tests and symbolic configurations
+- Version 2.1.0 Introduced tests and symbolic configurations
 
 [[[ 
-(ConfigurationOfXMLWriter project version: '2.1.0') load
-(ConfigurationOfXMLWriter project version: '2.1.0') record loadDirective
+(ConfigurationOfXMLWriter project version: ''2.1.0'') load
+(ConfigurationOfXMLWriter project version: ''2.1.0'') record loadDirective
 ]]]
 
-- Version 2.0.0
-After SmalltalkHub Migration and the introduction of configuration in other projects
+- Version 2.0.0 After SmalltalkHub Migration and the introduction of configuration in other projects
 
 - Pre-smalltalkhub migration
 [[[
-(ConfigurationOfXMLWriter project version: '1.0.5') load
+(ConfigurationOfXMLWriter project version: ''1.0.5'') load
 ]]]
-
+'
 "
 Class {
 	#name : #ConfigurationOfXMLWriter,
@@ -57,20 +55,46 @@ ConfigurationOfXMLWriter class >> bootstrapPackage: aString from: aPath [
 ]
 
 { #category : #catalog }
+ConfigurationOfXMLWriter class >> catalogChangeLog [
+
+^ '- Version 2.2.1 - 2013-07-10 Merged fix of Camillo for fileSystem interaction.
+[[[ 
+	(ConfigurationOfXMLWriter project version: ''2.2.1'') load
+]]]
+
+- Version 2.2.0 - Migrated to PharoExtras
+
+[[[ 	
+	(ConfigurationOfXMLWriter project version: ''2.2.0'') load
+]]]
+	
+- Version 2.1.0 Introduced tests and symbolic configurations
+
+[[[ 
+(ConfigurationOfXMLWriter project version: ''2.1.0'') load
+(ConfigurationOfXMLWriter project version: ''2.1.0'') record loadDirective
+]]]
+
+- Version 2.0.0 After SmalltalkHub Migration and the introduction of configuration in other projects
+
+- Pre-smalltalkhub migration
+[[[
+(ConfigurationOfXMLWriter project version: ''1.0.5'') load
+]]]
+'
+]
+
+{ #category : #catalog }
 ConfigurationOfXMLWriter class >> catalogDescription [
 
-^ 
-'!! XMLWriter 
-		XMLWriter allows you to generate well-formed XML documents using a nice API based on a canvas and tag brush API.
-	
-		
-!!! Keywords
-		
-XML
-					
-!!! Implementation notes
-		
-The main entry point is the class ==XMLWriter==.
+	^ 'XMLWriter allows you to generate well-formed XML documents using a nice API based on a canvas and tag brush API. It offers a compact way to produce XML documents without stupid syntactic mistakes.'
+
+]
+
+{ #category : #catalog }
+ConfigurationOfXMLWriter class >> catalogExampleOrKeyClasses [
+
+^ 'The main entry point is the class ==XMLWriter==.
 
 Here are examples of the API 
 [[[ 
@@ -100,6 +124,14 @@ Here are examples of the API
 				tag: ''id'' with: ''101''] 
 ]]]
 '
+]
+
+{ #category : #catalog }
+ConfigurationOfXMLWriter class >> catalogKeywords [
+
+	^ #( XML )
+					
+
 ]
 
 { #category : #private }
@@ -174,11 +206,6 @@ ConfigurationOfXMLWriter class >> metacelloVersion: versionString loads: anArray
 ConfigurationOfXMLWriter class >> project [
 
 	^self new project
-]
-
-{ #category : #catalog }
-ConfigurationOfXMLWriter class >> repositoryUrlString [
-	^ 'http://smalltalkhub.com/mc/PharoExtras/XMLWriter/main'
 ]
 
 { #category : #'unloading Metacello' }
@@ -409,7 +436,7 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 			spec
 				blessing: #baseline;
 				description: 'Moving to PharoExtras';
-				repository: self repositoryUrlString.
+				repository: 'http://smalltalkhub.com/mc/PharoExtras/XMLWriter/main'.
 			spec
 				project: 'OrderPreservingDictionary'
 				with: [ 
@@ -465,11 +492,6 @@ ConfigurationOfXMLWriter >> project [
 		project := constructor project.
 		project loadType: #linear. "change to #atomic if desired"
 		project ]
-]
-
-{ #category : #baselines }
-ConfigurationOfXMLWriter >> repositoryUrlString [
-	^ self class repositoryUrlString
 ]
 
 { #category : #symbolic }
