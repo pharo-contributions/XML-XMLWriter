@@ -68,14 +68,14 @@ ConfigurationOfXMLWriter class >> catalogChangeLog [
 	
 - Version 2.1.0 Introduced tests and symbolic configurations
 [[[ 
-(ConfigurationOfXMLWriter project version: ''2.1.0'') load
-(ConfigurationOfXMLWriter project version: ''2.1.0'') record loadDirective
+	(ConfigurationOfXMLWriter project version: ''2.1.0'') load
+	(ConfigurationOfXMLWriter project version: ''2.1.0'') record loadDirective
 ]]]
 
 - Version 2.0.0 After SmalltalkHub Migration and the introduction of configuration in other projects
 - Pre-smalltalkhub migration
 [[[
-(ConfigurationOfXMLWriter project version: ''1.0.5'') load
+	(ConfigurationOfXMLWriter project version: ''1.0.5'') load
 ]]]
 '
 ]
