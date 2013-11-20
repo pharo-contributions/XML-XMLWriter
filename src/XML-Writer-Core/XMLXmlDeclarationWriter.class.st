@@ -24,7 +24,7 @@ XMLXmlDeclarationWriter >> encoding: anEncoding [
 
 { #category : #accessing }
 XMLXmlDeclarationWriter >> standalone [
-	^ standalone
+	^ standalone ifNil: [standalone := false]
 ]
 
 { #category : #accessing }
@@ -55,9 +55,9 @@ XMLXmlDeclarationWriter >> writeBody [
 		writeName: 'encoding' value: self encoding.
 
 	self standalone
-		ifNotNil: [
+		ifTrue: [
 			self writer
 				space;
 				writeName: 'standalone'
-				value: (self standalone ifTrue: ['yes'] ifFalse: ['no'])]
+				value: 'yes']
 ]

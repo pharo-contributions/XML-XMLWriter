@@ -4,19 +4,32 @@ Class {
 	#instVars : [
 		'replacement',
 		'ndata',
-		'externalIdWriter'
+		'externalIdWriter',
+		'isParameter'
 	],
 	#category : #'XML-Writer-Core'
 }
 
 { #category : #accessing }
 XMLEntityDeclarationWriter >> declarationType [
-	^ 'ENTITY'
+	^ self isParameter
+		ifTrue: ['ENTITY %']
+		ifFalse: ['ENTITY']
 ]
 
 { #category : #accessing }
 XMLEntityDeclarationWriter >> externalIDWriter [
 	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter writer: self writer]
+]
+
+{ #category : #accessing }
+XMLEntityDeclarationWriter >> isParameter [
+	^ isParameter ifNil: [isParameter := false]
+]
+
+{ #category : #accessing }
+XMLEntityDeclarationWriter >> isParameter: aBoolean [
+	isParameter := aBoolean
 ]
 
 { #category : #accessing }
@@ -65,8 +78,8 @@ XMLEntityDeclarationWriter >> writeBody [
 		ifNotEmpty: [self writer writeXmlEncodedString: self replacement]
 		ifEmpty: [
 			self externalIDWriter write.
-			self ndata
-				ifNotEmpty: [
+			(self isParameter not and: [self ndata notEmpty])
+				ifTrue: [
 					self writer
 						space;
 						nextPutAll: 'NDATA';
