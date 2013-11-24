@@ -1,6 +1,11 @@
 "
 '!!! Current loading expressions and key development history
 
+- Version 2.3 - 2013-11-22 Monty's Enhancements
+[[[ 
+	(ConfigurationOfXMLWriter project version: ''2.3'') load
+]]]
+
 - Version 2.2.1 - 2013-07-10 Merged fix of Camillo for fileSystem interaction.
 [[[ 
 	(ConfigurationOfXMLWriter project version: ''2.2.1'') load
@@ -56,7 +61,13 @@ ConfigurationOfXMLWriter class >> bootstrapPackage: aString from: aPath [
 { #category : #catalog }
 ConfigurationOfXMLWriter class >> catalogChangeLog [
 
-^ '- Version 2.2.1 - 2013-07-10 Merged fix of Camillo for fileSystem interaction.
+^ '
+- Version 2.3 - 2013-11-22 Monty''s Enhancements
+[[[ 
+	(ConfigurationOfXMLWriter project version: ''2.3'') load
+]]]
+
+- Version 2.2.1 - 2013-07-10 Merged fix of Camillo for fileSystem interaction.
 [[[ 
 	(ConfigurationOfXMLWriter project version: ''2.2.1'') load
 ]]]
@@ -473,7 +484,7 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 ConfigurationOfXMLWriter >> development: spec [
 	<symbolicVersion: #'development'>
 	
-	spec for: #'pharo' version: '2.1.0'.
+	spec for: #'pharo' version: '2.3'.
 
 ]
 
@@ -494,7 +505,7 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 	
-	spec for: #'pharo' version: '2.2.1'.
+	spec for: #'pharo' version: '2.3'.
 
 ]
 
@@ -650,6 +661,25 @@ ConfigurationOfXMLWriter >> version221: spec [
 			do: [ spec
 					blessing: #release;
 					package: 'XML-Writer-Core' with: 'XML-Writer-Core-CamilloBruni.2' ;
+					package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-StephaneDucasse.1' ];
+		
+	
+		for: #gemstone
+			do: [ 
+					spec
+						package: 'Collections-Support' with: 'Collections-Support.g-OttoBehrens.45';
+						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version23: spec [
+	<version: '2.3' imports: #('2.1.0-baseline')>
+	spec
+		for: #common
+			do: [ spec
+					description: 'Enhancements made by monty to support Entity% and others';
+					blessing: #release;
+					package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.5' ;
 					package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-StephaneDucasse.1' ];
 		
 	
