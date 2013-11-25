@@ -673,7 +673,7 @@ ConfigurationOfXMLWriter >> version221: spec [
 
 { #category : #versions }
 ConfigurationOfXMLWriter >> version23: spec [
-	<version: '2.3' imports: #('2.1.0-baseline')>
+	<version: '2.3' imports: #('2.2.0-baseline')>
 	spec
 		for: #common
 			do: [ spec
