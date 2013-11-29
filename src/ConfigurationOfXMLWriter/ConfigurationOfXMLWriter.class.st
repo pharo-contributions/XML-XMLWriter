@@ -480,7 +480,7 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 			spec group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #baselines }
 ConfigurationOfXMLWriter >> baseline231: spec [
 	<version: '2.3.1-baseline'>
 	spec
@@ -530,7 +530,7 @@ ConfigurationOfXMLWriter >> baseline231: spec [
 ConfigurationOfXMLWriter >> development: spec [
 	<symbolicVersion: #'development'>
 	
-	spec for: #'pharo' version: '2.3'.
+	spec for: #'pharo' version: '2.3.1'.
 
 ]
 
@@ -717,7 +717,7 @@ ConfigurationOfXMLWriter >> version221: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #versions }
 ConfigurationOfXMLWriter >> version231: spec [
 	<version: '2.3.1' imports: #('2.3.1-baseline')>
 	spec
