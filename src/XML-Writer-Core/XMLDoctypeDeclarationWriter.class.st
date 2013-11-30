@@ -83,8 +83,10 @@ XMLDoctypeDeclarationWriter >> writePrologue [
 		cr;
 		nextPutAll: '<!DOCTYPE';
 		space;
-		writeName: self root;
-		space.
+		writeName: self root.
 
-	self externalIDWriter write.
+	self externalIDWriter hasExternalID
+		ifTrue: [
+			self writer space.
+			self externalIDWriter write].
 ]

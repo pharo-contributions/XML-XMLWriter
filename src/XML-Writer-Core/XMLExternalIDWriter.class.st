@@ -8,6 +8,11 @@ Class {
 	#category : #'XML-Writer-Core'
 }
 
+{ #category : #testing }
+XMLExternalIDWriter >> hasExternalID [
+	^ self publicID notEmpty or: [self systemID notEmpty]
+]
+
 { #category : #accessing }
 XMLExternalIDWriter >> publicID [
 	^ publicId ifNil: [publicId := '']
