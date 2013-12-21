@@ -22,6 +22,16 @@ XMLElementDeclarationWriter >> declarationType [
 	^ 'ELEMENT'
 ]
 
+{ #category : #accessing }
+XMLElementDeclarationWriter >> element [
+	^ self name
+]
+
+{ #category : #accessing }
+XMLElementDeclarationWriter >> element: aName [
+	self name: aName
+]
+
 { #category : #private }
 XMLElementDeclarationWriter >> writeBody [
 	self writer nextPutAll: self contentModel

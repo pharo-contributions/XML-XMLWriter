@@ -5,7 +5,6 @@ Class {
 	#name : #XMLMarkupDeclarationWriter,
 	#superclass : #XMLMarkupWriter,
 	#instVars : [
-		'type',
 		'name'
 	],
 	#category : #'XML-Writer-Core'

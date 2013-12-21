@@ -2,20 +2,21 @@ Class {
 	#name : #XMLAttributeDeclarationWriter,
 	#superclass : #XMLMarkupDeclarationWriter,
 	#instVars : [
-		'attributeName',
+		'attribute',
+		'type',
 		'defaultDeclaration'
 	],
 	#category : #'XML-Writer-Core'
 }
 
 { #category : #accessing }
-XMLAttributeDeclarationWriter >> attributeName [
-	^ attributeName ifNil: [attributeName := '']
+XMLAttributeDeclarationWriter >> attribute [
+	^ attribute ifNil: [attribute := '']
 ]
 
 { #category : #accessing }
-XMLAttributeDeclarationWriter >> attributeName: aName [
-	attributeName := aName
+XMLAttributeDeclarationWriter >> attribute: aName [
+	attribute := aName
 ]
 
 { #category : #accessing }
@@ -34,12 +35,12 @@ XMLAttributeDeclarationWriter >> defaultDeclaration: aDefaultDeclaration [
 ]
 
 { #category : #accessing }
-XMLAttributeDeclarationWriter >> elementName [
+XMLAttributeDeclarationWriter >> element [
 	^ self name
 ]
 
 { #category : #accessing }
-XMLAttributeDeclarationWriter >> elementName: aName [
+XMLAttributeDeclarationWriter >> element: aName [
 	self name: aName
 ]
 
@@ -56,7 +57,7 @@ XMLAttributeDeclarationWriter >> type: aType [
 { #category : #private }
 XMLAttributeDeclarationWriter >> writeBody [
 	self writer
-		writeName: self attributeName;
+		writeName: self attribute;
 		space;
 		writeName: self type.
 
