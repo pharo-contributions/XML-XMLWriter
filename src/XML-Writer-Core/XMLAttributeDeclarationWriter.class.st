@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'attribute',
 		'type',
-		'defaultDeclaration'
+		'defaultPragma',
+		'defaultValue'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -25,13 +26,23 @@ XMLAttributeDeclarationWriter >> declarationType [
 ]
 
 { #category : #accessing }
-XMLAttributeDeclarationWriter >> defaultDeclaration [
-	^ defaultDeclaration ifNil: [defaultDeclaration := '']
+XMLAttributeDeclarationWriter >> defaultPragma [
+	^ defaultPragma ifNil: [defaultPragma := '']
 ]
 
 { #category : #accessing }
-XMLAttributeDeclarationWriter >> defaultDeclaration: aDefaultDeclaration [
-	defaultDeclaration := aDefaultDeclaration
+XMLAttributeDeclarationWriter >> defaultPragma: aDefaultPragma [
+	defaultPragma := aDefaultPragma
+]
+
+{ #category : #accessing }
+XMLAttributeDeclarationWriter >> defaultValue [
+	^ defaultValue ifNil: [defaultValue := '']
+]
+
+{ #category : #accessing }
+XMLAttributeDeclarationWriter >> defaultValue: aDefaultValue [
+	defaultValue := aDefaultValue
 ]
 
 { #category : #accessing }
@@ -61,9 +72,16 @@ XMLAttributeDeclarationWriter >> writeBody [
 		space;
 		writeName: self type.
 
-	self defaultDeclaration
+	self defaultPragma
+		ifNotEmpty: [
+			self writer space.
+			(self defaultPragma first == $#)
+				ifFalse: [self writer nextPut: $#].
+			self writer nextPutAll: self defaultPragma].
+
+	self defaultValue
 		ifNotEmpty: [
 			self writer
 				space;
-				nextPutAll: self defaultDeclaration]
+				writeXmlEncodedString: self defaultValue].
 ]
