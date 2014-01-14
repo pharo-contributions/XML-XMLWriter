@@ -530,7 +530,7 @@ ConfigurationOfXMLWriter >> baseline231: spec [
 ConfigurationOfXMLWriter >> development: spec [
 	<symbolicVersion: #'development'>
 	
-	spec for: #'pharo' version: '2.3.4'.
+	spec for: #'pharo' version: '2.3.5'.
 
 ]
 
@@ -551,7 +551,7 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 	
-	spec for: #'pharo' version: '2.3.4'.
+	spec for: #'pharo' version: '2.3.5'.
 
 ]
 
@@ -799,6 +799,24 @@ ConfigurationOfXMLWriter >> version234: spec [
 			do: [ spec
 					blessing: #release;
 					package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.8' ;
+					package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-StephaneDucasse.1' ];
+		
+	
+		for: #gemstone
+			do: [ 
+					spec
+						package: 'Collections-Support' with: 'Collections-Support.g-OttoBehrens.45';
+						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version235: spec [
+	<version: '2.3.5' imports: #('2.3.1-baseline')>
+	spec
+		for: #common
+			do: [ spec
+					blessing: #release;
+					package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.9' ;
 					package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-StephaneDucasse.1' ];
 		
 	
