@@ -7,11 +7,9 @@ Class {
 	#category : #'XML-Writer-Core'
 }
 
-{ #category : #private }
-XMLCDataWriter >> embedString: aString [
-	self writer isCanonical
-		ifTrue: [self writer writeXmlEncoded: aString]
-		ifFalse: [self writer nextPutAll: aString]
+{ #category : #testing }
+XMLCDataWriter >> encodesEmbeddedStrings [
+	^ self writer isCanonical
 ]
 
 { #category : #private }

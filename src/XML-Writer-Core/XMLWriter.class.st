@@ -43,7 +43,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'stream',
-		'activeMarkupWriter',
+		'markupWriterStack',
 		'currentIndentLevel',
 		'indentString',
 		'lineBreak',
@@ -51,10 +51,7 @@ Class {
 		'omitsLineBreaks'
 	],
 	#classVars : [
-		'CarriageReturn',
-		'CharacterEscapes',
-		'LineFeed',
-		'SpecialCharacters'
+		'CharacterEscapes'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -63,19 +60,15 @@ Class {
 XMLWriter class >> initialize [
 	"self initialize"
 
-	(CharacterEscapes := Dictionary new)
-		at: $& put: '&amp;';
-		at: $" put: '&quot;';
-		at: $< put: '&lt;';
-		at: $> put: '&gt;'.
+	super initialize.
 
-	CarriageReturn := Character cr.
-	LineFeed := Character lf.
-
-	(SpecialCharacters := CharacterSet new)
-		addAll: CharacterEscapes keys;
-		add: CarriageReturn;
-		add: LineFeed.
+	(CharacterEscapes := Array new: 128)
+		at: $& asciiValue put: '&amp;';
+		at: $" asciiValue put: '&quot;';
+		at: $< asciiValue put: '&lt;';
+		at: $> asciiValue put: '&gt;';
+		at: Character cr asciiValue put: #LineBreak;
+		at: Character lf asciiValue put: #LineBreak.
 ]
 
 { #category : #'instance creation' }
@@ -101,34 +94,30 @@ XMLWriter >> & anEntityReference [
 
 { #category : #accessing }
 XMLWriter >> activeMarkupWriter [
-	^ activeMarkupWriter
+	^ self markupWriterStack
+		at: markupWriterStack size
+		ifAbsent: [nil]
 ]
 
-{ #category : #private }
-XMLWriter >> addNewMarkupWriter: aMarkupWriterClass [
-	| markupWriter |
-
-	markupWriter := aMarkupWriterClass writer: self.
-
-	self activeMarkupWriter
-		ifNotNil: [self activeMarkupWriter nextMarkupWriter: markupWriter].
-
-	^ activeMarkupWriter := markupWriter.
+{ #category : #printing }
+XMLWriter >> asString [
+	"for compatibility"
+	^ self printString
 ]
 
 { #category : #testing }
 XMLWriter >> atStart [
-	^ self stream position isZero
+	^ stream position isZero
 ]
 
 { #category : #'writing markup' }
 XMLWriter >> attributeDeclaration [
-	^ self addNewMarkupWriter: XMLAttributeDeclarationWriter
+	^ self pushNewMarkupWriter: XMLAttributeDeclarationWriter
 ]
 
 { #category : #'writing markup' }
 XMLWriter >> cdata [
-	^ self addNewMarkupWriter: XMLCDataWriter
+	^ self pushNewMarkupWriter: XMLCDataWriter
 ]
 
 { #category : #'writing markup' }
@@ -136,15 +125,15 @@ XMLWriter >> cdata: aString [
 	self cdata with: aString
 ]
 
-{ #category : #actions }
+{ #category : #'writing markup' }
 XMLWriter >> close [
 	self write.
-	self stream close.
+	stream close.
 ]
 
 { #category : #'writing markup' }
 XMLWriter >> comment [
-	^ self addNewMarkupWriter: XMLCommentWriter
+	^ self pushNewMarkupWriter: XMLCommentWriter
 ]
 
 { #category : #'writing markup' }
@@ -155,7 +144,7 @@ XMLWriter >> comment: aString [
 { #category : #accessing }
 XMLWriter >> contents [
 	self write.
-	^ self stream contents.
+	^ stream contents.
 ]
 
 { #category : #private }
@@ -175,15 +164,15 @@ XMLWriter >> currentIndentLevel [
 
 { #category : #'writing markup' }
 XMLWriter >> doctype [
-	^ self addNewMarkupWriter: XMLDoctypeDeclarationWriter
+	^ self pushNewMarkupWriter: XMLDoctypeDeclarationWriter
 ]
 
 { #category : #'writing markup' }
 XMLWriter >> elementDeclaration [
-	^ self addNewMarkupWriter: XMLElementDeclarationWriter
+	^ self pushNewMarkupWriter: XMLElementDeclarationWriter
 ]
 
-{ #category : #accessing }
+{ #category : #'writing markup' }
 XMLWriter >> enablePrettyPrinting [
 	self indentString: '    '.
 	self omitsLineBreaks: false.
@@ -191,7 +180,7 @@ XMLWriter >> enablePrettyPrinting [
 
 { #category : #'writing markup' }
 XMLWriter >> entityDeclaration [
-	^ self addNewMarkupWriter: XMLEntityDeclarationWriter
+	^ self pushNewMarkupWriter: XMLEntityDeclarationWriter
 ]
 
 { #category : #'writing markup' }
@@ -201,6 +190,12 @@ XMLWriter >> entityRef: aName [
 		nextPut: $&;
 		writeName: aName;
 		nextPut: $;
+]
+
+{ #category : #private }
+XMLWriter >> hasEmbeddedMarkupWriter: aMarkupWriter [
+	^ self activeMarkupWriter == aMarkupWriter
+		and: [self markupWriterStack size > 1]
 ]
 
 { #category : #testing }
@@ -239,7 +234,9 @@ XMLWriter >> isCanonical: aBoolean [
 
 { #category : #private }
 XMLWriter >> lastChar [
-	^ self stream peekLast asCharacter
+	^ self atStart
+		ifTrue: [nil]
+		ifFalse: [stream peekLast asCharacter]
 ]
 
 { #category : #accessing }
@@ -253,18 +250,23 @@ XMLWriter >> lineBreak: aLineBreakCharOrString [
 ]
 
 { #category : #private }
+XMLWriter >> markupWriterStack [
+	^ markupWriterStack ifNil: [markupWriterStack := OrderedCollection new]
+]
+
+{ #category : #private }
 XMLWriter >> nextPut: aCharacter [
-	self stream nextPut: aCharacter
+	stream nextPut: aCharacter
 ]
 
 { #category : #private }
 XMLWriter >> nextPutAll: aString [
-	self stream nextPutAll: aString
+	stream nextPutAll: aString
 ]
 
 { #category : #'writing markup' }
 XMLWriter >> notationDeclaration [
-	^ self addNewMarkupWriter: XMLNotationDeclarationWriter
+	^ self pushNewMarkupWriter: XMLNotationDeclarationWriter
 ]
 
 { #category : #testing }
@@ -298,12 +300,28 @@ XMLWriter >> pcdata: aString [
 
 { #category : #'writing markup' }
 XMLWriter >> pi [
-	^ self addNewMarkupWriter: XMLPIWriter
+	^ self pushNewMarkupWriter: XMLPIWriter
+]
+
+{ #category : #private }
+XMLWriter >> popActiveMarkupWriter [
+	self markupWriterStack removeLast
 ]
 
 { #category : #printing }
 XMLWriter >> printOn: aStream [
 	aStream nextPutAll: self contents.
+]
+
+{ #category : #private }
+XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
+	| newMarkupWriter activeMarkupWriter |
+
+	newMarkupWriter := aMarkupWriterClass writer: self.
+	(activeMarkupWriter := self activeMarkupWriter)
+		ifNotNil: [activeMarkupWriter writeForNewMarkupWriter].
+
+	^ self markupWriterStack addLast: newMarkupWriter.
 ]
 
 { #category : #'writing markup' }
@@ -316,15 +334,15 @@ XMLWriter >> raw: aString [
 { #category : #private }
 XMLWriter >> space [
 	(self isCanonical and: [self hasTrailingWhitespace])
-		ifFalse: [self stream space]
+		ifFalse: [stream space]
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 XMLWriter >> stream [
 	^ stream
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 XMLWriter >> stream: aStream [
 	stream := aStream
 ]
@@ -338,7 +356,7 @@ XMLWriter >> string: aString [
 
 { #category : #'writing markup' }
 XMLWriter >> tag [
-	^ self addNewMarkupWriter: XMLTagWriter
+	^ self pushNewMarkupWriter: XMLTagWriter
 ]
 
 { #category : #'writing markup' }
@@ -354,21 +372,16 @@ XMLWriter >> tag: aName attributes: aDictionaryOrArray with: aStringOrCollection
 ]
 
 { #category : #'writing markup' }
-XMLWriter >> tag: aName content: aStringOrCollectionOrBlock [
-	self deprecated: 'use #tag:with: instead'.
-
-	^ (self tag: aName) with: aStringOrCollectionOrBlock.
-]
-
-{ #category : #'writing markup' }
 XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
 	^ (self tag: aName) with: aStringOrCollectionOrBlock
 ]
 
 { #category : #'writing markup' }
 XMLWriter >> write [
-	self activeMarkupWriter
-		ifNotNil: [self activeMarkupWriter write].
+	| activeMarkupWriter |
+
+	(activeMarkupWriter := self activeMarkupWriter)
+		ifNotNil: [activeMarkupWriter writeForNewMarkup]
 ]
 
 { #category : #private }
@@ -384,7 +397,7 @@ XMLWriter >> writeName: aString [
 { #category : #private }
 XMLWriter >> writeName: aName value: aValue [
 	(self atStart or: [self hasTrailingWhitespace])
-		ifFalse: [self stream space].
+		ifFalse: [stream space].
 
 	self
 		writeName: aName;
@@ -393,39 +406,33 @@ XMLWriter >> writeName: aName value: aValue [
 ]
 
 { #category : #'writing markup' }
+XMLWriter >> writeUnwrittenEmbeddedMarkupWriterOf: aMarkupWriter [
+	| activeMarkupWriter |
+
+	(activeMarkupWriter := self activeMarkupWriter) == aMarkupWriter
+		ifFalse: [activeMarkupWriter write]
+]
+
+{ #category : #'writing markup' }
 XMLWriter >> writeWith: aBlock [
-	aBlock valueWithPossibleArgument: self.
+	aBlock cull: self.
 	self write.
 ]
 
 { #category : #private }
 XMLWriter >> writeXmlEncoded: aString [
-	| lastIndex nextIndex |
-	
-	"Unroll the first search"
-	lastIndex := 1.
-	nextIndex := String
-		findFirstInString: aString
-		inSet: SpecialCharacters byteArrayMap
-		startingAt: lastIndex.
-	nextIndex isZero
-		ifTrue: [^ self nextPutAll: aString].
+	| asciiValue replacement |
 
-	[nextIndex isZero]
-		whileFalse: [| nextChar |
-			stream
-				next: nextIndex - lastIndex putAll: aString startingAt: lastIndex;
-				nextPutAll:
-					(((nextChar := aString at: nextIndex) == LineFeed or: [nextChar == CarriageReturn])
+	aString do: [:each |
+		((asciiValue := each asciiValue) > 0
+			and: [asciiValue <= CharacterEscapes size
+				and: [(replacement := CharacterEscapes at: asciiValue) notNil]])
+			ifTrue: [
+				stream nextPutAll:
+					(replacement == #LineBreak
 						ifTrue: [self lineBreak]
-						ifFalse: [CharacterEscapes at: nextChar]).
-			lastIndex := nextIndex + 1.
-			nextIndex := String
-				findFirstInString: aString
-				inSet: SpecialCharacters byteArrayMap
-				startingAt: lastIndex].
-
-	stream next: aString size - lastIndex + 1 putAll: aString startingAt: lastIndex.
+						ifFalse: [replacement])]
+			ifFalse: [stream nextPut: each]]
 ]
 
 { #category : #private }
@@ -436,12 +443,7 @@ XMLWriter >> writeXmlEncodedString: aString [
 		nextPut: $"
 ]
 
-{ #category : #private }
-XMLWriter >> writtenMarkupWriter: aMarkupWriter [
-	activeMarkupWriter := aMarkupWriter parent
-]
-
 { #category : #'writing markup' }
 XMLWriter >> xml [
-	^ self addNewMarkupWriter: XMLXmlDeclarationWriter
+	^ self pushNewMarkupWriter: XMLXmlDeclarationWriter
 ]

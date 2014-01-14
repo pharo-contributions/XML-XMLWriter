@@ -58,7 +58,7 @@ XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
 ]
 
 { #category : #private }
-XMLDoctypeDeclarationWriter >> writeBeforeEmbeddedMarkup [
+XMLDoctypeDeclarationWriter >> writeEmbeddedMarkupPrologue [
 	self writer
 		nextPutAll: ' [';
 		indent

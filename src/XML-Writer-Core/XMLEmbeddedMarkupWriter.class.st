@@ -5,7 +5,6 @@ Class {
 	#name : #XMLEmbeddedMarkupWriter,
 	#superclass : #XMLMarkupWriter,
 	#instVars : [
-		'isWritingBody',
 		'hasEmbeddedMarkup',
 		'hasEmbeddedMarkupWriters'
 	],
@@ -14,7 +13,7 @@ Class {
 
 { #category : #private }
 XMLEmbeddedMarkupWriter >> embedBlock: aBlock [
-	aBlock valueWithPossibleArgument: self writer
+	aBlock cull: self writer
 ]
 
 { #category : #private }
@@ -24,13 +23,15 @@ XMLEmbeddedMarkupWriter >> embedCollection: aCollection [
 
 { #category : #private }
 XMLEmbeddedMarkupWriter >> embedString: aString [
-	self writer nextPutAll: aString
+	self prepareForEmbeddedMarkup.
+
+	self encodesEmbeddedStrings
+		ifTrue: [self writer writeXmlEncoded: aString]
+		ifFalse: [self writer nextPutAll: aString]
 ]
 
 { #category : #private }
 XMLEmbeddedMarkupWriter >> embedValue: aValue [
-	aValue ifNil: [^ self].
-
 	aValue isString
 		ifTrue: [^ self embedString: aValue].
 	aValue isCollection
@@ -39,6 +40,11 @@ XMLEmbeddedMarkupWriter >> embedValue: aValue [
 		ifTrue: [^ self embedBlock: aValue].
 
 	self error: 'Value object must be a string, collection or block'.
+]
+
+{ #category : #testing }
+XMLEmbeddedMarkupWriter >> encodesEmbeddedStrings [
+	^ false
 ]
 
 { #category : #testing }
@@ -51,57 +57,54 @@ XMLEmbeddedMarkupWriter >> hasEmbeddedMarkupWriters [
 	^ hasEmbeddedMarkupWriters ifNil: [hasEmbeddedMarkupWriters := false]
 ]
 
-{ #category : #testing }
-XMLEmbeddedMarkupWriter >> isWritingBody [
-	^ isWritingBody ifNil: [isWritingBody := false]
-]
-
 { #category : #private }
-XMLEmbeddedMarkupWriter >> nextMarkupWriter: aMarkupWriter [
-	self isWritingBody
-		ifTrue: [
-			self hasEmbeddedMarkup
-				ifFalse: [self startWritingEmbeddedMarkup].
-			aMarkupWriter parent: self.
-			hasEmbeddedMarkupWriters := true]
-		ifFalse: [self write]
-]
-
-{ #category : #private }
-XMLEmbeddedMarkupWriter >> startWritingEmbeddedMarkup [	
-	hasEmbeddedMarkup := true.
-	self writeBeforeEmbeddedMarkup.
+XMLEmbeddedMarkupWriter >> prepareForEmbeddedMarkup [
+	self hasEmbeddedMarkup
+		ifFalse: [
+			hasEmbeddedMarkup := true.
+			self writeEmbeddedMarkupPrologue]
 ]
 
 { #category : #'embedding markup' }
 XMLEmbeddedMarkupWriter >> with: aStringOrCollectionOrBlock [
 	self
+		startWriting;
 		writePrologue;
 		writeBody: aStringOrCollectionOrBlock;
 		writeEpilogue;
-		beWritten
+		stopWriting
 ]
 
 { #category : #private }
 XMLEmbeddedMarkupWriter >> write [
-	self isWritingBody
-		ifTrue: [
-			self hasEmbeddedMarkup
-				ifFalse: [self startWritingEmbeddedMarkup]]
+	self isWriting
 		ifFalse: [self with: nil]
 ]
 
 { #category : #private }
-XMLEmbeddedMarkupWriter >> writeBeforeEmbeddedMarkup [
+XMLEmbeddedMarkupWriter >> writeBody: aStringOrCollectionOrBlock [
+	aStringOrCollectionOrBlock
+		ifNotNil: [
+			self embedValue: aStringOrCollectionOrBlock.
+			self writer writeUnwrittenEmbeddedMarkupWriterOf: self].
 ]
 
 { #category : #private }
-XMLEmbeddedMarkupWriter >> writeBody: aStringOrCollectionOrBlock [
-	isWritingBody := true.
+XMLEmbeddedMarkupWriter >> writeEmbeddedMarkupPrologue [
+]
 
-	self embedValue: aStringOrCollectionOrBlock.
-	self isActiveMarkupWriter
-		ifFalse: [self writer write].
+{ #category : #private }
+XMLEmbeddedMarkupWriter >> writeForNewMarkup [
+	self isWriting
+		ifTrue: [self prepareForEmbeddedMarkup]
+		ifFalse: [self write]
+]
 
-	isWritingBody := false.
+{ #category : #private }
+XMLEmbeddedMarkupWriter >> writeForNewMarkupWriter [
+	self isWriting
+		ifTrue: [
+			self prepareForEmbeddedMarkup.
+			hasEmbeddedMarkupWriters := true]
+		ifFalse: [self write]
 ]

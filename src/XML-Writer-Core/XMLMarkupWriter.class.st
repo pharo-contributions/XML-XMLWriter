@@ -6,7 +6,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'writer',
-		'parent'
+		'isWriting'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -16,39 +16,19 @@ XMLMarkupWriter class >> writer: aWriter [
 	^ self new writer: aWriter
 ]
 
-{ #category : #private }
-XMLMarkupWriter >> beWritten [
-	self writer writtenMarkupWriter: self.
-]
-
 { #category : #testing }
-XMLMarkupWriter >> hasParent [
-	^ self parent notNil
-]
-
-{ #category : #testing }
-XMLMarkupWriter >> isActiveMarkupWriter [
-	^ self writer activeMarkupWriter == self
+XMLMarkupWriter >> hasEmbeddedMarkup [
+	^ false
 ]
 
 { #category : #testing }
 XMLMarkupWriter >> isEmbedded [
-	^ self hasParent
+	^ self writer hasEmbeddedMarkupWriter: self
 ]
 
-{ #category : #private }
-XMLMarkupWriter >> nextMarkupWriter: aMarkupWriter [
-	self write
-]
-
-{ #category : #accessing }
-XMLMarkupWriter >> parent [
-	^ parent
-]
-
-{ #category : #accessing }
-XMLMarkupWriter >> parent: aParentMarkupWriter [
-	parent := aParentMarkupWriter
+{ #category : #testing }
+XMLMarkupWriter >> isWriting [
+	^ isWriting ifNil: [isWriting := false]
 ]
 
 { #category : #printing }
@@ -56,13 +36,25 @@ XMLMarkupWriter >> printOn: aStream [
 	self writer printOn: aStream
 ]
 
+{ #category : #private }
+XMLMarkupWriter >> startWriting [
+	isWriting := true
+]
+
+{ #category : #private }
+XMLMarkupWriter >> stopWriting [
+	isWriting := false.
+	self writer popActiveMarkupWriter.
+]
+
 { #category : #'writing markup' }
 XMLMarkupWriter >> write [
 	self
+		startWriting;
 		writePrologue;
 		writeBody;
 		writeEpilogue;
-		beWritten
+		stopWriting
 ]
 
 { #category : #private }
@@ -74,6 +66,16 @@ XMLMarkupWriter >> writeEpilogue [
 ]
 
 { #category : #private }
+XMLMarkupWriter >> writeForNewMarkup [
+	self write
+]
+
+{ #category : #private }
+XMLMarkupWriter >> writeForNewMarkupWriter [
+	self write
+]
+
+{ #category : #private }
 XMLMarkupWriter >> writePrologue [
 ]
 
@@ -82,7 +84,7 @@ XMLMarkupWriter >> writer [
 	^ writer
 ]
 
-{ #category : #initialization }
+{ #category : #accessing }
 XMLMarkupWriter >> writer: aWriter [
 	writer := aWriter
 ]
