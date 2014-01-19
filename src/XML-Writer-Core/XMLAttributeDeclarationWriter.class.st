@@ -73,15 +73,15 @@ XMLAttributeDeclarationWriter >> writeBody [
 		writeName: self type.
 
 	self defaultPragma
-		ifNotEmpty: [
+		ifNotEmpty: [:pragma |
 			self writer space.
-			(self defaultPragma first == $#)
+			(pragma first == $#)
 				ifFalse: [self writer nextPut: $#].
-			self writer nextPutAll: self defaultPragma].
+			self writer nextPutAll: pragma].
 
 	self defaultValue
-		ifNotEmpty: [
+		ifNotEmpty: [:value |
 			self writer
 				space;
-				writeXmlEncodedString: self defaultValue].
+				writeXmlEncodedString: value].
 ]

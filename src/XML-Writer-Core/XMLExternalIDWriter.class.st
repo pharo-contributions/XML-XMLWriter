@@ -1,3 +1,6 @@
+"
+This class writes public and system IDs of external entities.
+"
 Class {
 	#name : #XMLExternalIDWriter,
 	#superclass : #XMLMarkupWriter,
@@ -36,16 +39,17 @@ XMLExternalIDWriter >> systemID: aSystemId [
 { #category : #private }
 XMLExternalIDWriter >> write [
 	self publicID
-		ifNotEmpty: [
+		ifNotEmpty: [:id |
 			self writer
 				nextPutAll: 'PUBLIC';
 				space;
-				writeXmlEncodedString: self publicID]
+				writeXmlEncodedString: id]
 		ifEmpty: [
-			self systemID ifNotEmpty: [self writer nextPutAll: 'SYSTEM']].
+			self systemID
+				ifNotEmpty: [self writer nextPutAll: 'SYSTEM']].
 
-	self systemID ifNotEmpty: [
+	self systemID ifNotEmpty: [:id |
 		self writer
 			space
-			writeXmlEncodedString: self systemID].
+			writeXmlEncodedString: id].
 ]

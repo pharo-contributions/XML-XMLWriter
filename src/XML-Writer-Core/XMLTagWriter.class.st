@@ -126,13 +126,19 @@ XMLTagWriter >> writePrologue [
 
 { #category : #private }
 XMLTagWriter >> writeXmlnsDeclarations [
-	xmlns ifNotNil: [self writer writeName: 'xmlns' value: self xmlns].
+	xmlns ifNotNil: [:default |
+		self writer
+			writeName: 'xmlns'
+			value: default].
 
 	self xmlnsPrefixes
-		ifNotEmpty: [
+		ifNotEmpty: [:prefixes |
 			self
-				writeKeysAndValuesFrom: self xmlnsPrefixes
-				with: [:prefix :uri | self writer writeName: 'xmlns:', prefix value: uri]].
+				writeKeysAndValuesFrom: prefixes
+				with: [:prefix :uri |
+					self writer
+						writeName: 'xmlns:', prefix
+						value: uri]].
 ]
 
 { #category : #accessing }

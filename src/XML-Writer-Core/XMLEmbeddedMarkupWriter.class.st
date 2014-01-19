@@ -58,6 +58,22 @@ XMLEmbeddedMarkupWriter >> hasEmbeddedMarkupWriters [
 ]
 
 { #category : #private }
+XMLEmbeddedMarkupWriter >> newMarkupBeingWritten [
+	self isWriting
+		ifTrue: [self prepareForEmbeddedMarkup]
+		ifFalse: [self write]
+]
+
+{ #category : #private }
+XMLEmbeddedMarkupWriter >> newMarkupWriterBeingPushed [
+	self isWriting
+		ifTrue: [
+			self prepareForEmbeddedMarkup.
+			hasEmbeddedMarkupWriters := true]
+		ifFalse: [self write]
+]
+
+{ #category : #private }
 XMLEmbeddedMarkupWriter >> prepareForEmbeddedMarkup [
 	self hasEmbeddedMarkup
 		ifFalse: [
@@ -86,25 +102,9 @@ XMLEmbeddedMarkupWriter >> writeBody: aStringOrCollectionOrBlock [
 	aStringOrCollectionOrBlock
 		ifNotNil: [
 			self embedValue: aStringOrCollectionOrBlock.
-			self writer writeUnwrittenEmbeddedMarkupWriterOf: self].
+			self writer writeUnwrittenMarkupWriterEmbeddedIn: self].
 ]
 
 { #category : #private }
 XMLEmbeddedMarkupWriter >> writeEmbeddedMarkupPrologue [
-]
-
-{ #category : #private }
-XMLEmbeddedMarkupWriter >> writeForNewMarkup [
-	self isWriting
-		ifTrue: [self prepareForEmbeddedMarkup]
-		ifFalse: [self write]
-]
-
-{ #category : #private }
-XMLEmbeddedMarkupWriter >> writeForNewMarkupWriter [
-	self isWriting
-		ifTrue: [
-			self prepareForEmbeddedMarkup.
-			hasEmbeddedMarkupWriters := true]
-		ifFalse: [self write]
 ]

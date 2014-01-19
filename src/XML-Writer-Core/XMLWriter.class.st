@@ -186,7 +186,7 @@ XMLWriter >> entityDeclaration [
 { #category : #'writing markup' }
 XMLWriter >> entityRef: aName [
 	self
-		write;
+		newMarkup;
 		nextPut: $&;
 		writeName: aName;
 		nextPut: $;
@@ -255,6 +255,12 @@ XMLWriter >> markupWriterStack [
 ]
 
 { #category : #private }
+XMLWriter >> newMarkup [
+	self activeMarkupWriter
+		ifNotNil: [:activeMarkupWriter | activeMarkupWriter newMarkupBeingWritten]
+]
+
+{ #category : #private }
 XMLWriter >> nextPut: aCharacter [
 	stream nextPut: aCharacter
 ]
@@ -287,7 +293,7 @@ XMLWriter >> outdent [
 { #category : #'writing markup' }
 XMLWriter >> paramEntityRef: aName [
 	self
-		write;
+		newMarkup;
 		nextPut: $%;
 		writeName: aName;
 		nextPut: $;
@@ -305,7 +311,7 @@ XMLWriter >> pi [
 
 { #category : #private }
 XMLWriter >> popActiveMarkupWriter [
-	self markupWriterStack removeLast
+	self markupWriterStack ifNotEmpty: [:stack | stack removeLast]
 ]
 
 { #category : #printing }
@@ -315,11 +321,12 @@ XMLWriter >> printOn: aStream [
 
 { #category : #private }
 XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
-	| newMarkupWriter activeMarkupWriter |
+	| newMarkupWriter |
 
 	newMarkupWriter := aMarkupWriterClass writer: self.
-	(activeMarkupWriter := self activeMarkupWriter)
-		ifNotNil: [activeMarkupWriter writeForNewMarkupWriter].
+	self activeMarkupWriter
+		ifNotNil: [:activeMarkupWriter |
+			activeMarkupWriter newMarkupWriterBeingPushed].
 
 	^ self markupWriterStack addLast: newMarkupWriter.
 ]
@@ -327,7 +334,7 @@ XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
 { #category : #'writing markup' }
 XMLWriter >> raw: aString [
 	self
-		write;
+		newMarkup;
 		nextPutAll: aString
 ]
 
@@ -350,7 +357,7 @@ XMLWriter >> stream: aStream [
 { #category : #'writing markup' }
 XMLWriter >> string: aString [
 	self
-		write;
+		newMarkup;
 		writeXmlEncoded: aString.
 ]
 
@@ -378,10 +385,8 @@ XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
 
 { #category : #'writing markup' }
 XMLWriter >> write [
-	| activeMarkupWriter |
-
-	(activeMarkupWriter := self activeMarkupWriter)
-		ifNotNil: [activeMarkupWriter writeForNewMarkup]
+	self activeMarkupWriter
+		ifNotNil: [:activeMarkupWriter | activeMarkupWriter write]
 ]
 
 { #category : #private }
@@ -405,8 +410,8 @@ XMLWriter >> writeName: aName value: aValue [
 		writeXmlEncodedString: aValue.
 ]
 
-{ #category : #'writing markup' }
-XMLWriter >> writeUnwrittenEmbeddedMarkupWriterOf: aMarkupWriter [
+{ #category : #private }
+XMLWriter >> writeUnwrittenMarkupWriterEmbeddedIn: aMarkupWriter [
 	| activeMarkupWriter |
 
 	(activeMarkupWriter := self activeMarkupWriter) == aMarkupWriter

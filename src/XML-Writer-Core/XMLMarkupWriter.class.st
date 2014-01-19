@@ -31,6 +31,16 @@ XMLMarkupWriter >> isWriting [
 	^ isWriting ifNil: [isWriting := false]
 ]
 
+{ #category : #private }
+XMLMarkupWriter >> newMarkupBeingWritten [
+	self write
+]
+
+{ #category : #private }
+XMLMarkupWriter >> newMarkupWriterBeingPushed [
+	self write
+]
+
 { #category : #printing }
 XMLMarkupWriter >> printOn: aStream [
 	self writer printOn: aStream
@@ -63,16 +73,6 @@ XMLMarkupWriter >> writeBody [
 
 { #category : #private }
 XMLMarkupWriter >> writeEpilogue [
-]
-
-{ #category : #private }
-XMLMarkupWriter >> writeForNewMarkup [
-	self write
-]
-
-{ #category : #private }
-XMLMarkupWriter >> writeForNewMarkupWriter [
-	self write
 ]
 
 { #category : #private }
