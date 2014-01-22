@@ -37,7 +37,7 @@ XMLExternalIDWriter >> systemID: aSystemId [
 ]
 
 { #category : #private }
-XMLExternalIDWriter >> write [
+XMLExternalIDWriter >> writeBody [
 	self publicID
 		ifNotEmpty: [:id |
 			self writer
