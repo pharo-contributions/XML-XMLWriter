@@ -834,7 +834,7 @@ ConfigurationOfXMLWriter >> version236: spec [
 		for: #common
 			do: [ spec
 					blessing: #release;
-					package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.10' ;
+					package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.11' ;
 					package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-StephaneDucasse.1' ];
 		
 	
