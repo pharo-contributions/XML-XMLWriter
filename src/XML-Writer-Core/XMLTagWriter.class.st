@@ -45,7 +45,7 @@ XMLTagWriter >> attributes: aDictionaryOrArray [
 	aDictionaryOrArray associationsDo: [:each | self attributes add: each]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
 XMLTagWriter >> encodesEmbeddedStrings [
 	^ true
 ]
