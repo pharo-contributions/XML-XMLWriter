@@ -14,7 +14,7 @@ XMLNotationDeclarationWriter >> declarationType [
 
 { #category : #accessing }
 XMLNotationDeclarationWriter >> externalIDWriter [
-	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter writer: self writer]
+	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter new]
 ]
 
 { #category : #accessing }
@@ -39,5 +39,5 @@ XMLNotationDeclarationWriter >> systemID: aSystemId [
 
 { #category : #private }
 XMLNotationDeclarationWriter >> writeBody [
-	self externalIDWriter write
+	self externalIDWriter writeOn: self writer
 ]

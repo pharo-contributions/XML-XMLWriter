@@ -102,7 +102,8 @@ XMLEmbeddedMarkupWriter >> writeBody: aStringOrCollectionOrBlock [
 	aStringOrCollectionOrBlock
 		ifNotNil: [
 			self embedValue: aStringOrCollectionOrBlock.
-			self writer writeUnwrittenMarkupWriterEmbeddedIn: self].
+			self hasEmbeddedMarkupWriters
+				ifTrue: [self writer writeUnwrittenMarkupWriterEmbeddedIn: self]].
 ]
 
 { #category : #private }

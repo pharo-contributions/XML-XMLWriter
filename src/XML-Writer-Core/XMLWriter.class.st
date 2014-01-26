@@ -412,10 +412,10 @@ XMLWriter >> writeName: aName value: aValue [
 
 { #category : #private }
 XMLWriter >> writeUnwrittenMarkupWriterEmbeddedIn: aMarkupWriter [
-	| activeMarkupWriter |
-
-	(activeMarkupWriter := self activeMarkupWriter) == aMarkupWriter
-		ifFalse: [activeMarkupWriter write]
+	self activeMarkupWriter
+		ifNotNil: [:activeMarkupWriter |
+			activeMarkupWriter == aMarkupWriter
+				ifFalse: [activeMarkupWriter write]]
 ]
 
 { #category : #'writing markup' }

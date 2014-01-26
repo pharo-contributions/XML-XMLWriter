@@ -13,7 +13,7 @@ Class {
 
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> externalIDWriter [
-	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter writer: self writer]
+	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter new]
 ]
 
 { #category : #accessing }
@@ -88,5 +88,5 @@ XMLDoctypeDeclarationWriter >> writePrologue [
 	self externalIDWriter hasExternalID
 		ifTrue: [
 			self writer space.
-			self externalIDWriter write].
+			self externalIDWriter writeOn: self writer].
 ]

@@ -19,7 +19,7 @@ XMLEntityDeclarationWriter >> declarationType [
 
 { #category : #accessing }
 XMLEntityDeclarationWriter >> externalIDWriter [
-	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter writer: self writer]
+	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter new]
 ]
 
 { #category : #accessing }
@@ -77,7 +77,7 @@ XMLEntityDeclarationWriter >> writeBody [
 	self replacement
 		ifNotEmpty: [self writer writeXmlEncodedString: self replacement]
 		ifEmpty: [
-			self externalIDWriter write.
+			self externalIDWriter writeOn: self writer.
 			(self isParameter not and: [self ndata notEmpty])
 				ifTrue: [
 					self writer
