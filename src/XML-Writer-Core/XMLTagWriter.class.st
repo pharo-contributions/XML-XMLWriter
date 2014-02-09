@@ -46,7 +46,7 @@ XMLTagWriter >> attributes: aDictionaryOrArray [
 ]
 
 { #category : #testing }
-XMLTagWriter >> encodesEmbeddedStrings [
+XMLTagWriter >> escapesEmbeddedStrings [
 	^ true
 ]
 
@@ -67,7 +67,8 @@ XMLTagWriter >> writeAttributes [
 			writeKeysAndValuesFrom: self attributes
 			with: [:attrName :attrValue |
 				self writer
-					writeName: attrName value: attrValue]]
+					writeName: attrName
+					escapedContentValue: attrValue]]
 ]
 
 { #category : #private }
@@ -129,7 +130,7 @@ XMLTagWriter >> writeXmlnsDeclarations [
 	xmlns ifNotNil: [:default |
 		self writer
 			writeName: 'xmlns'
-			value: default].
+			escapedContentValue: default].
 
 	self xmlnsPrefixes
 		ifNotEmpty: [:prefixes |
@@ -138,7 +139,7 @@ XMLTagWriter >> writeXmlnsDeclarations [
 				with: [:prefix :uri |
 					self writer
 						writeName: 'xmlns:', prefix
-						value: uri]].
+						escapedContentValue: uri]].
 ]
 
 { #category : #accessing }

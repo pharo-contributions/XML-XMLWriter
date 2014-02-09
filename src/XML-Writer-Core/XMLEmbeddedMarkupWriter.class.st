@@ -25,8 +25,8 @@ XMLEmbeddedMarkupWriter >> embedCollection: aCollection [
 XMLEmbeddedMarkupWriter >> embedString: aString [
 	self prepareForEmbeddedMarkup.
 
-	self encodesEmbeddedStrings
-		ifTrue: [self writer writeXmlEncoded: aString]
+	self escapesEmbeddedStrings
+		ifTrue: [self writer writeEscapedContent: aString]
 		ifFalse: [self writer nextPutAll: aString]
 ]
 
@@ -43,7 +43,7 @@ XMLEmbeddedMarkupWriter >> embedValue: aValue [
 ]
 
 { #category : #testing }
-XMLEmbeddedMarkupWriter >> encodesEmbeddedStrings [
+XMLEmbeddedMarkupWriter >> escapesEmbeddedStrings [
 	^ false
 ]
 

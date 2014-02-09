@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #testing }
-XMLCDataWriter >> encodesEmbeddedStrings [
+XMLCDataWriter >> escapesEmbeddedStrings [
 	^ self writer isCanonical
 ]
 

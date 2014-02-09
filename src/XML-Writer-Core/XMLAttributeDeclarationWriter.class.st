@@ -83,5 +83,5 @@ XMLAttributeDeclarationWriter >> writeBody [
 		ifNotEmpty: [:value |
 			self writer
 				space;
-				writeXmlEncodedString: value].
+				writeEscapedContentString: value].
 ]

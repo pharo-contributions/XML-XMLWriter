@@ -50,14 +50,13 @@ XMLXmlDeclarationWriter >> version: aVersion [
 { #category : #accessing }
 XMLXmlDeclarationWriter >> writeBody [
 	self writer
-		writeName: 'version' value: self version asString;
+		writeName: 'version' unescapedValue: self version asString;
 		space;
-		writeName: 'encoding' value: self encoding.
+		writeName: 'encoding' unescapedValue: self encoding.
 
 	self standalone
 		ifTrue: [
 			self writer
 				space;
-				writeName: 'standalone'
-				value: 'yes']
+				writeName: 'standalone' unescapedValue: 'yes']
 ]

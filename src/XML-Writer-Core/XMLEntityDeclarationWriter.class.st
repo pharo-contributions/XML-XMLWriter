@@ -75,7 +75,7 @@ XMLEntityDeclarationWriter >> systemID: aSystemId [
 { #category : #private }
 XMLEntityDeclarationWriter >> writeBody [
 	self replacement
-		ifNotEmpty: [self writer writeXmlEncodedString: self replacement]
+		ifNotEmpty: [self writer writeEscapedEntityValueString: self replacement]
 		ifEmpty: [
 			self externalIDWriter writeOn: self writer.
 			(self isParameter not and: [self ndata notEmpty])

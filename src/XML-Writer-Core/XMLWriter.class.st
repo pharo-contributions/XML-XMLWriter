@@ -48,10 +48,12 @@ Class {
 		'indentString',
 		'lineBreak',
 		'isCanonical',
-		'omitsLineBreaks'
+		'omitsLineBreaks',
+		'isEscaping'
 	],
 	#classVars : [
-		'CharacterEscapes'
+		'ContentEscapes',
+		'EntityValueEscapes'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -61,12 +63,27 @@ XMLWriter class >> initialize [
 	"self initialize"
 
 	super initialize.
+	self
+		initializeContentEscapes;
+		initializeEntityValueEscapes
+]
 
-	(CharacterEscapes := Array new: 128)
+{ #category : #'class initialization' }
+XMLWriter class >> initializeContentEscapes [
+	(ContentEscapes := Array new: 128)
 		at: $& asciiValue put: '&amp;';
 		at: $" asciiValue put: '&quot;';
 		at: $< asciiValue put: '&lt;';
 		at: $> asciiValue put: '&gt;';
+		at: Character cr asciiValue put: #LineBreak;
+		at: Character lf asciiValue put: #LineBreak.
+]
+
+{ #category : #'class initialization' }
+XMLWriter class >> initializeEntityValueEscapes [
+	(EntityValueEscapes := Array new: 128)
+		at: $" asciiValue put: '&#34;';
+		at: $% asciiValue put: '&#37;';
 		at: Character cr asciiValue put: #LineBreak;
 		at: Character lf asciiValue put: #LineBreak.
 ]
@@ -94,9 +111,10 @@ XMLWriter >> & anEntityReference [
 
 { #category : #accessing }
 XMLWriter >> activeMarkupWriter [
-	^ self markupWriterStack
-		at: markupWriterStack size
-		ifAbsent: [nil]
+	"for speed"
+	^ self markupWriterStack size > 0
+		ifTrue: [markupWriterStack at: markupWriterStack size]
+		ifFalse: [nil]
 ]
 
 { #category : #printing }
@@ -232,6 +250,16 @@ XMLWriter >> isCanonical: aBoolean [
 	isCanonical := aBoolean
 ]
 
+{ #category : #testing }
+XMLWriter >> isEscaping [
+	^ isEscaping ifNil: [isEscaping := true]
+]
+
+{ #category : #accessing }
+XMLWriter >> isEscaping: aBoolean [
+	isEscaping := aBoolean
+]
+
 { #category : #private }
 XMLWriter >> lastChar [
 	^ self atStart
@@ -358,7 +386,7 @@ XMLWriter >> stream: aStream [
 XMLWriter >> string: aString [
 	self
 		newMarkup;
-		writeXmlEncoded: aString.
+		writeEscapedContent: aString.
 ]
 
 { #category : #'writing markup' }
@@ -390,6 +418,46 @@ XMLWriter >> write [
 ]
 
 { #category : #private }
+XMLWriter >> write: aString escapedWith: anEscapeTable [
+	| asciiValue replacement |
+
+	self isEscaping
+		ifFalse: [^ self nextPutAll: aString].
+
+	aString do: [:each |
+		((asciiValue := each asciiValue) > 0
+			and: [asciiValue <= anEscapeTable size
+				and: [(replacement := anEscapeTable at: asciiValue) notNil]])
+			ifTrue: [
+				stream nextPutAll:
+					(replacement == #LineBreak
+						ifTrue: [self lineBreak]
+						ifFalse: [replacement])]
+			ifFalse: [stream nextPut: each]]
+]
+
+{ #category : #private }
+XMLWriter >> writeEscapedContent: aString [
+	self write: aString escapedWith: ContentEscapes
+]
+
+{ #category : #private }
+XMLWriter >> writeEscapedContentString: aString [
+	self
+		nextPut: $";
+		write: aString escapedWith: ContentEscapes;
+		nextPut: $"
+]
+
+{ #category : #private }
+XMLWriter >> writeEscapedEntityValueString: aString [
+	self
+		nextPut: $";
+		write: aString escapedWith: EntityValueEscapes;
+		nextPut: $"
+]
+
+{ #category : #private }
 XMLWriter >> writeIndent [
 	self currentIndentLevel timesRepeat: [self nextPutAll: self indentString]
 ]
@@ -400,14 +468,45 @@ XMLWriter >> writeName: aString [
 ]
 
 { #category : #private }
-XMLWriter >> writeName: aName value: aValue [
+XMLWriter >> writeName: aName escapedContentValue: aValue [
+	self
+		writeName: aName
+		value: aValue
+		isEscapedContent: true
+]
+
+{ #category : #private }
+XMLWriter >> writeName: aName unescapedValue: aValue [
+	self
+		writeName: aName
+		value: aValue
+		isEscapedContent: false
+]
+
+{ #category : #private }
+XMLWriter >> writeName: aName value: aValue isEscapedContent: aBoolean [
 	(self atStart or: [self hasTrailingWhitespace])
 		ifFalse: [stream space].
 
 	self
 		writeName: aName;
-		nextPut: $=;
-		writeXmlEncodedString: aValue.
+		nextPut: $=.
+	aBoolean
+		ifTrue: [self writeEscapedContentString: aValue]
+		ifFalse: [self writeUnescapedString: aValue].
+]
+
+{ #category : #private }
+XMLWriter >> writeUnescapedString: aString [
+	| quote |
+
+	quote := (aString includes: $") ifTrue: [$'] ifFalse: [$"].
+
+	self nextPut: quote.
+	aString do: [:each |
+		each == quote
+			ifFalse: [self nextPut: each]].
+	self nextPut: quote.
 ]
 
 { #category : #private }
@@ -422,30 +521,6 @@ XMLWriter >> writeUnwrittenMarkupWriterEmbeddedIn: aMarkupWriter [
 XMLWriter >> writeWith: aBlock [
 	aBlock cull: self.
 	self write.
-]
-
-{ #category : #private }
-XMLWriter >> writeXmlEncoded: aString [
-	| asciiValue replacement |
-
-	aString do: [:each |
-		((asciiValue := each asciiValue) > 0
-			and: [asciiValue <= CharacterEscapes size
-				and: [(replacement := CharacterEscapes at: asciiValue) notNil]])
-			ifTrue: [
-				stream nextPutAll:
-					(replacement == #LineBreak
-						ifTrue: [self lineBreak]
-						ifFalse: [replacement])]
-			ifFalse: [stream nextPut: each]]
-]
-
-{ #category : #private }
-XMLWriter >> writeXmlEncodedString: aString [
-	self
-		nextPut: $";
-		writeXmlEncoded: aString;
-		nextPut: $"
 ]
 
 { #category : #'writing markup' }

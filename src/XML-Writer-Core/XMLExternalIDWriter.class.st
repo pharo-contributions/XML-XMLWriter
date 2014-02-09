@@ -43,13 +43,13 @@ XMLExternalIDWriter >> writeOn: aWriter [
 			aWriter
 				nextPutAll: 'PUBLIC';
 				space;
-				writeXmlEncodedString: id]
+				writeUnescapedString: id]
 		ifEmpty: [
 			self systemID
 				ifNotEmpty: [aWriter nextPutAll: 'SYSTEM']].
 
 	self systemID ifNotEmpty: [:id |
 		aWriter
-			space
-			writeXmlEncodedString: id].
+			space;
+			writeUnescapedString: id].
 ]
