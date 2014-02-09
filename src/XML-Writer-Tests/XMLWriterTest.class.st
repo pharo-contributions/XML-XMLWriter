@@ -9,6 +9,49 @@ Class {
 }
 
 { #category : #tests }
+XMLWriterTest >> testContentEscaping [
+	| writer |
+
+	(writer := XMLWriter new)
+		tag
+			name: 'test';
+			attributeAt: 'escaped' put: '& " < >';
+			with: '& " < >'.
+	self assert:
+		writer contents =
+			'<test escaped="&amp; &quot; &lt; &gt;">&amp; &quot; &lt; &gt;</test>'.
+
+	((writer := XMLWriter new)
+		isEscaping: false;
+		tag)
+			name: 'test';
+			attributeAt: 'unescaped' put: '& " < >';
+			with: '& " < >'.
+	self assert: writer contents = '<test unescaped="& " < >">& " < ></test>'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testEntityValueEscaping [
+	| writer |
+
+	(writer := XMLWriter new)
+		entityDeclaration
+			name: 'test';
+			replacement: '% " < >';
+			write.
+	self assert: writer contents = '<!ENTITY test "&#37; &#34; < >">'.
+
+	((writer := XMLWriter new)
+		isEscaping: false;
+		entityDeclaration)
+			name: 'test';
+			replacement: '% " < >';
+			write.
+	self assert: writer contents = '<!ENTITY test "% " < >">'.
+
+]
+
+{ #category : #tests }
 XMLWriterTest >> testExampleUser [
 
 	| writer  |
@@ -60,4 +103,18 @@ XMLWriterTest >> testSimpleExampleWithWriteWith [
 				attributeAt: 'a' put: 'value'].
 		
 	self assert:  res contents  =  '<emptyTag a="value" />'
+]
+
+{ #category : #tests }
+XMLWriterTest >> testSystemAndPublicIDs [
+	| writer |
+
+	(writer := XMLWriter new)
+		doctype
+			root: 'test';
+			publicID: 'public"ID';
+			systemID: 'system"ID'''. "contains double and single quote"
+
+	"IDs are single quoted because they contain a double quote"
+	self assert: writer contents = '<!DOCTYPE test PUBLIC ''public"ID'' ''system"ID''>'
 ]
