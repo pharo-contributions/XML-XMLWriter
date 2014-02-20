@@ -64,11 +64,11 @@ XMLTagWriter >> name: aName [
 XMLTagWriter >> writeAttributes [
 	attributes ifNotNil: [
 		self
-			writeKeysAndValuesFrom: self attributes
-			with: [:attrName :attrValue |
+			writeKeysAndValuesFrom: attributes
+			with: [:attributeName :attributeValue |
 				self writer
-					writeName: attrName
-					escapedContentValue: attrValue]]
+					writeName: attributeName
+					escapedContentValue: attributeValue]]
 ]
 
 { #category : #private }
@@ -127,19 +127,18 @@ XMLTagWriter >> writePrologue [
 
 { #category : #private }
 XMLTagWriter >> writeXmlnsDeclarations [
-	xmlns ifNotNil: [:default |
+	xmlns ifNotNil: [
 		self writer
 			writeName: 'xmlns'
-			escapedContentValue: default].
+			escapedContentValue: xmlns].
 
-	self xmlnsPrefixes
-		ifNotEmpty: [:prefixes |
-			self
-				writeKeysAndValuesFrom: prefixes
-				with: [:prefix :uri |
-					self writer
-						writeName: 'xmlns:', prefix
-						escapedContentValue: uri]].
+	xmlnsPrefixes ifNotNil: [
+		self
+			writeKeysAndValuesFrom: xmlnsPrefixes
+			with: [:prefix :uri |
+				self writer
+					writeName: 'xmlns:', prefix
+					escapedContentValue: uri]].
 ]
 
 { #category : #accessing }
