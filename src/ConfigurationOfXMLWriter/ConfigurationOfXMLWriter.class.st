@@ -529,10 +529,8 @@ ConfigurationOfXMLWriter >> baseline231: spec [
 { #category : #symbolic }
 ConfigurationOfXMLWriter >> development: spec [
 	<symbolicVersion: #'development'>
-
-	spec for: #'common' version: '2.3.1-baseline'.
-
-	spec for: #'pharo' version: '2.3.1-baseline'.
+	
+	spec for: #'pharo' version: '2.3.9'.
 
 ]
 
@@ -552,9 +550,8 @@ ConfigurationOfXMLWriter >> project [
 { #category : #symbolic }
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
-
-	spec for: #'common' version: '2.3.10'.
-
+	
+	spec for: #'pharo' version: '2.3.9'.
 
 ]
 
@@ -737,30 +734,6 @@ ConfigurationOfXMLWriter >> version230: spec [
 					spec
 						package: 'Collections-Support' with: 'Collections-Support.g-OttoBehrens.45';
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
-]
-
-{ #category : #versions }
-ConfigurationOfXMLWriter >> version2310: spec [
-	<version: '2.3.10' imports: #('2.3.1-baseline' )>
-
-	spec for: #'common' do: [
-		spec blessing: #'stable'.
-		spec description: 'version 2.3.10'.
-		spec author: 'GuillaumeLarcheveque'.
-		spec timestamp: '6/27/2014 16:09'.
-		spec project: 'OrderPreservingDictionary' with: '1.2'.
-		spec 
-			package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.15';
-			package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.2'. ].
-
-	spec for: #'squeak' do: [
-		spec package: 'Collections-Support'. ].
-
-	spec for: #'gemstone' do: [
-		spec 
-			package: 'Collections-Support' with: '';
-			package: 'Collections-Tests-Support' with: ''. ].
-
 ]
 
 { #category : #versions }
