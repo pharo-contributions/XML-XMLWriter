@@ -16,8 +16,23 @@ XMLMarkupWriter class >> writer: aWriter [
 	^ self new writer: aWriter
 ]
 
+{ #category : #'writing markup' }
+XMLMarkupWriter >> finishWriting [
+	self hasEmbeddedMarkupWriters
+		ifTrue: [self writer writeUnwrittenMarkupWriterEmbeddedIn: self].
+	self writeEpilogue.
+	isWriting := false.
+
+	self writer popActiveMarkupWriter.
+]
+
 { #category : #testing }
 XMLMarkupWriter >> hasEmbeddedMarkup [
+	^ false
+]
+
+{ #category : #testing }
+XMLMarkupWriter >> hasEmbeddedMarkupWriters [
 	^ false
 ]
 
@@ -46,28 +61,21 @@ XMLMarkupWriter >> printOn: aStream [
 	self writer printOn: aStream
 ]
 
-{ #category : #private }
+{ #category : #'writing markup' }
 XMLMarkupWriter >> startWriting [
-	isWriting := true
-]
-
-{ #category : #private }
-XMLMarkupWriter >> stopWriting [
-	isWriting := false.
-	self writer popActiveMarkupWriter.
+	isWriting := true.
+	self writePrologue.
 ]
 
 { #category : #'writing markup' }
 XMLMarkupWriter >> write [
 	self
 		startWriting;
-		writePrologue;
 		writeBody;
-		writeEpilogue;
-		stopWriting
+		finishWriting
 ]
 
-{ #category : #private }
+{ #category : #'writing markup' }
 XMLMarkupWriter >> writeBody [
 ]
 

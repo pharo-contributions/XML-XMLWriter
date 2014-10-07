@@ -85,25 +85,20 @@ XMLEmbeddedMarkupWriter >> prepareForEmbeddedMarkup [
 XMLEmbeddedMarkupWriter >> with: aStringOrCollectionOrBlock [
 	self
 		startWriting;
-		writePrologue;
 		writeBody: aStringOrCollectionOrBlock;
-		writeEpilogue;
-		stopWriting
+		finishWriting
 ]
 
-{ #category : #private }
+{ #category : #'writing markup' }
 XMLEmbeddedMarkupWriter >> write [
 	self isWriting
 		ifFalse: [self with: nil]
 ]
 
-{ #category : #private }
+{ #category : #'embedding markup' }
 XMLEmbeddedMarkupWriter >> writeBody: aStringOrCollectionOrBlock [
 	aStringOrCollectionOrBlock
-		ifNotNil: [
-			self embedValue: aStringOrCollectionOrBlock.
-			self hasEmbeddedMarkupWriters
-				ifTrue: [self writer writeUnwrittenMarkupWriterEmbeddedIn: self]].
+		ifNotNil: [self embedValue: aStringOrCollectionOrBlock]
 ]
 
 { #category : #private }

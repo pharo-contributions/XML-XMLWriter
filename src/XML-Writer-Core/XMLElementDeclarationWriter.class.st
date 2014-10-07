@@ -1,3 +1,7 @@
+"
+Writes ELEMENT declarations. 
+
+"
 Class {
 	#name : #XMLElementDeclarationWriter,
 	#superclass : #XMLMarkupDeclarationWriter,

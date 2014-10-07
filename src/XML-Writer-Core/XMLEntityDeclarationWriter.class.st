@@ -1,3 +1,6 @@
+"
+Writes general and parameter ENTITY declarations.
+"
 Class {
 	#name : #XMLEntityDeclarationWriter,
 	#superclass : #XMLMarkupDeclarationWriter,

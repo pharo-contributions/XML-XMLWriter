@@ -1,3 +1,6 @@
+"
+Writes NOTATION declarations.
+"
 Class {
 	#name : #XMLNotationDeclarationWriter,
 	#superclass : #XMLMarkupDeclarationWriter,

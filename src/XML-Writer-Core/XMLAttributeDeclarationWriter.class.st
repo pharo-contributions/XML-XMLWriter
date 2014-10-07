@@ -1,3 +1,6 @@
+"
+Writes ATTLIST declarations for attributes.
+"
 Class {
 	#name : #XMLAttributeDeclarationWriter,
 	#superclass : #XMLMarkupDeclarationWriter,

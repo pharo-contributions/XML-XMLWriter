@@ -117,6 +117,15 @@ XMLWriter >> activeMarkupWriter [
 		ifFalse: [nil]
 ]
 
+{ #category : #accessing }
+XMLWriter >> activeTagWriter [
+	self markupWriterStack reverseDo: [:each |
+		(each class == XMLTagWriter)
+			ifTrue: [^ each]].
+	^ nil.
+	
+]
+
 { #category : #printing }
 XMLWriter >> asString [
 	"for compatibility"
@@ -400,6 +409,12 @@ XMLWriter >> tag: aName [
 ]
 
 { #category : #'writing markup' }
+XMLWriter >> tag: aName attributes: aDictionaryOrArray [
+	^ (self tag: aName)
+		attributes: aDictionaryOrArray
+]
+
+{ #category : #'writing markup' }
 XMLWriter >> tag: aName attributes: aDictionaryOrArray with: aStringOrCollectionOrBlock [
 	^ (self tag: aName)
 		attributes: aDictionaryOrArray;
@@ -414,7 +429,10 @@ XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
 { #category : #'writing markup' }
 XMLWriter >> write [
 	self activeMarkupWriter
-		ifNotNil: [:activeMarkupWriter | activeMarkupWriter write]
+		ifNotNil: [:activeMarkupWriter |
+			activeMarkupWriter write.
+			(activeMarkupWriter isWriting)
+				ifTrue: [activeMarkupWriter finishWriting]]
 ]
 
 { #category : #private }
