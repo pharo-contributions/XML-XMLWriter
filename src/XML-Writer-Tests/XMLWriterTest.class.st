@@ -9,6 +9,31 @@ Class {
 }
 
 { #category : #tests }
+XMLWriterTest >> testAttributes [
+	| writer tag |
+
+	writer := XMLWriter new.
+	tag := writer  tag: 'outer' attributes: (Array with: 'first' -> 'one').
+	self
+		assert: tag hasAttributes;
+		assert: (tag attributeAt: 'first') = 'one';
+		assert: (tag attributeAt: 'second' put: 'two') = 'two';
+		assert: (tag attributeAt: 'third' ifAbsentPut: ['three']) = 'three';
+		assert: (tag attributeAt: 'fourth' ifAbsent: [true]);
+		assert: (tag attributeAt: 'fourth') isEmpty;
+		assert: (tag attributes at: 'fourth') isEmpty;
+		deny: (tag includesAttribute: 'fourth').
+	tag with: [
+		writer
+			tag: 'inner'
+			attributes: (Dictionary with: 'fourth' -> 'four')
+			with: 'test'].
+	self assert:
+		writer contents =
+			'<outer first="one" second="two" third="three"><inner fourth="four">test</inner></outer>'.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testContentEscaping [
 	| writer |
 
@@ -106,6 +131,24 @@ XMLWriterTest >> testSimpleExampleWithWriteWith [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testStartingAndFinishing [
+	| writer outer inner |
+
+	writer := XMLWriter new.
+
+	(outer := writer tag: 'outer')
+		attributeAt: 'test' put: 'value';
+		startWriting.
+
+	(inner := writer tag: 'inner')
+		startWriting.
+	writer string: 'test'.
+	inner finishWriting.
+
+	self assert: writer contents = '<outer test="value"><inner>test</inner></outer>'.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testSystemAndPublicIDs [
 	| writer |
 
@@ -117,4 +160,27 @@ XMLWriterTest >> testSystemAndPublicIDs [
 
 	"IDs are single quoted because they contain a double quote"
 	self assert: writer contents = '<!DOCTYPE test PUBLIC ''public"ID'' ''system"ID''>'
+]
+
+{ #category : #tests }
+XMLWriterTest >> testXmlnsDeclarations [
+	| writer tag |
+
+	writer := XMLWriter new.
+	tag := writer  tag: 'test'.
+	tag xmlnsDeclarations: (Array with: '' -> 'default1' with: 'ns1' -> 'first').
+	self
+		assert: tag xmlns = 'default1';
+		assert: (tag xmlnsAt: '') = 'default1';
+		assert: (tag xmlns: 'default2') = tag;
+		assert: tag xmlns = 'default2';
+		assert: (tag xmlnsAt: 'ns1') = 'first';
+		assert: (tag xmlnsAt: 'ns2' put: 'second') = 'second';
+		assert: (tag xmlnsAt: 'ns3' ifAbsentPut: ['third']) = 'third';
+		assert: (tag xmlnsAt: 'ns4' ifAbsent: [true]);
+		assert: (tag xmlnsAt: 'ns4') isEmpty;
+		assert: (tag xmlnsDeclarations at: 'ns4') isEmpty;
+		assert:
+			writer contents =
+				'<test xmlns="default2" xmlns:ns1="first" xmlns:ns2="second" xmlns:ns3="third" />'.
 ]
