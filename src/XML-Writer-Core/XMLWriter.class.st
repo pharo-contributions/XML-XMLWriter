@@ -49,7 +49,8 @@ Class {
 		'lineBreak',
 		'isCanonical',
 		'omitsLineBreaks',
-		'isEscaping'
+		'isEscaping',
+		'outputsSelfClosingTags'
 	],
 	#classVars : [
 		'ContentEscapes',
@@ -101,12 +102,21 @@ XMLWriter class >> on: aStream [
 
 { #category : #'writing markup' }
 XMLWriter >> % aParameterEntityReference [
-	^ self paramEntityRef: aParameterEntityReference
+	self paramEntityRef: aParameterEntityReference
 ]
 
 { #category : #'writing markup' }
 XMLWriter >> & anEntityReference [
-	^ self entityRef: anEntityReference
+	self entityRef: anEntityReference
+]
+
+{ #category : #accessing }
+XMLWriter >> activeDoctypeWriter [
+	self markupWriterStack reverseDo: [:each |
+		each isDoctypeWriter
+			ifTrue: [^ each]].
+	^ nil.
+	
 ]
 
 { #category : #accessing }
@@ -120,7 +130,7 @@ XMLWriter >> activeMarkupWriter [
 { #category : #accessing }
 XMLWriter >> activeTagWriter [
 	self markupWriterStack reverseDo: [:each |
-		(each class == XMLTagWriter)
+		each isTagWriter
 			ifTrue: [^ each]].
 	^ nil.
 	
@@ -201,8 +211,9 @@ XMLWriter >> elementDeclaration [
 
 { #category : #'writing markup' }
 XMLWriter >> enablePrettyPrinting [
-	self indentString: '    '.
-	self omitsLineBreaks: false.
+	self
+		indentString: '    ';
+		omitsLineBreaks: false
 ]
 
 { #category : #'writing markup' }
@@ -327,10 +338,21 @@ XMLWriter >> outdent [
 	currentIndentLevel := self currentIndentLevel - 1
 ]
 
+{ #category : #testing }
+XMLWriter >> outputsSelfClosingTags [
+	^ outputsSelfClosingTags ifNil: [outputsSelfClosingTags := true]
+]
+
+{ #category : #accessing }
+XMLWriter >> outputsSelfClosingTags: aBoolean [
+	outputsSelfClosingTags := aBoolean
+]
+
 { #category : #'writing markup' }
 XMLWriter >> paramEntityRef: aName [
 	self
 		newMarkup;
+		cr;
 		nextPut: $%;
 		writeName: aName;
 		nextPut: $;
@@ -430,9 +452,9 @@ XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
 XMLWriter >> write [
 	self activeMarkupWriter
 		ifNotNil: [:activeMarkupWriter |
-			activeMarkupWriter write.
 			(activeMarkupWriter isWriting)
-				ifTrue: [activeMarkupWriter finishWriting]]
+				ifTrue: [activeMarkupWriter finishWriting]
+				ifFalse: [activeMarkupWriter write]]
 ]
 
 { #category : #private }

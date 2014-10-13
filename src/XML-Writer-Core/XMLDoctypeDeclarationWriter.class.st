@@ -16,6 +16,11 @@ XMLDoctypeDeclarationWriter >> externalIDWriter [
 	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter new]
 ]
 
+{ #category : #testing }
+XMLDoctypeDeclarationWriter >> isDoctypeWriter [
+	^ true
+]
+
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> publicID [
 	^ self externalIDWriter publicID
@@ -47,46 +52,49 @@ XMLDoctypeDeclarationWriter >> systemID: aSystemId [
 ]
 
 { #category : #'embedding markup' }
-XMLDoctypeDeclarationWriter >> with: aStringOrCollectionOrBlock [
-	self writer isCanonical
-		ifFalse: [^ super with: aStringOrCollectionOrBlock]
-]
-
-{ #category : #'embedding markup' }
 XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
 	^ self with: aStringOrCollectionOrBlock
 ]
 
+{ #category : #'embedding markup' }
+XMLDoctypeDeclarationWriter >> writeBody: aStringOrCollectionOrBlock [
+	self omitIfCanonical: [super writeBody: aStringOrCollectionOrBlock]
+]
+
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeEmbeddedMarkupPrologue [
-	self writer
-		nextPutAll: ' [';
-		indent
+	self omitIfCanonical: [
+		self writer
+			space;
+			nextPut: $[;
+			indent]
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeEpilogue [
-	self hasEmbeddedMarkup
-		ifTrue: [
-			self writer
-				outdent;
-				cr;
-				nextPut: $]].
-	self writer
-		nextPut: $>;
-		cr.
+	self omitIfCanonical: [
+		self hasEmbeddedMarkup
+			ifTrue: [
+				self writer
+					outdent;
+					cr;
+					nextPut: $]].
+		self writer
+			nextPut: $>;
+			cr]
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writePrologue [
-	self writer
-		cr;
-		nextPutAll: '<!DOCTYPE';
-		space;
-		writeName: self root.
+	self omitIfCanonical: [
+		self writer
+			cr;
+			nextPutAll: '<!DOCTYPE';
+			space;
+			writeName: self root.
 
-	self externalIDWriter hasExternalID
-		ifTrue: [
-			self writer space.
-			self externalIDWriter writeOn: self writer].
+		self externalIDWriter hasExternalID
+			ifTrue: [
+				self writer space.
+				self externalIDWriter writeOn: self writer]]
 ]

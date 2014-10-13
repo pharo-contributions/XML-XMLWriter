@@ -27,16 +27,17 @@ XMLMarkupDeclarationWriter >> name: aName [
 
 { #category : #private }
 XMLMarkupDeclarationWriter >> writeEpilogue [
-	self writer nextPut: $>
+	self omitIfCanonical: [self writer nextPut: $>]
 ]
 
 { #category : #private }
 XMLMarkupDeclarationWriter >> writePrologue [
-	self writer
-		cr;
-		nextPutAll: '<!';
-		writeName: self declarationType;
-		space;
-		writeName: self name;
-		space
+	self omitIfCanonical: [
+		self writer
+			cr;
+			nextPutAll: '<!';
+			writeName: self declarationType;
+			space;
+			writeName: self name;
+			space]
 ]

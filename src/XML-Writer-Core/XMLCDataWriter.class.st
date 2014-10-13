@@ -14,12 +14,10 @@ XMLCDataWriter >> escapesEmbeddedStrings [
 
 { #category : #private }
 XMLCDataWriter >> writeEpilogue [
-	self writer isCanonical
-		ifFalse: [self writer nextPutAll: ']]>']
+	self omitIfCanonical: [self writer nextPutAll: ']]>']
 ]
 
 { #category : #private }
 XMLCDataWriter >> writePrologue [
-	self writer isCanonical
-		ifFalse: [self writer nextPutAll: '<![CDATA[']
+	self omitIfCanonical: [self writer nextPutAll: '<![CDATA[']
 ]

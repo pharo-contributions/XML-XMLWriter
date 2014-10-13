@@ -70,21 +70,34 @@ XMLAttributeDeclarationWriter >> type: aType [
 
 { #category : #private }
 XMLAttributeDeclarationWriter >> writeBody [
-	self writer
-		writeName: self attribute;
-		space;
-		writeName: self type.
+	self omitIfCanonical: [
+		self writer
+			writeName: self attribute;
+			space;
+			writeName: self type.
 
+		self
+			writeDefaultPragma;
+			writeDefaultValue]
+]
+
+{ #category : #private }
+XMLAttributeDeclarationWriter >> writeDefaultPragma [
 	self defaultPragma
 		ifNotEmpty: [:pragma |
 			self writer space.
+
 			(pragma first == $#)
 				ifFalse: [self writer nextPut: $#].
-			self writer nextPutAll: pragma].
 
+			self writer nextPutAll: pragma]
+]
+
+{ #category : #private }
+XMLAttributeDeclarationWriter >> writeDefaultValue [
 	self defaultValue
 		ifNotEmpty: [:value |
 			self writer
 				space;
-				writeEscapedContentString: value].
+				writeEscapedContentString: value]
 ]

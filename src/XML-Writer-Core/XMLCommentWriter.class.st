@@ -8,13 +8,19 @@ Class {
 }
 
 { #category : #private }
+XMLCommentWriter >> writeBody: aStringOrCollectionOrBlock [
+	self omitIfCanonicalInDTD: [super writeBody: aStringOrCollectionOrBlock]
+]
+
+{ #category : #private }
 XMLCommentWriter >> writeEpilogue [
-	self writer nextPutAll: '-->'
+	self omitIfCanonicalInDTD: [self writer nextPutAll: '-->']
 ]
 
 { #category : #private }
 XMLCommentWriter >> writePrologue [	
-	self writer
-		cr;
-		nextPutAll: '<!--'
+	self omitIfCanonicalInDTD: [
+		self writer
+			cr;
+			nextPutAll: '<!--']
 ]

@@ -59,6 +59,11 @@ XMLTagWriter >> includesAttribute: anAttribute [
 	^ self attributes includesKey: anAttribute
 ]
 
+{ #category : #testing }
+XMLTagWriter >> isTagWriter [
+	^ true
+]
+
 { #category : #accessing }
 XMLTagWriter >> name [
 	^ name ifNil: ['']
@@ -97,7 +102,8 @@ XMLTagWriter >> writeEmbeddedMarkupPrologue [
 { #category : #private }
 XMLTagWriter >> writeEndTag [
 	self writer
-		nextPutAll: '</';
+		nextPut: $<;
+		nextPut: $/;
 		writeName: self name;
 		nextPut: $>
 ]
@@ -111,14 +117,16 @@ XMLTagWriter >> writeEpilogue [
 				ifTrue: [self writer cr].
 			self writeEndTag]
 		ifFalse: [
-			self writer isCanonical
+			(self writer isCanonical
+				or: [self writer outputsSelfClosingTags not])
 				ifTrue: [
 					self writer nextPut: $>.
 					self writeEndTag]
 				ifFalse: [
 					self writer
 						space;
-						nextPutAll: '/>']].
+						nextPut: $/;
+						nextPut: $>]].
 ]
 
 { #category : #private }
@@ -135,7 +143,7 @@ XMLTagWriter >> writePrologue [
 	self writer
 		cr;
 		nextPut: $<;
-		writeName: (self name ifNil: ['']).
+		writeName: self name.
 	self
 		writeXmlnsDeclarations;
 		writeAttributes.

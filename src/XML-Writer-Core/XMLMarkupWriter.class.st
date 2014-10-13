@@ -37,8 +37,18 @@ XMLMarkupWriter >> hasEmbeddedMarkupWriters [
 ]
 
 { #category : #testing }
+XMLMarkupWriter >> isDoctypeWriter [
+	^ false
+]
+
+{ #category : #testing }
 XMLMarkupWriter >> isEmbedded [
 	^ self writer hasEmbeddedMarkupWriter: self
+]
+
+{ #category : #testing }
+XMLMarkupWriter >> isTagWriter [
+	^ false
 ]
 
 { #category : #testing }
@@ -56,6 +66,20 @@ XMLMarkupWriter >> newMarkupWriterBeingPushed [
 	self write
 ]
 
+{ #category : #private }
+XMLMarkupWriter >> omitIfCanonical: aBlock [
+	self writer isCanonical
+		ifFalse: [aBlock value]
+]
+
+{ #category : #private }
+XMLMarkupWriter >> omitIfCanonicalInDTD: aBlock [
+	(self writer isCanonical
+		and: [self isEmbedded
+			and: [self writer activeDoctypeWriter notNil]])
+		ifFalse: [aBlock value]
+]
+
 { #category : #printing }
 XMLMarkupWriter >> printOn: aStream [
 	self writer printOn: aStream
@@ -69,13 +93,14 @@ XMLMarkupWriter >> startWriting [
 
 { #category : #'writing markup' }
 XMLMarkupWriter >> write [
-	self
-		startWriting;
-		writeBody;
-		finishWriting
+	self isWriting ifFalse: [
+		self
+			startWriting;
+			writeBody;
+			finishWriting]
 ]
 
-{ #category : #'writing markup' }
+{ #category : #private }
 XMLMarkupWriter >> writeBody [
 ]
 

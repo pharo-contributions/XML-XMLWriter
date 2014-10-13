@@ -38,5 +38,5 @@ XMLElementDeclarationWriter >> element: aName [
 
 { #category : #private }
 XMLElementDeclarationWriter >> writeBody [
-	self writer nextPutAll: self contentModel
+	self omitIfCanonical: [self writer nextPutAll: self contentModel]
 ]

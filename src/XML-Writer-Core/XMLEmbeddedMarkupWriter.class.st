@@ -83,16 +83,16 @@ XMLEmbeddedMarkupWriter >> prepareForEmbeddedMarkup [
 
 { #category : #'embedding markup' }
 XMLEmbeddedMarkupWriter >> with: aStringOrCollectionOrBlock [
-	self
-		startWriting;
-		writeBody: aStringOrCollectionOrBlock;
-		finishWriting
+	self isWriting ifFalse: [
+		self
+			startWriting;
+			writeBody: aStringOrCollectionOrBlock;
+			finishWriting]
 ]
 
 { #category : #'writing markup' }
-XMLEmbeddedMarkupWriter >> write [
-	self isWriting
-		ifFalse: [self with: nil]
+XMLEmbeddedMarkupWriter >> writeBody [
+	self writeBody: nil
 ]
 
 { #category : #'embedding markup' }

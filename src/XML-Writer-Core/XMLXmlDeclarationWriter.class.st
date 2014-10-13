@@ -3,7 +3,7 @@ This class generates <?xml ...?> declarations.
 "
 Class {
 	#name : #XMLXmlDeclarationWriter,
-	#superclass : #XMLPIWriter,
+	#superclass : #XMLMarkupWriter,
 	#instVars : [
 		'encoding',
 		'version',
@@ -33,11 +33,6 @@ XMLXmlDeclarationWriter >> standalone: aBoolean [
 ]
 
 { #category : #accessing }
-XMLXmlDeclarationWriter >> target [
-	^ 'xml'
-]
-
-{ #category : #accessing }
 XMLXmlDeclarationWriter >> version [
 	^ version ifNil: [version := '1.0']
 ]
@@ -47,16 +42,30 @@ XMLXmlDeclarationWriter >> version: aVersion [
 	version := aVersion
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 XMLXmlDeclarationWriter >> writeBody [
-	self writer
-		writeName: 'version' unescapedValue: self version asString;
-		space;
-		writeName: 'encoding' unescapedValue: self encoding.
+	self omitIfCanonical: [
+		self writer
+			writeName: 'version' unescapedValue: self version asString;
+			space;
+			writeName: 'encoding' unescapedValue: self encoding.
 
-	self standalone
-		ifTrue: [
-			self writer
-				space;
-				writeName: 'standalone' unescapedValue: 'yes']
+		self standalone
+			ifTrue: [
+				self writer
+					space;
+					writeName: 'standalone' unescapedValue: 'yes']]
+]
+
+{ #category : #private }
+XMLXmlDeclarationWriter >> writeEpilogue [
+	self omitIfCanonical: [self writer nextPutAll: '?>']
+]
+
+{ #category : #private }
+XMLXmlDeclarationWriter >> writePrologue [
+	self omitIfCanonical: [
+		self writer
+			cr;
+			nextPutAll: '<?xml']
 ]

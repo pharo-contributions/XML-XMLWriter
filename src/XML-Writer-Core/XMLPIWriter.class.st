@@ -33,20 +33,22 @@ XMLPIWriter >> target: aTarget [
 
 { #category : #private }
 XMLPIWriter >> writeBody [
-	self writer
-		space;
-		nextPutAll: self data.
+	self omitIfCanonicalInDTD: [
+		self writer
+			space;
+			nextPutAll: self data]
 ]
 
 { #category : #private }
 XMLPIWriter >> writeEpilogue [
-	self writer nextPutAll: '?>'
+	self omitIfCanonicalInDTD: [self writer nextPutAll: '?>']
 ]
 
 { #category : #private }
 XMLPIWriter >> writePrologue [
-	self writer
-		cr;
-		nextPutAll: '<?';
-		writeName: self target
+	self omitIfCanonicalInDTD: [
+		self writer
+			cr;
+			nextPutAll: '<?';
+			writeName: self target]
 ]
