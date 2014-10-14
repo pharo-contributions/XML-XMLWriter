@@ -950,7 +950,7 @@ ConfigurationOfXMLWriter >> version241: spec [
 
 	spec for: #'common' do: [
 		spec blessing: #'stable'.
-		spec project: 'OrderPreservingDictionary' with: '1.2'.
+		spec project: 'OrderPreservingDictionary' with: '1.2.1'.
 		spec 
 			package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.18';
 			package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.4'. ].
