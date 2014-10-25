@@ -949,9 +949,8 @@ ConfigurationOfXMLWriter >> version241: spec [
 	<version: '2.4.1' imports: #('2.3.1-baseline' )>
 
 	spec for: #'common' do: [
-		spec blessing: #'stable'.
-		spec project: 'OrderPreservingDictionary' with: '1.2.3'.
-		spec 
+		spec
+			blessing: #'stable';
 			package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.18';
 			package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.4'. ].
 
