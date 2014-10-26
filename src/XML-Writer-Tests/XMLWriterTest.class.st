@@ -307,7 +307,7 @@ XMLWriterTest >> testSimpleExampleWithWriteWith [
 	contents := '<emptyTag a="value" />'.
 	self
 		assert: (XMLWriter new writeWith: block) contents = contents;
-		assert: (XMLWriter writeWith: block) contents = contents.
+		assert: (XMLWriter writeWith: block) = contents.
 ]
 
 { #category : #tests }
