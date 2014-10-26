@@ -100,6 +100,11 @@ XMLWriter class >> on: aStream [
 		stream: aStream
 ]
 
+{ #category : #'instance creation' }
+XMLWriter class >> writeWith: aBlock [
+	^ self new writeWith: aBlock
+]
+
 { #category : #'writing markup' }
 XMLWriter >> % aParameterEntityReference [
 	self paramEntityRef: aParameterEntityReference
