@@ -553,7 +553,7 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 
-	spec for: #'common' version: '2.4.1'.
+	spec for: #'common' version: '2.4.2'.
 
 
 ]
@@ -953,6 +953,24 @@ ConfigurationOfXMLWriter >> version241: spec [
 			blessing: #'stable';
 			package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.18';
 			package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.4'. ].
+
+	spec for: #gemstone
+			do: [ 
+					spec
+						package: 'Collections-Support' with: 'Collections-Support.g-OttoBehrens.45';
+						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
+
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version242: spec [
+	<version: '2.4.2' imports: #('2.3.1-baseline' )>
+
+	spec for: #'common' do: [
+		spec
+			blessing: #'stable';
+			package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.20';
+			package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.6'. ].
 
 	spec for: #gemstone
 			do: [ 
