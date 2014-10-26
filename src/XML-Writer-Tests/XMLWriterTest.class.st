@@ -297,15 +297,17 @@ XMLWriterTest >> testSimpleExample [
 
 { #category : #tests }
 XMLWriterTest >> testSimpleExampleWithWriteWith [
+	| block contents |
 
-	| res |
-	res :=  XMLWriter new
-		writeWith: [:writer |
+	block :=
+		[:writer |
 			writer tag
 				name: 'emptyTag';
 				attributeAt: 'a' put: 'value'].
-		
-	self assert:  res contents  =  '<emptyTag a="value" />'
+	contents := '<emptyTag a="value" />'.
+	self
+		assert: (XMLWriter new writeWith: block) contents = contents;
+		assert: (XMLWriter writeWith: block) contents = contents.
 ]
 
 { #category : #tests }
