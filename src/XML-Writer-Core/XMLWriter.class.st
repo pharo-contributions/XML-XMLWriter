@@ -100,9 +100,11 @@ XMLWriter class >> on: aStream [
 		stream: aStream
 ]
 
-{ #category : #'instance creation' }
+{ #category : #'writing markup' }
 XMLWriter class >> writeWith: aBlock [
-	^ self new writeWith: aBlock
+	^ self new
+		writeWith: aBlock;
+		contents
 ]
 
 { #category : #'writing markup' }
