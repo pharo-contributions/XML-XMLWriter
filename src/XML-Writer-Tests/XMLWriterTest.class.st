@@ -316,16 +316,23 @@ XMLWriterTest >> testStartingAndFinishing [
 
 	writer := XMLWriter new.
 
-	(outer := writer tag: 'outer')
+	(outer := writer tag)
+		name: 'outer';
 		attributeAt: 'test' put: 'value';
+		xmlns: 'default';
 		startWriting.
 
 	(inner := writer tag: 'inner')
 		startWriting.
 	writer string: 'test'.
+	(writer tag: 'empty')
+		startWriting;
+		finishWriting.
 	inner finishWriting.
 
-	self assert: writer contents = '<outer test="value"><inner>test</inner></outer>'.
+	self assert:
+		writer contents =
+			'<outer xmlns="default" test="value"><inner>test<empty /></inner></outer>'.
 ]
 
 { #category : #tests }
