@@ -96,8 +96,7 @@ XMLWriter class >> new [
 
 { #category : #'instance creation' }
 XMLWriter class >> on: aStream [
-	^ self basicNew initialize
-		stream: aStream
+	^ self basicNew initialize on: aStream
 ]
 
 { #category : #'writing markup' }
@@ -129,7 +128,7 @@ XMLWriter >> activeDoctypeWriter [
 { #category : #accessing }
 XMLWriter >> activeMarkupWriter [
 	"for speed"
-	^ self markupWriterStack size > 0
+	^ markupWriterStack size > 0
 		ifTrue: [markupWriterStack at: markupWriterStack size]
 		ifFalse: [nil]
 ]
@@ -306,7 +305,7 @@ XMLWriter >> lineBreak: aLineBreakCharOrString [
 
 { #category : #private }
 XMLWriter >> markupWriterStack [
-	^ markupWriterStack ifNil: [markupWriterStack := OrderedCollection new]
+	^ markupWriterStack
 ]
 
 { #category : #private }
@@ -338,6 +337,12 @@ XMLWriter >> omitsLineBreaks [
 { #category : #accessing }
 XMLWriter >> omitsLineBreaks: aBoolean [
 	omitsLineBreaks := aBoolean
+]
+
+{ #category : #initialization }
+XMLWriter >> on: aStream [
+	stream := aStream.
+	markupWriterStack := OrderedCollection new.
 ]
 
 { #category : #private }
