@@ -54,6 +54,7 @@ Class {
 	],
 	#classVars : [
 		'ContentEscapes',
+		'ContentStringEscapes',
 		'EntityValueEscapes'
 	],
 	#category : #'XML-Writer-Core'
@@ -66,23 +67,28 @@ XMLWriter class >> initialize [
 	super initialize.
 	self
 		initializeContentEscapes;
-		initializeEntityValueEscapes
+		initializeContentStringEscapes;
+		initializeEntityValueEscapes.
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentEscapes [
-	(ContentEscapes := Array new: 128)
+	(ContentEscapes := Array new: 256)
 		at: $& asciiValue put: '&amp;';
-		at: $" asciiValue put: '&quot;';
 		at: $< asciiValue put: '&lt;';
-		at: $> asciiValue put: '&gt;';
 		at: Character cr asciiValue put: #LineBreak;
 		at: Character lf asciiValue put: #LineBreak.
 ]
 
 { #category : #'class initialization' }
+XMLWriter class >> initializeContentStringEscapes [
+	(ContentStringEscapes := ContentEscapes copy)
+		at: $" asciiValue put: '&quot;'
+]
+
+{ #category : #'class initialization' }
 XMLWriter class >> initializeEntityValueEscapes [
-	(EntityValueEscapes := Array new: 128)
+	(EntityValueEscapes := Array new: 256)
 		at: $" asciiValue put: '&#34;';
 		at: $% asciiValue put: '&#37;';
 		at: Character cr asciiValue put: #LineBreak;
@@ -497,7 +503,7 @@ XMLWriter >> writeEscapedContent: aString [
 XMLWriter >> writeEscapedContentString: aString [
 	self
 		nextPut: $";
-		write: aString escapedWith: ContentEscapes;
+		write: aString escapedWith: ContentStringEscapes;
 		nextPut: $"
 ]
 
@@ -556,6 +562,7 @@ XMLWriter >> writeUnescapedString: aString [
 
 	self nextPut: quote.
 	aString do: [:each |
+		"strip delimiter because it can't be escaped with an entity in this type of string"
 		each == quote
 			ifFalse: [self nextPut: each]].
 	self nextPut: quote.
