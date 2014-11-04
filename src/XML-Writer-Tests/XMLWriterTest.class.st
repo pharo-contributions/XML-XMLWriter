@@ -114,7 +114,7 @@ XMLWriterTest >> testCanonicalTags [
 		writer contents =
 			('<!--tags-->',
 			'<tags xmlns="default" xmlns:a="ns1" xmlns:b="ns2" a="1" b="2" c="3">',
-			'<cdata>&lt;escaped name=&quot;&amp;value;&quot; /&gt;</cdata>',
+			'<cdata>&lt;escaped name="&amp;value;" /></cdata>',
 			'<empty></empty>',
 			'</tags>').
 ]
@@ -143,18 +143,20 @@ XMLWriterTest >> testContentEscaping [
 		tag
 			name: 'test';
 			attributeAt: 'escaped' put: '& " < >';
+			xmlns: '& " < >';
 			with: '& " < >'.
 	self assert:
 		writer contents =
-			'<test escaped="&amp; &quot; &lt; &gt;">&amp; &quot; &lt; &gt;</test>'.
+			'<test xmlns="&amp; &quot; &lt; >" escaped="&amp; &quot; &lt; >">&amp; " &lt; ></test>'.
 
 	((writer := XMLWriter new)
 		isEscaping: false;
 		tag)
 			name: 'test';
+			xmlns: '& " < >';
 			attributeAt: 'unescaped' put: '& " < >';
 			with: '& " < >'.
-	self assert: writer contents = '<test unescaped="& " < >">& " < ></test>'.
+	self assert: writer contents = '<test xmlns="& " < >" unescaped="& " < >">& " < ></test>'.
 ]
 
 { #category : #tests }
