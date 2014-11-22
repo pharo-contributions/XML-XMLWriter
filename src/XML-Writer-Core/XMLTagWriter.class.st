@@ -36,12 +36,12 @@ XMLTagWriter >> attributeAt: aName put: aValue [
 
 { #category : #accessing }
 XMLTagWriter >> attributes [
-	^ attributes ifNil: [attributes := OrderPreservingDictionary defaultValue: '']
+	^ attributes ifNil: [attributes := OrderPreservingStringDictionary new]
 ]
 
 { #category : #accessing }
 XMLTagWriter >> attributes: aDictionaryOrArray [
-	(attributes := OrderPreservingDictionary newFrom: aDictionaryOrArray) defaultValue: ''
+	attributes := OrderPreservingStringDictionary newFrom: aDictionaryOrArray
 ]
 
 { #category : #testing }
@@ -64,6 +64,13 @@ XMLTagWriter >> isTagWriter [
 	^ true
 ]
 
+{ #category : #private }
+XMLTagWriter >> keysFrom: aDictionary do: aBlock [
+	self writer isCanonical
+		ifTrue: [aDictionary keys sorted do: aBlock]
+		ifFalse: [aDictionary keysDo: aBlock]
+]
+
 { #category : #accessing }
 XMLTagWriter >> name [
 	^ name ifNil: ['']
@@ -82,14 +89,20 @@ XMLTagWriter >> setName: aName attributes: anAttributeDictionary xmlnsDeclaratio
 ]
 
 { #category : #private }
+XMLTagWriter >> writeAttributeName: aName value: aValue [ 
+	self writer
+		writeName: aName
+		escapedContentValue: aValue
+]
+
+{ #category : #private }
 XMLTagWriter >> writeAttributes [
-	attributes ifNotNil: [
-		self
-			writeKeysAndValuesFrom: attributes
-			with: [:attributeName :attributeValue |
-				self writer
-					writeName: attributeName
-					escapedContentValue: attributeValue]]
+	self
+		keysFrom: attributes
+		do: [:attributeName |
+			self
+				writeAttributeName: attributeName
+				value: (attributes at: attributeName)]
 ]
 
 { #category : #private }
@@ -130,38 +143,36 @@ XMLTagWriter >> writeEpilogue [
 ]
 
 { #category : #private }
-XMLTagWriter >> writeKeysAndValuesFrom: aDictionary with: aTwoArgumentBlock [
-	self writer isCanonical
-		ifTrue: [
-			aDictionary keys asSortedCollection do: [:each |
-				aTwoArgumentBlock value: each value: (aDictionary at: each)]]
-		ifFalse: [aDictionary keysAndValuesDo: aTwoArgumentBlock]
-]
-
-{ #category : #private }
 XMLTagWriter >> writePrologue [
 	self writer
 		cr;
 		nextPut: $<;
 		writeName: self name.
-	self
-		writeXmlnsDeclarations;
-		writeAttributes.
+
+	xmlnsDeclarations
+		ifNotNil: [self writeXmlnsDeclarations].
+	attributes
+		ifNotNil: [self writeAttributes].
+]
+
+{ #category : #private }
+XMLTagWriter >> writeXmlns: aPrefix uri: aUri [
+	self writer
+		writeName:
+			(aPrefix
+				ifEmpty: ['xmlns']
+				ifNotEmpty: ['xmlns:', aPrefix])
+		escapedContentValue: aUri
 ]
 
 { #category : #private }
 XMLTagWriter >> writeXmlnsDeclarations [
-	xmlnsDeclarations ifNil: [^ self].
-
 	self
-		writeKeysAndValuesFrom: xmlnsDeclarations
-		with: [:prefix :uri |
-			self writer
-				writeName:
-					(prefix
-						ifEmpty: ['xmlns']
-						ifNotEmpty: ['xmlns:', prefix])
-				escapedContentValue: uri].
+		keysFrom: xmlnsDeclarations
+		do: [:prefix |
+			self
+				writeXmlns: prefix
+				uri: (xmlnsDeclarations at: prefix)]
 ]
 
 { #category : #accessing }
@@ -198,12 +209,12 @@ XMLTagWriter >> xmlnsAt: aPrefix put: aValue [
 
 { #category : #accessing }
 XMLTagWriter >> xmlnsDeclarations [
-	^ xmlnsDeclarations ifNil: [xmlnsDeclarations := OrderPreservingDictionary new: 5 withDefaultValue: '']
+	^ xmlnsDeclarations ifNil: [xmlnsDeclarations := OrderPreservingStringDictionary new: 5]
 ]
 
 { #category : #accessing }
 XMLTagWriter >> xmlnsDeclarations: aDictionaryOrArray [
 	"set xmlns decls using a dictionary or array of prefix/uri associations.
 	empty prefix is default xmlns."
-	(xmlnsDeclarations := OrderPreservingDictionary newFrom: aDictionaryOrArray)  defaultValue: ''
+	xmlnsDeclarations := OrderPreservingStringDictionary newFrom: aDictionaryOrArray
 ]

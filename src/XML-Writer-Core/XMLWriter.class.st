@@ -64,7 +64,6 @@ Class {
 XMLWriter class >> initialize [
 	"self initialize"
 
-	super initialize.
 	self
 		initializeContentEscapes;
 		initializeContentStringEscapes;
