@@ -46,6 +46,7 @@ XMLXmlDeclarationWriter >> version: aVersion [
 XMLXmlDeclarationWriter >> writeBody [
 	self omitIfCanonical: [
 		self writer
+			space;
 			writeName: 'version' unescapedValue: self version asString;
 			space;
 			writeName: 'encoding' unescapedValue: self encoding.

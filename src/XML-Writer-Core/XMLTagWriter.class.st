@@ -91,6 +91,7 @@ XMLTagWriter >> setName: aName attributes: anAttributeDictionary xmlnsDeclaratio
 { #category : #private }
 XMLTagWriter >> writeAttributeName: aName value: aValue [ 
 	self writer
+		space;
 		writeName: aName
 		escapedContentValue: aValue
 ]
@@ -158,6 +159,7 @@ XMLTagWriter >> writePrologue [
 { #category : #private }
 XMLTagWriter >> writeXmlns: aPrefix uri: aUri [
 	self writer
+		space;
 		writeName:
 			(aPrefix
 				ifEmpty: ['xmlns']

@@ -47,9 +47,9 @@ Class {
 		'currentIndentLevel',
 		'indentString',
 		'lineBreak',
+		'isEscaping',
 		'isCanonical',
 		'omitsLineBreaks',
-		'isEscaping',
 		'outputsSelfClosingTags'
 	],
 	#classVars : [
@@ -201,13 +201,19 @@ XMLWriter >> cr [
 		ifTrue: [^ self].
 
 	self nextPutAll: self lineBreak.
-	self isCanonical
+	(self isCanonical
+		or: [self indentString isEmpty])
 		ifFalse: [self writeIndent].
 ]
 
 { #category : #private }
 XMLWriter >> currentIndentLevel [
-	^ currentIndentLevel ifNil: [currentIndentLevel := 0].
+	^ currentIndentLevel
+]
+
+{ #category : #private }
+XMLWriter >> defaultLineBreak [
+	^ String with: Character cr
 ]
 
 { #category : #'writing markup' }
@@ -247,14 +253,6 @@ XMLWriter >> hasEmbeddedMarkupWriter: aMarkupWriter [
 		and: [self markupWriterStack size > 1]
 ]
 
-{ #category : #testing }
-XMLWriter >> hasTrailingWhitespace [
-	| lastChar |
-
-	^ (lastChar := self lastChar) notNil
-		and: [lastChar isSeparator]
-]
-
 { #category : #private }
 XMLWriter >> indent [
 	currentIndentLevel := self currentIndentLevel + 1
@@ -262,7 +260,7 @@ XMLWriter >> indent [
 
 { #category : #accessing }
 XMLWriter >> indentString [
-	^ indentString ifNil: [indentString := '']
+	^ indentString
 ]
 
 { #category : #accessing }
@@ -273,7 +271,7 @@ XMLWriter >> indentString: aString [
 
 { #category : #testing }
 XMLWriter >> isCanonical [
-	^ isCanonical ifNil: [isCanonical := false]
+	^ isCanonical
 ]
 
 { #category : #accessing }
@@ -283,7 +281,7 @@ XMLWriter >> isCanonical: aBoolean [
 
 { #category : #testing }
 XMLWriter >> isEscaping [
-	^ isEscaping ifNil: [isEscaping := true]
+	^ isEscaping
 ]
 
 { #category : #accessing }
@@ -291,16 +289,9 @@ XMLWriter >> isEscaping: aBoolean [
 	isEscaping := aBoolean
 ]
 
-{ #category : #private }
-XMLWriter >> lastChar [
-	^ self atStart
-		ifTrue: [nil]
-		ifFalse: [stream peekLast asCharacter]
-]
-
 { #category : #accessing }
 XMLWriter >> lineBreak [
-	^ lineBreak ifNil: [lineBreak := String cr]
+	^ lineBreak
 ]
 
 { #category : #accessing }
@@ -336,7 +327,7 @@ XMLWriter >> notationDeclaration [
 
 { #category : #testing }
 XMLWriter >> omitsLineBreaks [
-	^ omitsLineBreaks ifNil: [omitsLineBreaks := true]
+	^ omitsLineBreaks
 ]
 
 { #category : #accessing }
@@ -348,6 +339,13 @@ XMLWriter >> omitsLineBreaks: aBoolean [
 XMLWriter >> on: aStream [
 	stream := aStream.
 	markupWriterStack := OrderedCollection new.
+	currentIndentLevel := 0.
+	indentString := ''.
+	lineBreak := self defaultLineBreak.
+	isEscaping := true.
+	isCanonical := false.
+	omitsLineBreaks := true.
+	outputsSelfClosingTags := true.
 ]
 
 { #category : #private }
@@ -357,7 +355,7 @@ XMLWriter >> outdent [
 
 { #category : #testing }
 XMLWriter >> outputsSelfClosingTags [
-	^ outputsSelfClosingTags ifNil: [outputsSelfClosingTags := true]
+	^ outputsSelfClosingTags
 ]
 
 { #category : #accessing }
@@ -416,8 +414,7 @@ XMLWriter >> raw: aString [
 
 { #category : #private }
 XMLWriter >> space [
-	(self isCanonical and: [self hasTrailingWhitespace])
-		ifFalse: [stream space]
+	stream space
 ]
 
 { #category : #private }
@@ -542,9 +539,6 @@ XMLWriter >> writeName: aName unescapedValue: aValue [
 
 { #category : #private }
 XMLWriter >> writeName: aName value: aValue isEscapedContent: aBoolean [
-	(self atStart or: [self hasTrailingWhitespace])
-		ifFalse: [stream space].
-
 	self
 		writeName: aName;
 		nextPut: $=.
