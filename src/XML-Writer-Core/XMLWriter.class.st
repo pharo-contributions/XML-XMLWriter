@@ -44,12 +44,10 @@ Class {
 	#instVars : [
 		'stream',
 		'markupWriterStack',
-		'currentIndentLevel',
-		'indentString',
+		'formatter',
 		'lineBreak',
-		'isEscaping',
 		'isCanonical',
-		'omitsLineBreaks',
+		'isEscaping',
 		'outputsSelfClosingTags'
 	],
 	#classVars : [
@@ -75,14 +73,19 @@ XMLWriter class >> initializeContentEscapes [
 	(ContentEscapes := Array new: 256)
 		at: $& asciiValue put: '&amp;';
 		at: $< asciiValue put: '&lt;';
+		at: $> asciiValue put: '&gt;'; "required to escape ]]> in PCDATA"
 		at: Character cr asciiValue put: #LineBreak;
 		at: Character lf asciiValue put: #LineBreak.
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentStringEscapes [
-	(ContentStringEscapes := ContentEscapes copy)
-		at: $" asciiValue put: '&quot;'
+	(ContentStringEscapes := Array new: 256)
+		at: $& asciiValue put: '&amp;';
+		at: $< asciiValue put: '&lt;';
+		at: $" asciiValue put: '&quot;';
+		at: Character cr asciiValue put: #LineBreak;
+		at: Character lf asciiValue put: #LineBreak
 ]
 
 { #category : #'class initialization' }
@@ -101,7 +104,16 @@ XMLWriter class >> new [
 
 { #category : #'instance creation' }
 XMLWriter class >> on: aStream [
-	^ self basicNew initialize on: aStream
+	^ self
+		on: aStream
+		formatter: nil
+]
+
+{ #category : #'instance creation' }
+XMLWriter class >> on: aStream formatter: aFormatter [
+	^ self basicNew initialize
+		on: aStream
+		formatter: aFormatter
 ]
 
 { #category : #'writing markup' }
@@ -122,15 +134,6 @@ XMLWriter >> & anEntityReference [
 ]
 
 { #category : #accessing }
-XMLWriter >> activeDoctypeWriter [
-	self markupWriterStack reverseDo: [:each |
-		each isDoctypeWriter
-			ifTrue: [^ each]].
-	^ nil.
-	
-]
-
-{ #category : #accessing }
 XMLWriter >> activeMarkupWriter [
 	"for speed"
 	^ markupWriterStack size > 0
@@ -144,7 +147,6 @@ XMLWriter >> activeTagWriter [
 		each isTagWriter
 			ifTrue: [^ each]].
 	^ nil.
-	
 ]
 
 { #category : #printing }
@@ -170,7 +172,9 @@ XMLWriter >> cdata [
 
 { #category : #'writing markup' }
 XMLWriter >> cdata: aString [
-	self cdata with: aString
+	self cdata
+		string: aString;
+		write
 ]
 
 { #category : #'writing markup' }
@@ -186,7 +190,9 @@ XMLWriter >> comment [
 
 { #category : #'writing markup' }
 XMLWriter >> comment: aString [
-	self comment with: aString
+	self comment
+		string: aString;
+		write
 ]
 
 { #category : #accessing }
@@ -196,24 +202,8 @@ XMLWriter >> contents [
 ]
 
 { #category : #private }
-XMLWriter >> cr [
-	(self omitsLineBreaks or: [self atStart])
-		ifTrue: [^ self].
-
-	self nextPutAll: self lineBreak.
-	(self isCanonical
-		or: [self indentString isEmpty])
-		ifFalse: [self writeIndent].
-]
-
-{ #category : #private }
-XMLWriter >> currentIndentLevel [
-	^ currentIndentLevel
-]
-
-{ #category : #private }
 XMLWriter >> defaultLineBreak [
-	^ String with: Character cr
+	^ String cr
 ]
 
 { #category : #'writing markup' }
@@ -228,9 +218,7 @@ XMLWriter >> elementDeclaration [
 
 { #category : #'writing markup' }
 XMLWriter >> enablePrettyPrinting [
-	self
-		indentString: '    ';
-		omitsLineBreaks: false
+	self formatter: (XMLPrettyPrintingWriterFormatter writer: self)
 ]
 
 { #category : #'writing markup' }
@@ -240,33 +228,97 @@ XMLWriter >> entityDeclaration [
 
 { #category : #'writing markup' }
 XMLWriter >> entityRef: aName [
-	self
-		newMarkup;
-		nextPut: $&;
-		writeName: aName;
-		nextPut: $;
+	(self pushNewMarkupWriter: XMLEntityReferenceWriter)
+		name: aName;
+		write
+]
+
+{ #category : #formatting }
+XMLWriter >> formatAfterDoctypeDeclaration: aDoctypeDeclarationWriter [
+	formatter
+		ifNotNil: [formatter formatAfterDoctypeDeclaration: aDoctypeDeclarationWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatAfterInternalSubset: aDoctypeDeclarationWriter [
+	formatter
+		ifNotNil: [formatter formatAfterInternalSubset: aDoctypeDeclarationWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatAfterStartTag: aTagWriter [
+	formatter
+		ifNotNil: [formatter formatAfterStartTag: aTagWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeComment: aCommentWriter [
+	formatter
+		ifNotNil: [formatter formatBeforeComment: aCommentWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeDeclaration: aDeclarationWriter [
+	formatter
+		ifNotNil: [formatter formatBeforeDeclaration: aDeclarationWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeDoctypeDeclaration: aDoctypeDeclarationWriter [
+	formatter
+		ifNotNil: [formatter formatBeforeDoctypeDeclaration: aDoctypeDeclarationWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeEndTag: aTagWriter [
+	formatter
+		ifNotNil: [formatter formatBeforeEndTag: aTagWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeEntityReference: anEntityReferenceWriter [
+	formatter
+		ifNotNil: [formatter formatBeforeEntityReference: anEntityReferenceWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeInternalSubset: aDoctypeDeclarationWriter [
+	formatter
+		ifNotNil: [formatter formatBeforeInternalSubset: aDoctypeDeclarationWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforePI: aPiWriter [
+	formatter
+		ifNotNil: [formatter formatBeforePI: aPiWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeStartTag: aTagWriter [
+	formatter
+		ifNotNil: [formatter formatBeforeStartTag: aTagWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeXmlDeclaration: anXmlDeclarationWriter [
+	formatter
+		ifNotNil: [formatter formatBeforeXmlDeclaration: anXmlDeclarationWriter]
+]
+
+{ #category : #accessing }
+XMLWriter >> formatter [
+	^ formatter
+]
+
+{ #category : #accessing }
+XMLWriter >> formatter: aFormatter [
+	formatter := aFormatter
 ]
 
 { #category : #private }
 XMLWriter >> hasEmbeddedMarkupWriter: aMarkupWriter [
 	^ self activeMarkupWriter == aMarkupWriter
 		and: [self markupWriterStack size > 1]
-]
-
-{ #category : #private }
-XMLWriter >> indent [
-	currentIndentLevel := self currentIndentLevel + 1
-]
-
-{ #category : #accessing }
-XMLWriter >> indentString [
-	^ indentString
-]
-
-{ #category : #accessing }
-XMLWriter >> indentString: aString [
-	currentIndentLevel := 0.
-	indentString := aString.
 ]
 
 { #category : #testing }
@@ -295,8 +347,8 @@ XMLWriter >> lineBreak [
 ]
 
 { #category : #accessing }
-XMLWriter >> lineBreak: aLineBreakCharOrString [
-	lineBreak := aLineBreakCharOrString asString
+XMLWriter >> lineBreak: aCharacterOrString [
+	lineBreak := aCharacterOrString asString
 ]
 
 { #category : #private }
@@ -305,9 +357,9 @@ XMLWriter >> markupWriterStack [
 ]
 
 { #category : #private }
-XMLWriter >> newMarkup [
+XMLWriter >> newStringMarkup [
 	self activeMarkupWriter
-		ifNotNil: [:activeMarkupWriter | activeMarkupWriter newMarkupBeingWritten]
+		ifNotNil: [:activeMarkupWriter | activeMarkupWriter newStringMarkupBeingWritten]
 ]
 
 { #category : #private }
@@ -325,32 +377,22 @@ XMLWriter >> notationDeclaration [
 	^ self pushNewMarkupWriter: XMLNotationDeclarationWriter
 ]
 
-{ #category : #testing }
-XMLWriter >> omitsLineBreaks [
-	^ omitsLineBreaks
-]
-
-{ #category : #accessing }
-XMLWriter >> omitsLineBreaks: aBoolean [
-	omitsLineBreaks := aBoolean
+{ #category : #initialization }
+XMLWriter >> on: aStream [
+	self
+		on: aStream
+		formatter: self formatter
 ]
 
 { #category : #initialization }
-XMLWriter >> on: aStream [
+XMLWriter >> on: aStream formatter: aFormatter [
 	stream := aStream.
 	markupWriterStack := OrderedCollection new.
-	currentIndentLevel := 0.
-	indentString := ''.
+	formatter := aFormatter.
 	lineBreak := self defaultLineBreak.
-	isEscaping := true.
 	isCanonical := false.
-	omitsLineBreaks := true.
+	isEscaping := true.
 	outputsSelfClosingTags := true.
-]
-
-{ #category : #private }
-XMLWriter >> outdent [
-	currentIndentLevel := self currentIndentLevel - 1
 ]
 
 { #category : #testing }
@@ -365,12 +407,22 @@ XMLWriter >> outputsSelfClosingTags: aBoolean [
 
 { #category : #'writing markup' }
 XMLWriter >> paramEntityRef: aName [
-	self
-		newMarkup;
-		cr;
-		nextPut: $%;
-		writeName: aName;
-		nextPut: $;
+	(self pushNewMarkupWriter: XMLEntityReferenceWriter)
+		isParameter: true;
+		name: aName;
+		write
+]
+
+{ #category : #accessing }
+XMLWriter >> parentMarkupWriterOf: aMarkupWriter [
+	| previous |
+
+	previous := nil.
+	self markupWriterStack reverseDo: [:each |
+		previous == aMarkupWriter
+			ifTrue: [^ each]
+			ifFalse: [previous := each]].
+	^ nil.
 ]
 
 { #category : #'writing markup' }
@@ -408,7 +460,7 @@ XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
 { #category : #'writing markup' }
 XMLWriter >> raw: aString [
 	self
-		newMarkup;
+		newStringMarkup;
 		nextPutAll: aString
 ]
 
@@ -430,7 +482,7 @@ XMLWriter >> stream: aStream [
 { #category : #'writing markup' }
 XMLWriter >> string: aString [
 	self
-		newMarkup;
+		newStringMarkup;
 		writeEscapedContent: aString.
 ]
 
@@ -509,11 +561,6 @@ XMLWriter >> writeEscapedEntityValueString: aString [
 		nextPut: $";
 		write: aString escapedWith: EntityValueEscapes;
 		nextPut: $"
-]
-
-{ #category : #private }
-XMLWriter >> writeIndent [
-	self currentIndentLevel timesRepeat: [self nextPutAll: self indentString]
 ]
 
 { #category : #private }

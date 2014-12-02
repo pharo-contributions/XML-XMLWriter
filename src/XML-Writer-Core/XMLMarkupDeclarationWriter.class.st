@@ -34,7 +34,7 @@ XMLMarkupDeclarationWriter >> writeEpilogue [
 XMLMarkupDeclarationWriter >> writePrologue [
 	self omitIfCanonical: [
 		self writer
-			cr;
+			formatBeforeDeclaration: self;
 			nextPutAll: '<!';
 			writeName: self declarationType;
 			space;

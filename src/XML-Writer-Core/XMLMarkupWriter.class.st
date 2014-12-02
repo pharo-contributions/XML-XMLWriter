@@ -13,7 +13,7 @@ Class {
 
 { #category : #'instance creation' }
 XMLMarkupWriter class >> writer: aWriter [
-	^ self new writer: aWriter
+	^ self new setWriter: aWriter
 ]
 
 { #category : #'writing markup' }
@@ -37,6 +37,11 @@ XMLMarkupWriter >> hasEmbeddedMarkupWriters [
 ]
 
 { #category : #testing }
+XMLMarkupWriter >> hasEmbeddedStringMarkup [
+	^ false
+]
+
+{ #category : #testing }
 XMLMarkupWriter >> isDoctypeWriter [
 	^ false
 ]
@@ -47,22 +52,30 @@ XMLMarkupWriter >> isEmbedded [
 ]
 
 { #category : #testing }
+XMLMarkupWriter >> isEmbeddedWithStringMarkup [
+	| parent |
+
+	^ (parent := self parentMarkupWriter) notNil
+		and: [parent hasEmbeddedStringMarkup]
+]
+
+{ #category : #testing }
 XMLMarkupWriter >> isTagWriter [
 	^ false
 ]
 
 { #category : #testing }
 XMLMarkupWriter >> isWriting [
-	^ isWriting ifNil: [isWriting := false]
-]
-
-{ #category : #private }
-XMLMarkupWriter >> newMarkupBeingWritten [
-	self write
+	^ isWriting
 ]
 
 { #category : #private }
 XMLMarkupWriter >> newMarkupWriterBeingPushed [
+	self write
+]
+
+{ #category : #private }
+XMLMarkupWriter >> newStringMarkupBeingWritten [
 	self write
 ]
 
@@ -74,15 +87,28 @@ XMLMarkupWriter >> omitIfCanonical: aBlock [
 
 { #category : #private }
 XMLMarkupWriter >> omitIfCanonicalInDTD: aBlock [
+	| parent |
+
 	(self writer isCanonical
-		and: [self isEmbedded
-			and: [self writer activeDoctypeWriter notNil]])
+		and: [(parent := self parentMarkupWriter) notNil
+			and: [parent isDoctypeWriter]])
 		ifFalse: [aBlock value]
+]
+
+{ #category : #accessing }
+XMLMarkupWriter >> parentMarkupWriter [
+	^ self writer parentMarkupWriterOf: self
 ]
 
 { #category : #printing }
 XMLMarkupWriter >> printOn: aStream [
 	self writer printOn: aStream
+]
+
+{ #category : #initialization }
+XMLMarkupWriter >> setWriter: aWriter [
+	writer := aWriter.
+	isWriting := false.
 ]
 
 { #category : #'writing markup' }
@@ -115,9 +141,4 @@ XMLMarkupWriter >> writePrologue [
 { #category : #accessing }
 XMLMarkupWriter >> writer [
 	^ writer
-]
-
-{ #category : #accessing }
-XMLMarkupWriter >> writer: aWriter [
-	writer := aWriter
 ]

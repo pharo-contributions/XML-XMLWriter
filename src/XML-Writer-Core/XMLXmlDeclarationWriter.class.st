@@ -67,6 +67,6 @@ XMLXmlDeclarationWriter >> writeEpilogue [
 XMLXmlDeclarationWriter >> writePrologue [
 	self omitIfCanonical: [
 		self writer
-			cr;
+			formatBeforeXmlDeclaration: self;
 			nextPutAll: '<?xml']
 ]

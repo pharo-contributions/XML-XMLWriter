@@ -48,7 +48,7 @@ XMLPIWriter >> writeEpilogue [
 XMLPIWriter >> writePrologue [
 	self omitIfCanonicalInDTD: [
 		self writer
-			cr;
+			formatBeforePI: self;
 			nextPutAll: '<?';
 			writeName: self target]
 ]

@@ -110,12 +110,13 @@ XMLTagWriter >> writeAttributes [
 XMLTagWriter >> writeEmbeddedMarkupPrologue [
 	self writer
 		nextPut: $>;
-		indent
+		formatAfterStartTag: self
 ]
 
 { #category : #private }
 XMLTagWriter >> writeEndTag [
 	self writer
+		formatBeforeEndTag: self;
 		nextPut: $<;
 		nextPut: $/;
 		writeName: self name;
@@ -125,11 +126,7 @@ XMLTagWriter >> writeEndTag [
 { #category : #private }
 XMLTagWriter >> writeEpilogue [
 	self hasEmbeddedMarkup
-		ifTrue: [
-			self writer outdent.
-			self hasEmbeddedMarkupWriters
-				ifTrue: [self writer cr].
-			self writeEndTag]
+		ifTrue: [self writeEndTag]
 		ifFalse: [
 			(self writer isCanonical
 				or: [self writer outputsSelfClosingTags not])
@@ -146,7 +143,7 @@ XMLTagWriter >> writeEpilogue [
 { #category : #private }
 XMLTagWriter >> writePrologue [
 	self writer
-		cr;
+		formatBeforeStartTag: self;
 		nextPut: $<;
 		writeName: self name.
 

@@ -25,7 +25,7 @@ XMLEntityDeclarationWriter >> externalIDWriter [
 	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter new]
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 XMLEntityDeclarationWriter >> isParameter [
 	^ isParameter ifNil: [isParameter := false]
 ]

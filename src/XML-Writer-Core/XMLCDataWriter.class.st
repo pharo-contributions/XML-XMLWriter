@@ -1,15 +1,33 @@
 "
-This class generates a <![CDATA[...]]> section. If the XMLWriter object has been set to generate canonical XML, CDATA sections will not be produced and their content will instead be XML-escaped and inserted directly into the document.
+A markup writer for <![CDATA[...]]> sections. Will be output as regular escpaed strings instead if isCanonical is enbaled.
 "
 Class {
 	#name : #XMLCDataWriter,
-	#superclass : #XMLEmbeddedMarkupWriter,
+	#superclass : #XMLMarkupWriter,
+	#instVars : [
+		'string'
+	],
 	#category : #'XML-Writer-Core'
 }
 
-{ #category : #testing }
-XMLCDataWriter >> escapesEmbeddedStrings [
-	^ self writer isCanonical
+{ #category : #accessing }
+XMLCDataWriter >> string [
+	^ string ifNil: [string := '']
+]
+
+{ #category : #accessing }
+XMLCDataWriter >> string: aString [
+	string := aString
+]
+
+{ #category : #private }
+XMLCDataWriter >> writeBody [
+	self writer isCanonical
+		ifTrue: [
+			self parentMarkupWriter
+				ifNotNil: [:parent | parent newStringMarkupBeingWritten].
+			self writer writeEscapedContent: self string]
+		ifFalse: [self writer nextPutAll: self string]
 ]
 
 { #category : #private }

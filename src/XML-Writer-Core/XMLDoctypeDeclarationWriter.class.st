@@ -67,7 +67,7 @@ XMLDoctypeDeclarationWriter >> writeEmbeddedMarkupPrologue [
 		self writer
 			space;
 			nextPut: $[;
-			indent]
+			formatBeforeInternalSubset: self]
 ]
 
 { #category : #private }
@@ -76,19 +76,18 @@ XMLDoctypeDeclarationWriter >> writeEpilogue [
 		self hasEmbeddedMarkup
 			ifTrue: [
 				self writer
-					outdent;
-					cr;
+					formatAfterInternalSubset: self;
 					nextPut: $]].
 		self writer
 			nextPut: $>;
-			cr]
+			formatAfterDoctypeDeclaration: self]
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writePrologue [
 	self omitIfCanonical: [
 		self writer
-			cr;
+			formatBeforeDoctypeDeclaration: self;
 			nextPutAll: '<!DOCTYPE';
 			space;
 			writeName: self root.

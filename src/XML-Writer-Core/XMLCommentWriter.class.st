@@ -1,15 +1,28 @@
 "
-Generates a comment; XMLWriter>>comment: should normally suffice.
+A markup writer for <!-- ... --> comments.
 "
 Class {
 	#name : #XMLCommentWriter,
-	#superclass : #XMLEmbeddedMarkupWriter,
+	#superclass : #XMLMarkupWriter,
+	#instVars : [
+		'string'
+	],
 	#category : #'XML-Writer-Core'
 }
 
+{ #category : #accessing }
+XMLCommentWriter >> string [
+	^ string ifNil: [string := '']
+]
+
+{ #category : #accessing }
+XMLCommentWriter >> string: aString [
+	string := aString
+]
+
 { #category : #private }
-XMLCommentWriter >> writeBody: aStringOrCollectionOrBlock [
-	self omitIfCanonicalInDTD: [super writeBody: aStringOrCollectionOrBlock]
+XMLCommentWriter >> writeBody [
+	self omitIfCanonicalInDTD: [self writer nextPutAll: self string]
 ]
 
 { #category : #private }
@@ -18,9 +31,9 @@ XMLCommentWriter >> writeEpilogue [
 ]
 
 { #category : #private }
-XMLCommentWriter >> writePrologue [	
+XMLCommentWriter >> writePrologue [
 	self omitIfCanonicalInDTD: [
 		self writer
-			cr;
+			formatBeforeComment: self;
 			nextPutAll: '<!--']
 ]
