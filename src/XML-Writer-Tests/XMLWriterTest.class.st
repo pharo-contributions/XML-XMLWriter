@@ -8,6 +8,32 @@ Class {
 	#category : #'XML-Writer-Tests'
 }
 
+{ #category : #private }
+XMLWriterTest >> defaultIndentString [
+	^ '    '
+]
+
+{ #category : #private }
+XMLWriterTest >> defaultLineBreak [
+	^ Character cr
+]
+
+{ #category : #private }
+XMLWriterTest >> prettyPrintedLines: anArrayOfLineArrays [
+	"takes an array of arrays where the first element of each is the indent level
+	and the rest are the lines with that indent level"
+
+	^ String streamContents: [:stream |
+		anArrayOfLineArrays do: [:each | | indentLevel |
+			indentLevel := each first.
+			2 to: each size do: [:lineIndex |
+				stream position > 0
+					ifTrue: [
+						stream nextPutAll: self defaultLineBreak asString.
+						indentLevel timesRepeat: [stream nextPutAll: self defaultIndentString]].
+				stream nextPutAll: (each at: lineIndex)]]]
+]
+
 { #category : #tests }
 XMLWriterTest >> testAttributes [
 	| writer tag |
@@ -40,11 +66,13 @@ XMLWriterTest >> testCDataSections [
 	(writer := XMLWriter new)
 		tag: 'cdata'
 		with: [
-			writer cdata: '<escaped name="&value;" />'.
-			writer cdata with: [
-				writer tag
-					name: 'escaped';
-					with: [writer & 'value']]].
+			writer
+				cdata: '<escaped name="&value;" />';
+				cdata:
+					(XMLWriter writeWith: [:w |
+						w
+							tag: 'escaped'
+							with: [w & 'value']])].
 
 	self assert:
 		writer contents =
@@ -114,7 +142,7 @@ XMLWriterTest >> testCanonicalTags [
 		writer contents =
 			('<!--tags-->',
 			'<tags xmlns="default" xmlns:a="ns1" xmlns:b="ns2" a="1" b="2" c="3">',
-			'<cdata>&lt;escaped name="&amp;value;" /></cdata>',
+			'<cdata>&lt;escaped name="&amp;value;" /&gt;</cdata>',
 			'<empty></empty>',
 			'</tags>').
 ]
@@ -147,7 +175,7 @@ XMLWriterTest >> testContentEscaping [
 			with: '& " < >'.
 	self assert:
 		writer contents =
-			'<test xmlns="&amp; &quot; &lt; >" escaped="&amp; &quot; &lt; >">&amp; " &lt; ></test>'.
+			'<test xmlns="&amp; &quot; &lt; >" escaped="&amp; &quot; &lt; >">&amp; " &lt; &gt;</test>'.
 
 	((writer := XMLWriter new)
 		isEscaping: false;
@@ -195,6 +223,19 @@ XMLWriterTest >> testEntityValueEscaping [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testLineBreak [
+	| writer  |
+
+	(writer := XMLWriter new)
+		enablePrettyPrinting;
+		lineBreak: $N.
+	writer
+		xml;
+		tag: 'test'.
+	self assert: writer contents = '<?xml version="1.0" encoding="UTF-8"?>N<test />'
+]
+
+{ #category : #tests }
 XMLWriterTest >> testPrettyPrintingDTDs [
 	| writer  |
 
@@ -214,6 +255,7 @@ XMLWriterTest >> testPrettyPrintingDTDs [
 				name: 'comment';
 				replacement: '<!--attribute-->'.
 			writer % 'comment'.
+			writer comment: 'attribute'.
 			writer attributeDeclaration
 				element: 'pretty';
 				attribute: 'name';
@@ -224,18 +266,22 @@ XMLWriterTest >> testPrettyPrintingDTDs [
 				name: 'external';
 				systemID: 'external.txt'].
 
-	self assert: writer contents = '<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pretty [
-    <!--element-->
-    <!ELEMENT pretty EMPTY>
-    <!--entity-->
-    <!ENTITY % comment "<!--attribute-->">
-    %comment;
-    <!ATTLIST pretty name CDATA #REQUIRED>
-    <!--notation-->
-    <!NOTATION external SYSTEM "external.txt">
-]>
-'.
+	self assert:
+		writer contents =
+			(self prettyPrintedLines: #(
+				#(0 '<?xml version="1.0" encoding="UTF-8"?>'
+					'<!DOCTYPE pretty [')
+				#(1 '<!--element-->'
+					'<!ELEMENT pretty EMPTY>'
+					'<!--entity-->'
+					'<!ENTITY % comment "<!--attribute-->">'
+					'%comment;'
+					'<!--attribute-->'
+					'<!ATTLIST pretty name CDATA #REQUIRED>'
+					'<!--notation-->'
+					'<!NOTATION external SYSTEM "external.txt">')
+				#(0 ']>'
+					''))).
 ]
 
 { #category : #tests }
@@ -251,19 +297,45 @@ XMLWriterTest >> testPrettyPrintingElements [
 		xmlnsAt: 'example' put: 'urn://example';
 		with: [
 			writer
-				tag: 'username' with: 'jsmith';
-				tag: 'real-name' with: 'John Smith';
-				tag: 'age' with: '25';
-				tag: 'id' with: '101'].
+				tag: 'username' with: [
+					writer
+						comment: 'id';
+						string: 'jsmith'];
+				tag: 'real-name' with: [
+					writer tag: 'last-name' with: 'Smith'.
+					writer string: ', '.
+					writer pi
+						target: 'type';
+						data: 'string'.
+					writer
+						comment: 'first name';
+						string: 'John'];
+				tag: 'age' with: [
+					writer pi
+						target: 'type';
+						data: 'integer'.
+					writer comment: 'not supplied'];
+				tag: 'id' with: [
+					writer
+						string: '101';
+						comment: '']].
 
-	self assert: writer contents = '<?xml version="1.0" encoding="UTF-8"?>
-<!--an example-->
-<example:user xmlns:example="urn://example">
-    <username>jsmith</username>
-    <real-name>John Smith</real-name>
-    <age>25</age>
-    <id>101</id>
-</example:user>'
+	self assert:
+		writer contents =
+			(self prettyPrintedLines: #(
+				#(0 '<?xml version="1.0" encoding="UTF-8"?>'
+					'<!--an example-->'
+					'<example:user xmlns:example="urn://example">')
+				#(1 '<username>')
+				#(2 '<!--id-->jsmith</username>')
+				#(1 '<real-name>')
+				#(2 '<last-name>Smith</last-name>, <?type string?><!--first name-->John</real-name>')
+				#(1 '<age>')
+				#(2 '<?type integer?>'
+					'<!--not supplied-->')
+				#(1 '</age>'
+					'<id>101<!----></id>')
+				#(0 '</example:user>'))).
 ]
 
 { #category : #tests }
