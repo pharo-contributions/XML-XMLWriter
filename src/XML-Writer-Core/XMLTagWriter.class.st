@@ -8,8 +8,8 @@ Class {
 	#superclass : #XMLEmbeddedMarkupWriter,
 	#instVars : [
 		'name',
-		'attributes',
-		'xmlnsDeclarations'
+		'xmlnsDeclarations',
+		'attributes'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -64,13 +64,6 @@ XMLTagWriter >> isTagWriter [
 	^ true
 ]
 
-{ #category : #private }
-XMLTagWriter >> keysFrom: aDictionary do: aBlock [
-	self writer isCanonical
-		ifTrue: [aDictionary keys sorted do: aBlock]
-		ifFalse: [aDictionary keysDo: aBlock]
-]
-
 { #category : #accessing }
 XMLTagWriter >> name [
 	^ name ifNil: ['']
@@ -82,10 +75,13 @@ XMLTagWriter >> name: aName [
 ]
 
 { #category : #initialization }
-XMLTagWriter >> setName: aName attributes: anAttributeDictionary xmlnsDeclarations: anXmlnsDictionary [
-	name := aName.
-	attributes := anAttributeDictionary.
-	xmlnsDeclarations := anXmlnsDictionary.
+XMLTagWriter >> setAttributes: anAttributeDictionary [
+	attributes := anAttributeDictionary 
+]
+
+{ #category : #initialization }
+XMLTagWriter >> setXmlnsDeclarations: anXmlnsDictionary [ 
+	xmlnsDeclarations := anXmlnsDictionary
 ]
 
 { #category : #private }
@@ -98,12 +94,19 @@ XMLTagWriter >> writeAttributeName: aName value: aValue [
 
 { #category : #private }
 XMLTagWriter >> writeAttributes [
-	self
-		keysFrom: attributes
-		do: [:attributeName |
-			self
-				writeAttributeName: attributeName
-				value: (attributes at: attributeName)]
+	attributes
+		ifNil: [^ self].
+	self writer isCanonical
+		ifTrue: [
+			attributes keys sort do: [:attributeName |
+				self
+					writeAttributeName: attributeName
+					value: (attributes at: attributeName)]]
+		ifFalse: [
+			attributes keysDo: [:attributeName |
+				self
+					writeAttributeName: attributeName
+					value: (attributes at: attributeName)]].
 ]
 
 { #category : #private }
@@ -146,11 +149,9 @@ XMLTagWriter >> writePrologue [
 		formatBeforeStartTag: self;
 		nextPut: $<;
 		writeName: self name.
-
-	xmlnsDeclarations
-		ifNotNil: [self writeXmlnsDeclarations].
-	attributes
-		ifNotNil: [self writeAttributes].
+	self
+		writeXmlnsDeclarations;
+		writeAttributes.
 ]
 
 { #category : #private }
@@ -166,12 +167,33 @@ XMLTagWriter >> writeXmlns: aPrefix uri: aUri [
 
 { #category : #private }
 XMLTagWriter >> writeXmlnsDeclarations [
-	self
-		keysFrom: xmlnsDeclarations
-		do: [:prefix |
-			self
-				writeXmlns: prefix
-				uri: (xmlnsDeclarations at: prefix)]
+	| checkForDuplicates parentMarkupWriter |
+
+	xmlnsDeclarations
+		ifNil: [^ self].
+	checkForDuplicates := 
+		self writer omitsRedundantXmlnsDeclarations
+			and: [(parentMarkupWriter := self parentMarkupWriter) notNil
+				and: [parentMarkupWriter isTagWriter]].
+	self writer isCanonical
+		ifTrue: [
+			(xmlnsDeclarations keys reject: [:prefix |
+				(checkForDuplicates
+					and: [parentMarkupWriter xmlnsAt: prefix]) = (xmlnsDeclarations at: prefix)])
+				sort;
+				do: [:prefix |
+					self
+						writeXmlns: prefix
+						uri: (xmlnsDeclarations at: prefix)]]
+		ifFalse: [
+			xmlnsDeclarations keysDo: [:prefix | | uri |
+				uri := xmlnsDeclarations at: prefix.
+				(checkForDuplicates
+					and: [(parentMarkupWriter xmlnsAt: prefix) = uri])
+					ifFalse: [
+						self
+							writeXmlns: prefix
+							uri: uri]]].
 ]
 
 { #category : #accessing }

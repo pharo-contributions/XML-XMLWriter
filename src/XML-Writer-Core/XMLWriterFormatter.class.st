@@ -1,5 +1,5 @@
 "
-An abstract class for formatters.
+An abstract class for formatters used to decorate markup writers.
 "
 Class {
 	#name : #XMLWriterFormatter,

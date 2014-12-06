@@ -19,7 +19,7 @@ XMLMarkupWriter class >> writer: aWriter [
 { #category : #'writing markup' }
 XMLMarkupWriter >> finishWriting [
 	self hasEmbeddedMarkupWriters
-		ifTrue: [self writer writeUnwrittenMarkupWriterEmbeddedIn: self].
+		ifTrue: [self writer writeUnwrittenMarkupWritersEmbeddedIn: self].
 	self writeEpilogue.
 	isWriting := false.
 
@@ -44,11 +44,6 @@ XMLMarkupWriter >> hasEmbeddedStringMarkup [
 { #category : #testing }
 XMLMarkupWriter >> isDoctypeWriter [
 	^ false
-]
-
-{ #category : #testing }
-XMLMarkupWriter >> isEmbedded [
-	^ self writer hasEmbeddedMarkupWriter: self
 ]
 
 { #category : #testing }
@@ -119,11 +114,12 @@ XMLMarkupWriter >> startWriting [
 
 { #category : #'writing markup' }
 XMLMarkupWriter >> write [
-	self isWriting ifFalse: [
-		self
-			startWriting;
-			writeBody;
-			finishWriting]
+	self isWriting
+		ifFalse: [
+			self
+				startWriting;
+				writeBody;
+				finishWriting]
 ]
 
 { #category : #private }

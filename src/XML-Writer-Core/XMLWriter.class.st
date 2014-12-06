@@ -46,9 +46,10 @@ Class {
 		'markupWriterStack',
 		'formatter',
 		'lineBreak',
-		'isCanonical',
 		'isEscaping',
-		'outputsSelfClosingTags'
+		'isCanonical',
+		'outputsSelfClosingTags',
+		'omitsRedundantXmlnsDeclarations'
 	],
 	#classVars : [
 		'ContentEscapes',
@@ -65,7 +66,7 @@ XMLWriter class >> initialize [
 	self
 		initializeContentEscapes;
 		initializeContentStringEscapes;
-		initializeEntityValueEscapes.
+		initializeEntityValueEscapes
 ]
 
 { #category : #'class initialization' }
@@ -139,6 +140,19 @@ XMLWriter >> activeMarkupWriter [
 	^ markupWriterStack size > 0
 		ifTrue: [markupWriterStack at: markupWriterStack size]
 		ifFalse: [nil]
+]
+
+{ #category : #private }
+XMLWriter >> activeMarkupWriterDo: aBlock [
+	"This evaluates aBlock for the active (top) markup writer until
+	it is nil or is the same (still active) writer after evaluating aBlock"
+	| activeMarkupWriter previousActiveMarkupWriter |
+
+	[(activeMarkupWriter := self activeMarkupWriter) isNil
+		or: [activeMarkupWriter == previousActiveMarkupWriter]]
+		whileFalse: [
+			aBlock value: activeMarkupWriter.
+			previousActiveMarkupWriter := activeMarkupWriter]
 ]
 
 { #category : #accessing }
@@ -315,12 +329,6 @@ XMLWriter >> formatter: aFormatter [
 	formatter := aFormatter
 ]
 
-{ #category : #private }
-XMLWriter >> hasEmbeddedMarkupWriter: aMarkupWriter [
-	^ self activeMarkupWriter == aMarkupWriter
-		and: [self markupWriterStack size > 1]
-]
-
 { #category : #testing }
 XMLWriter >> isCanonical [
 	^ isCanonical
@@ -358,23 +366,32 @@ XMLWriter >> markupWriterStack [
 
 { #category : #private }
 XMLWriter >> newStringMarkup [
-	self activeMarkupWriter
-		ifNotNil: [:activeMarkupWriter | activeMarkupWriter newStringMarkupBeingWritten]
+	self activeMarkupWriterDo: [:each | each newStringMarkupBeingWritten]
 ]
 
 { #category : #private }
 XMLWriter >> nextPut: aCharacter [
-	stream nextPut: aCharacter
+	^ stream nextPut: aCharacter
 ]
 
 { #category : #private }
 XMLWriter >> nextPutAll: aString [
-	stream nextPutAll: aString
+	^ stream nextPutAll: aString
 ]
 
 { #category : #'writing markup' }
 XMLWriter >> notationDeclaration [
 	^ self pushNewMarkupWriter: XMLNotationDeclarationWriter
+]
+
+{ #category : #testing }
+XMLWriter >> omitsRedundantXmlnsDeclarations [
+	^ omitsRedundantXmlnsDeclarations
+]
+
+{ #category : #accessing }
+XMLWriter >> omitsRedundantXmlnsDeclarations: aBoolean [
+	omitsRedundantXmlnsDeclarations := aBoolean
 ]
 
 { #category : #initialization }
@@ -390,9 +407,10 @@ XMLWriter >> on: aStream formatter: aFormatter [
 	markupWriterStack := OrderedCollection new.
 	formatter := aFormatter.
 	lineBreak := self defaultLineBreak.
-	isCanonical := false.
 	isEscaping := true.
+	isCanonical := false.
 	outputsSelfClosingTags := true.
+	omitsRedundantXmlnsDeclarations := true.
 ]
 
 { #category : #testing }
@@ -415,13 +433,9 @@ XMLWriter >> paramEntityRef: aName [
 
 { #category : #accessing }
 XMLWriter >> parentMarkupWriterOf: aMarkupWriter [
-	| previous |
-
-	previous := nil.
-	self markupWriterStack reverseDo: [:each |
-		previous == aMarkupWriter
-			ifTrue: [^ each]
-			ifFalse: [previous := each]].
+	self markupWriterStack size to: 2 by: -1 do: [:i |
+		(self markupWriterStack at: i) == aMarkupWriter
+			ifTrue: [^ self markupWriterStack at: i - 1]].
 	^ nil.
 ]
 
@@ -437,12 +451,13 @@ XMLWriter >> pi [
 
 { #category : #private }
 XMLWriter >> popActiveMarkupWriter [
-	self markupWriterStack ifNotEmpty: [:stack | stack removeLast]
+	self markupWriterStack
+		ifNotEmpty: [:stack | stack removeLast]
 ]
 
 { #category : #printing }
 XMLWriter >> printOn: aStream [
-	aStream nextPutAll: self contents.
+	aStream nextPutAll: self contents
 ]
 
 { #category : #private }
@@ -450,9 +465,7 @@ XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
 	| newMarkupWriter |
 
 	newMarkupWriter := aMarkupWriterClass writer: self.
-	self activeMarkupWriter
-		ifNotNil: [:activeMarkupWriter |
-			activeMarkupWriter newMarkupWriterBeingPushed].
+	self activeMarkupWriterDo: [:each | each newMarkupWriterBeingPushed].
 
 	^ self markupWriterStack addLast: newMarkupWriter.
 ]
@@ -483,7 +496,7 @@ XMLWriter >> stream: aStream [
 XMLWriter >> string: aString [
 	self
 		newStringMarkup;
-		writeEscapedContent: aString.
+		writeEscapedContent: aString
 ]
 
 { #category : #'writing markup' }
@@ -516,30 +529,27 @@ XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
 
 { #category : #'writing markup' }
 XMLWriter >> write [
-	self activeMarkupWriter
-		ifNotNil: [:activeMarkupWriter |
-			(activeMarkupWriter isWriting)
-				ifTrue: [activeMarkupWriter finishWriting]
-				ifFalse: [activeMarkupWriter write]]
+	self activeMarkupWriterDo: [:each |
+		each isWriting
+			ifTrue: [each finishWriting]
+			ifFalse: [each write]]
 ]
 
 { #category : #private }
 XMLWriter >> write: aString escapedWith: anEscapeTable [
-	| asciiValue replacement |
-
 	self isEscaping
-		ifFalse: [^ self nextPutAll: aString].
-
-	aString do: [:each |
-		((asciiValue := each asciiValue) > 0
-			and: [asciiValue <= anEscapeTable size
-				and: [(replacement := anEscapeTable at: asciiValue) notNil]])
-			ifTrue: [
-				stream nextPutAll:
-					(replacement == #LineBreak
-						ifTrue: [self lineBreak]
-						ifFalse: [replacement])]
-			ifFalse: [stream nextPut: each]]
+		ifTrue: [
+			aString do: [:each | | asciiValue replacement |
+				((asciiValue := each asciiValue) > 0
+					and: [asciiValue <= anEscapeTable size
+						and: [(replacement := anEscapeTable at: asciiValue) notNil]])
+					ifTrue: [
+						stream nextPutAll:
+							(replacement == #LineBreak
+								ifTrue: [self lineBreak]
+								ifFalse: [replacement])]
+					ifFalse: [stream nextPut: each]]]
+		ifFalse: [self nextPutAll: aString]
 ]
 
 { #category : #private }
@@ -609,11 +619,13 @@ XMLWriter >> writeUnescapedString: aString [
 ]
 
 { #category : #private }
-XMLWriter >> writeUnwrittenMarkupWriterEmbeddedIn: aMarkupWriter [
-	self activeMarkupWriter
-		ifNotNil: [:activeMarkupWriter |
-			activeMarkupWriter == aMarkupWriter
-				ifFalse: [activeMarkupWriter write]]
+XMLWriter >> writeUnwrittenMarkupWritersEmbeddedIn: aMarkupWriter [
+	self activeMarkupWriterDo: [:each |
+		each == aMarkupWriter
+			ifTrue: [^ self].
+		each isWriting
+			ifTrue: [each finishWriting]
+			ifFalse: [each write]]
 ]
 
 { #category : #'writing markup' }
