@@ -117,6 +117,48 @@ XMLWriterTest >> testCanonicalDTDs [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testCanonicalOmitsRedundantXmlnsDeclarations [
+	| withBlock |
+
+	withBlock := [:writer |
+		(writer tag: 'one')
+			xmlns: 'defaultNS';
+			xmlnsAt: 'prefix' put: 'prefixNS';
+			with: [
+				(writer tag: 'two')
+					xmlns: 'defaultNS';
+					xmlnsAt: 'prefix' put: 'prefixNS';
+					with: [
+						(writer tag: 'three')
+							xmlns: 'newDefaultNS';
+							xmlnsAt: 'prefix' put: 'newPrefixNS']]].
+	self assert:
+		(XMLWriter new
+			isCanonical: true;
+			writeWith: withBlock;
+			contents) =
+			('<one xmlns="defaultNS" xmlns:prefix="prefixNS"><two>',
+			'<three xmlns="newDefaultNS" xmlns:prefix="newPrefixNS">',
+			'</three></two></one>').
+	self assert:
+		(XMLWriter new
+			omitsRedundantXmlnsDeclarations: false;
+			isCanonical: true;
+			writeWith: withBlock;
+			contents) =
+			('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
+			'<two xmlns="defaultNS" xmlns:prefix="prefixNS">',
+			'<three xmlns="newDefaultNS" xmlns:prefix="newPrefixNS">',
+			'</three></two></one>').
+	self assert:
+		(XMLWriter new
+			isCanonical: true;
+			writeWith: [:writer | (writer tag: 'empty') xmlns: ''];
+			contents) =
+			'<empty xmlns=""></empty>'.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testCanonicalTags [
 	| writer |
 
@@ -236,6 +278,41 @@ XMLWriterTest >> testLineBreak [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testOmitsRedundantXmlnsDeclarations [
+	| withBlock |
+
+	withBlock := [:writer |
+		(writer tag: 'one')
+			xmlns: 'defaultNS';
+			xmlnsAt: 'prefix' put: 'prefixNS';
+			with: [
+				(writer tag: 'two')
+					xmlns: 'defaultNS';
+					xmlnsAt: 'prefix' put: 'prefixNS';
+					with: [
+						(writer tag: 'three')
+							xmlns: 'newDefaultNS';
+							xmlnsAt: 'prefix' put: 'newPrefixNS']]].
+	self assert:
+		(XMLWriter writeWith: withBlock) =
+			('<one xmlns="defaultNS" xmlns:prefix="prefixNS"><two>',
+			'<three xmlns="newDefaultNS" xmlns:prefix="newPrefixNS" />',
+			'</two></one>').
+	self assert:
+		(XMLWriter new
+			omitsRedundantXmlnsDeclarations: false;
+			writeWith: withBlock;
+			contents) =
+			('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
+			'<two xmlns="defaultNS" xmlns:prefix="prefixNS">',
+			'<three xmlns="newDefaultNS" xmlns:prefix="newPrefixNS" />',
+			'</two></one>').
+	self assert:
+		(XMLWriter writeWith: [:writer | (writer tag: 'empty') xmlns: '']) =
+			'<empty xmlns="" />'.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testPrettyPrintingDTDs [
 	| writer  |
 
@@ -318,7 +395,11 @@ XMLWriterTest >> testPrettyPrintingElements [
 				tag: 'id' with: [
 					writer
 						string: '101';
-						comment: '']].
+						comment: ''];
+				tag: 'contact' with: [
+					writer
+						tag: 'email';
+						string: 'alternate']].
 
 	self assert:
 		writer contents =
@@ -334,7 +415,9 @@ XMLWriterTest >> testPrettyPrintingElements [
 				#(2 '<?type integer?>'
 					'<!--not supplied-->')
 				#(1 '</age>'
-					'<id>101<!----></id>')
+					'<id>101<!----></id>'
+					'<contact>')
+				#(2 '<email />alternate</contact>')
 				#(0 '</example:user>'))).
 ]
 
