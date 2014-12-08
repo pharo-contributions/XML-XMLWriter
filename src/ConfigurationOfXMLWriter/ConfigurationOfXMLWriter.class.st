@@ -576,9 +576,9 @@ ConfigurationOfXMLWriter >> baseline243: spec [
 ConfigurationOfXMLWriter >> development: spec [
 	<symbolicVersion: #'development'>
 
-	spec for: #'common' version: '2.3.1-baseline'.
+	spec for: #'common' version: '2.4.3-baseline'.
 
-	spec for: #'pharo' version: '2.3.1-baseline'.
+	spec for: #'pharo' version: '2.4.3-baseline'.
 
 ]
 
@@ -790,7 +790,7 @@ ConfigurationOfXMLWriter >> version2310: spec [
 	<version: '2.3.10' imports: #('2.3.1-baseline' )>
 
 	spec for: #'common' do: [
-		spec blessing: #'stable'.
+		spec blessing: #release.
 		spec description: 'version 2.3.10'.
 		spec author: 'GuillaumeLarcheveque'.
 		spec timestamp: '6/27/2014 16:09'.
@@ -975,7 +975,7 @@ ConfigurationOfXMLWriter >> version240: spec [
 	<version: '2.4.0' imports: #('2.3.1-baseline' )>
 
 	spec for: #'common' do: [
-		spec blessing: #'stable'.
+		spec blessing: #release.
 		spec description: 'version 2.4.0'.
 		spec project: 'OrderPreservingDictionary' with: '1.2'.
 		spec 
@@ -995,8 +995,8 @@ ConfigurationOfXMLWriter >> version241: spec [
 	<version: '2.4.1' imports: #('2.3.1-baseline' )>
 
 	spec for: #'common' do: [
+		spec blessing: #release.
 		spec
-			blessing: #'stable';
 			package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.18';
 			package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.4'. ].
 
@@ -1013,8 +1013,8 @@ ConfigurationOfXMLWriter >> version242: spec [
 	<version: '2.4.2' imports: #('2.3.1-baseline' )>
 
 	spec for: #'common' do: [
+		spec blessing: #release.
 		spec
-			blessing: #'stable';
 			package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.20';
 			package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.6'. ].
 
@@ -1031,8 +1031,8 @@ ConfigurationOfXMLWriter >> version243: spec [
 	<version: '2.4.3' imports: #('2.4.3-baseline' )>
 
 	spec for: #'common' do: [
+		spec blessing: #release.
 		spec
-			blessing: #'stable';
 			package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.21';
 			package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.7'. ].
 
