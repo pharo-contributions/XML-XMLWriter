@@ -76,7 +76,7 @@ XMLWriter class >> initializeContentEscapes [
 		at: $< asciiValue put: '&lt;';
 		at: $> asciiValue put: '&gt;'; "required to escape ]]> in PCDATA"
 		at: Character cr asciiValue put: #LineBreak;
-		at: Character lf asciiValue put: #LineBreak.
+		at: Character lf asciiValue put: #LineBreak
 ]
 
 { #category : #'class initialization' }
@@ -95,7 +95,7 @@ XMLWriter class >> initializeEntityValueEscapes [
 		at: $" asciiValue put: '&#34;';
 		at: $% asciiValue put: '&#37;';
 		at: Character cr asciiValue put: #LineBreak;
-		at: Character lf asciiValue put: #LineBreak.
+		at: Character lf asciiValue put: #LineBreak
 ]
 
 { #category : #'instance creation' }
@@ -451,8 +451,7 @@ XMLWriter >> pi [
 
 { #category : #private }
 XMLWriter >> popActiveMarkupWriter [
-	self markupWriterStack
-		ifNotEmpty: [:stack | stack removeLast]
+	^ self markupWriterStack removeLast
 ]
 
 { #category : #printing }
@@ -538,18 +537,19 @@ XMLWriter >> write [
 { #category : #private }
 XMLWriter >> write: aString escapedWith: anEscapeTable [
 	self isEscaping
-		ifTrue: [
-			aString do: [:each | | asciiValue replacement |
-				((asciiValue := each asciiValue) > 0
-					and: [asciiValue <= anEscapeTable size
-						and: [(replacement := anEscapeTable at: asciiValue) notNil]])
-					ifTrue: [
+		ifTrue: [| tableSize |
+			tableSize := anEscapeTable size.
+			1 to: aString size do: [:i | | nextChar asciiValue |
+				((asciiValue := (nextChar := aString at: i) asciiValue) > 0
+					and: [asciiValue <= tableSize
+						and: [(anEscapeTable at: asciiValue) notNil]])
+					ifTrue: [| replacement |
 						stream nextPutAll:
-							(replacement == #LineBreak
+							((replacement := anEscapeTable at: asciiValue) == #LineBreak
 								ifTrue: [self lineBreak]
 								ifFalse: [replacement])]
-					ifFalse: [stream nextPut: each]]]
-		ifFalse: [self nextPutAll: aString]
+					ifFalse: [stream nextPut: nextChar]]]
+		ifFalse: [stream nextPutAll: aString]
 ]
 
 { #category : #private }
@@ -575,41 +575,33 @@ XMLWriter >> writeEscapedEntityValueString: aString [
 
 { #category : #private }
 XMLWriter >> writeName: aString [
-	self nextPutAll: aString
+	stream nextPutAll: aString
 ]
 
 { #category : #private }
 XMLWriter >> writeName: aName escapedContentValue: aValue [
 	self
-		writeName: aName
-		value: aValue
-		isEscapedContent: true
+		writeName: aName;
+		nextPut: $=;
+		writeEscapedContentString: aValue
 ]
 
 { #category : #private }
 XMLWriter >> writeName: aName unescapedValue: aValue [
 	self
-		writeName: aName
-		value: aValue
-		isEscapedContent: false
-]
-
-{ #category : #private }
-XMLWriter >> writeName: aName value: aValue isEscapedContent: aBoolean [
-	self
 		writeName: aName;
-		nextPut: $=.
-	aBoolean
-		ifTrue: [self writeEscapedContentString: aValue]
-		ifFalse: [self writeUnescapedString: aValue].
+		nextPut: $=;
+		writeUnescapedString: aValue
 ]
 
 { #category : #private }
 XMLWriter >> writeUnescapedString: aString [
 	| quote |
 
-	quote := (aString includes: $") ifTrue: [$'] ifFalse: [$"].
-
+	quote :=
+		(aString includes: $")
+			ifTrue: [$']
+			ifFalse: [$"].
 	self nextPut: quote.
 	aString do: [:each |
 		"strip delimiter because it can't be escaped with an entity in this type of string"

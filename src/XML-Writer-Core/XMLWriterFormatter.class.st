@@ -119,7 +119,9 @@ XMLWriterFormatter >> writeLineBreak [
 	self writer atStart
 		ifFalse: [
 			self writer nextPutAll: self writer lineBreak.
-			self writeIndent]
+			(self currentIndentLevel > 0
+				and: [self indentString notEmpty])
+				ifTrue: [self writeIndent]]
 ]
 
 { #category : #accessing }

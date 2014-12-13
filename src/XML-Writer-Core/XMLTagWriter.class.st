@@ -101,12 +101,12 @@ XMLTagWriter >> writeAttributes [
 			attributes keys sort do: [:attributeName |
 				self
 					writeAttributeName: attributeName
-					value: (attributes at: attributeName)]]
+					value: (attributes at: attributeName ifAbsent: '')]]
 		ifFalse: [
 			attributes keysDo: [:attributeName |
 				self
 					writeAttributeName: attributeName
-					value: (attributes at: attributeName)]].
+					value: (attributes at: attributeName ifAbsent: '')]].
 ]
 
 { #category : #private }
