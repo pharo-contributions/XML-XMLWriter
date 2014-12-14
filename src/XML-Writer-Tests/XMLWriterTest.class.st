@@ -20,18 +20,21 @@ XMLWriterTest >> defaultLineBreak [
 
 { #category : #private }
 XMLWriterTest >> prettyPrintedLines: anArrayOfLineArrays [
+	| lineNumber |
 	"takes an array of arrays where the first element of each is the indent level
 	and the rest are the lines with that indent level"
 
+	lineNumber := 1.
 	^ String streamContents: [:stream |
 		anArrayOfLineArrays do: [:each | | indentLevel |
 			indentLevel := each first.
 			2 to: each size do: [:lineIndex |
-				stream position > 0
+				lineNumber > 1
 					ifTrue: [
 						stream nextPutAll: self defaultLineBreak asString.
 						indentLevel timesRepeat: [stream nextPutAll: self defaultIndentString]].
-				stream nextPutAll: (each at: lineIndex)]]]
+				stream nextPutAll: (each at: lineIndex).
+				lineNumber := lineNumber + 1]]]
 ]
 
 { #category : #tests }
