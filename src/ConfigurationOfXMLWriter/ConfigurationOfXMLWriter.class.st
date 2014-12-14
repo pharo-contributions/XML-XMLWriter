@@ -572,13 +572,60 @@ ConfigurationOfXMLWriter >> baseline243: spec [
 				package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ] 
 ]
 
+{ #category : #baselines }
+ConfigurationOfXMLWriter >> baseline250: spec [
+	<version: '2.5.0-baseline'>
+
+	spec
+		for: #common
+		do: [ 
+			spec
+				blessing: #baseline;
+				description: 'standard baseline';
+				repository: 'http://smalltalkhub.com/mc/PharoExtras/XMLWriter/main'.
+			spec
+				project: 'OrderPreservingDictionary'
+				with: [ 
+					spec
+						className: 'ConfigurationOfOrderPreservingDictionary';
+						versionString: #stable;
+						loads: #('Core');
+						repository: 'http://smalltalkhub.com/mc/PharoExtras/OrderPreservingDictionary/main' ].
+			spec package: 'XML-Writer-Core' with: [ spec requires: 'OrderPreservingDictionary' ].
+			spec package: 'XML-Writer-Tests' with: [ spec requires: 'XML-Writer-Core' ].
+			spec
+				group: 'default' with: #('Core' 'Tests');
+				group: 'Core' with: #('XML-Writer-Core');
+				group: 'Tests' with: #('XML-Writer-Tests') ].
+
+			"load gemstone methods"
+			spec
+				for: #'gemstone'
+				do: [
+					spec
+						package: 'XML-Writer-Core'
+						with: [ spec includes: 'XML-Writer-GemstoneCompatibility' ].
+					spec
+						package: 'XML-Writer-GemstoneCompatibility'
+						with: [ spec requires: 'XML-Writer-Core' ]. ].
+]
+
+{ #category : #baselines }
+ConfigurationOfXMLWriter >> baseline251: spec [ 
+		<version: '2.5.1-baseline' imports: #('2.5.0-baseline')>
+
+		spec for: #gemstone do: [
+			spec blessing: #baseline.
+			spec
+				package: 'XML-Writer-GemstoneCompatibility'
+				with: 'XML-Writer-GemstoneCompatibility-monty.1'. ].
+]
+
 { #category : #symbolic }
 ConfigurationOfXMLWriter >> development: spec [
 	<symbolicVersion: #'development'>
 
-	spec for: #'common' version: '2.4.3-baseline'.
-
-	spec for: #'pharo' version: '2.4.3-baseline'.
+	spec for: #'common' version: '2.5.1-baseline'.
 
 ]
 
@@ -599,7 +646,7 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 
-	spec for: #'common' version: '2.4.9'.
+	spec for: #'common' version: '2.5.1'.
 
 
 ]
@@ -1101,5 +1148,16 @@ ConfigurationOfXMLWriter >> version249: spec [
                 spec blessing: #release.
 			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.27'.
 			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.10'.
+                ].
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version251: spec [ 
+        <version: '2.5.1' imports: #('2.5.1-baseline')>
+
+        spec for: #common do: [
+                spec blessing: #release.
+			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.28'.
+			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.11'.
                 ].
 ]
