@@ -116,7 +116,7 @@ XMLWriterFormatter >> writeIndent [
 
 { #category : #private }
 XMLWriterFormatter >> writeLineBreak [
-	self writer atStart
+	self writer atBeginning
 		ifFalse: [
 			self writer nextPutAll: self writer lineBreak.
 			(self currentIndentLevel > 0

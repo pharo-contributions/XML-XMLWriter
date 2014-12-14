@@ -170,8 +170,8 @@ XMLWriter >> asString [
 ]
 
 { #category : #testing }
-XMLWriter >> atStart [
-	^ stream position isZero
+XMLWriter >> atBeginning [
+	^ stream position = 0
 ]
 
 { #category : #'writing markup' }
