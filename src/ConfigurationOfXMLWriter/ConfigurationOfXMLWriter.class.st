@@ -618,7 +618,7 @@ ConfigurationOfXMLWriter >> baseline251: spec [
 			spec blessing: #baseline.
 			spec
 				package: 'XML-Writer-GemstoneCompatibility'
-				with: 'XML-Writer-GemstoneCompatibility-monty.1'. ].
+				with: 'XML-Writer-GemstoneCompatibility-monty.2'. ].
 ]
 
 { #category : #symbolic }
