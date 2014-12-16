@@ -28,8 +28,10 @@ XMLXmlDeclarationWriter >> standalone [
 ]
 
 { #category : #accessing }
-XMLXmlDeclarationWriter >> standalone: aBoolean [
-	standalone := aBoolean
+XMLXmlDeclarationWriter >> standalone: aBooleanOrString [
+	aBooleanOrString isString
+		ifTrue: [standalone := aBooleanOrString = 'yes']
+		ifFalse: [standalone := aBooleanOrString].
 ]
 
 { #category : #accessing }
@@ -39,7 +41,12 @@ XMLXmlDeclarationWriter >> version [
 
 { #category : #accessing }
 XMLXmlDeclarationWriter >> version: aVersion [
-	version := aVersion
+	| versionString |
+
+	version :=
+		(versionString := (aVersion ifNil: ['1.0']) asString)
+			copyFrom: 1 "avoid first: for portability"
+			to: (3 min: versionString size)
 ]
 
 { #category : #private }
@@ -47,7 +54,7 @@ XMLXmlDeclarationWriter >> writeBody [
 	self omitIfCanonical: [
 		self writer
 			space;
-			writeName: 'version' unescapedValue: self version asString;
+			writeName: 'version' unescapedValue: self version;
 			space;
 			writeName: 'encoding' unescapedValue: self encoding.
 
