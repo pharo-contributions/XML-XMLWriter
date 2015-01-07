@@ -95,18 +95,10 @@ XMLTagWriter >> writeAttributeName: aName value: aValue [
 { #category : #private }
 XMLTagWriter >> writeAttributes [
 	attributes
-		ifNil: [^ self].
-	self writer isCanonical
-		ifTrue: [
-			attributes keys sort do: [:attributeName |
-				self
-					writeAttributeName: attributeName
-					value: (attributes at: attributeName ifAbsent: '')]]
-		ifFalse: [
-			attributes keysDo: [:attributeName |
-				self
-					writeAttributeName: attributeName
-					value: (attributes at: attributeName ifAbsent: '')]].
+		ifNotNil: [
+			self writer isCanonical
+				ifTrue: [attributes writeSortedAttributesOn: self]
+				ifFalse: [attributes writeAttributesOn: self]]
 ]
 
 { #category : #private }

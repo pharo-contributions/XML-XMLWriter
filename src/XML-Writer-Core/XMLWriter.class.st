@@ -46,6 +46,8 @@ Class {
 		'markupWriterStack',
 		'formatter',
 		'lineBreak',
+		'contentEscapes',
+		'contentStringEscapes',
 		'isEscaping',
 		'isCanonical',
 		'outputsSelfClosingTags',
@@ -53,7 +55,9 @@ Class {
 	],
 	#classVars : [
 		'ContentEscapes',
+		'ContentNonEntityEscapes',
 		'ContentStringEscapes',
+		'ContentStringNonEntityEscapes',
 		'EntityValueEscapes'
 	],
 	#category : #'XML-Writer-Core'
@@ -65,7 +69,9 @@ XMLWriter class >> initialize [
 
 	self
 		initializeContentEscapes;
+		initializeContentNonEntityEscapes;
 		initializeContentStringEscapes;
+		initializeContentStringNonEntityEscapes;
 		initializeEntityValueEscapes
 ]
 
@@ -80,6 +86,13 @@ XMLWriter class >> initializeContentEscapes [
 ]
 
 { #category : #'class initialization' }
+XMLWriter class >> initializeContentNonEntityEscapes [
+	(ContentNonEntityEscapes := ContentEscapes copy)
+		at: $& asciiValue
+		put: nil
+]
+
+{ #category : #'class initialization' }
 XMLWriter class >> initializeContentStringEscapes [
 	(ContentStringEscapes := Array new: 256)
 		at: $& asciiValue put: '&amp;';
@@ -87,6 +100,13 @@ XMLWriter class >> initializeContentStringEscapes [
 		at: $" asciiValue put: '&quot;';
 		at: Character cr asciiValue put: #LineBreak;
 		at: Character lf asciiValue put: #LineBreak
+]
+
+{ #category : #'class initialization' }
+XMLWriter class >> initializeContentStringNonEntityEscapes [
+	(ContentStringNonEntityEscapes := ContentStringEscapes copy)
+		at: $& asciiValue
+		put: nil
 ]
 
 { #category : #'class initialization' }
@@ -245,6 +265,23 @@ XMLWriter >> entityRef: aName [
 	(self pushNewMarkupWriter: XMLEntityReferenceWriter)
 		name: aName;
 		write
+]
+
+{ #category : #testing }
+XMLWriter >> escapesContentEntityReferences [
+	^ (contentEscapes at: $& asciiValue) notNil
+		and: [(contentStringEscapes at: $& asciiValue) notNil]
+]
+
+{ #category : #accessing }
+XMLWriter >> escapesContentEntityReferences: aBoolean [
+	aBoolean
+		ifTrue: [
+			contentEscapes := ContentEscapes.
+			contentStringEscapes := ContentStringEscapes]
+		ifFalse: [
+			contentEscapes := ContentNonEntityEscapes.
+			contentStringEscapes := ContentStringNonEntityEscapes]
 ]
 
 { #category : #formatting }
@@ -407,6 +444,8 @@ XMLWriter >> on: aStream formatter: aFormatter [
 	markupWriterStack := OrderedCollection new.
 	formatter := aFormatter.
 	lineBreak := self defaultLineBreak.
+	contentEscapes := ContentEscapes.
+	contentStringEscapes := ContentStringEscapes.
 	isEscaping := true.
 	isCanonical := false.
 	outputsSelfClosingTags := true.
@@ -539,6 +578,7 @@ XMLWriter >> write: aString escapedWith: anEscapeTable [
 	self isEscaping
 		ifTrue: [| tableSize |
 			tableSize := anEscapeTable size.
+			"to:do: for performance"
 			1 to: aString size do: [:i | | nextChar asciiValue |
 				((asciiValue := (nextChar := aString at: i) asciiValue) > 0
 					and: [asciiValue <= tableSize
@@ -554,14 +594,16 @@ XMLWriter >> write: aString escapedWith: anEscapeTable [
 
 { #category : #private }
 XMLWriter >> writeEscapedContent: aString [
-	self write: aString escapedWith: ContentEscapes
+	self
+		write: aString
+		escapedWith: contentEscapes
 ]
 
 { #category : #private }
 XMLWriter >> writeEscapedContentString: aString [
 	self
 		nextPut: $";
-		write: aString escapedWith: ContentStringEscapes;
+		write: aString escapedWith: contentStringEscapes;
 		nextPut: $"
 ]
 
