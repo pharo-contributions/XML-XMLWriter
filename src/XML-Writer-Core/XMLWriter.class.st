@@ -569,7 +569,6 @@ XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
 XMLWriter >> write [
 	self activeMarkupWriterDo: [:each |
 		each isWriting
-			ifTrue: [each finishWriting]
 			ifFalse: [each write]]
 ]
 
@@ -658,7 +657,6 @@ XMLWriter >> writeUnwrittenMarkupWritersEmbeddedIn: aMarkupWriter [
 		each == aMarkupWriter
 			ifTrue: [^ self].
 		each isWriting
-			ifTrue: [each finishWriting]
 			ifFalse: [each write]]
 ]
 
