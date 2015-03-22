@@ -27,8 +27,8 @@ XMLPIWriter >> target [
 ]
 
 { #category : #accessing }
-XMLPIWriter >> target: aTarget [
-	target := aTarget
+XMLPIWriter >> target: aString [
+	target := aString
 ]
 
 { #category : #private }

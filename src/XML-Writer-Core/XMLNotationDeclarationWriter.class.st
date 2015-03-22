@@ -5,7 +5,7 @@ Class {
 	#name : #XMLNotationDeclarationWriter,
 	#superclass : #XMLMarkupDeclarationWriter,
 	#instVars : [
-		'externalIdWriter'
+		'externalIDWriter'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -17,7 +17,7 @@ XMLNotationDeclarationWriter >> declarationType [
 
 { #category : #accessing }
 XMLNotationDeclarationWriter >> externalIDWriter [
-	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter new]
+	^ externalIDWriter ifNil: [externalIDWriter := XMLExternalIDWriter new]
 ]
 
 { #category : #accessing }
@@ -26,8 +26,8 @@ XMLNotationDeclarationWriter >> publicID [
 ]
 
 { #category : #accessing }
-XMLNotationDeclarationWriter >> publicID: aPublic [
-	self externalIDWriter publicID: aPublic
+XMLNotationDeclarationWriter >> publicID: aPublicID [
+	self externalIDWriter publicID: aPublicID
 ]
 
 { #category : #accessing }
@@ -36,8 +36,8 @@ XMLNotationDeclarationWriter >> systemID [
 ]
 
 { #category : #accessing }
-XMLNotationDeclarationWriter >> systemID: aSystemId [
-	self externalIDWriter systemID: aSystemId
+XMLNotationDeclarationWriter >> systemID: aSystemID [
+	self externalIDWriter systemID: aSystemID
 ]
 
 { #category : #private }

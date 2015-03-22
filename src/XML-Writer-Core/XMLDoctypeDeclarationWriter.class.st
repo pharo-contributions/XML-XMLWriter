@@ -6,14 +6,14 @@ Class {
 	#superclass : #XMLEmbeddedMarkupWriter,
 	#instVars : [
 		'root',
-		'externalIdWriter'
+		'externalIDWriter'
 	],
 	#category : #'XML-Writer-Core'
 }
 
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> externalIDWriter [
-	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter new]
+	^ externalIDWriter ifNil: [externalIDWriter := XMLExternalIDWriter new]
 ]
 
 { #category : #testing }
@@ -27,8 +27,8 @@ XMLDoctypeDeclarationWriter >> publicID [
 ]
 
 { #category : #accessing }
-XMLDoctypeDeclarationWriter >> publicID: aPublicId [
-	self externalIDWriter publicID: aPublicId
+XMLDoctypeDeclarationWriter >> publicID: aPublicID [
+	self externalIDWriter publicID: aPublicID
 ]
 
 { #category : #accessing }
@@ -47,8 +47,8 @@ XMLDoctypeDeclarationWriter >> systemID [
 ]
 
 { #category : #accessing }
-XMLDoctypeDeclarationWriter >> systemID: aSystemId [
-	self externalIDWriter systemID: aSystemId
+XMLDoctypeDeclarationWriter >> systemID: aSystemID [
+	self externalIDWriter systemID: aSystemID
 ]
 
 { #category : #'embedding markup' }

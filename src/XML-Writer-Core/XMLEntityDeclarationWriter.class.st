@@ -5,10 +5,10 @@ Class {
 	#name : #XMLEntityDeclarationWriter,
 	#superclass : #XMLMarkupDeclarationWriter,
 	#instVars : [
+		'isParameter',
 		'replacement',
-		'ndata',
-		'externalIdWriter',
-		'isParameter'
+		'externalIDWriter',
+		'ndata'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -22,7 +22,7 @@ XMLEntityDeclarationWriter >> declarationType [
 
 { #category : #accessing }
 XMLEntityDeclarationWriter >> externalIDWriter [
-	^ externalIdWriter ifNil: [externalIdWriter := XMLExternalIDWriter new]
+	^ externalIDWriter ifNil: [externalIDWriter := XMLExternalIDWriter new]
 ]
 
 { #category : #testing }
@@ -51,8 +51,8 @@ XMLEntityDeclarationWriter >> publicID [
 ]
 
 { #category : #accessing }
-XMLEntityDeclarationWriter >> publicID: aPublicId [
-	self externalIDWriter publicID: aPublicId
+XMLEntityDeclarationWriter >> publicID: aPublicID [
+	self externalIDWriter publicID: aPublicID
 ]
 
 { #category : #accessing }
@@ -71,8 +71,8 @@ XMLEntityDeclarationWriter >> systemID [
 ]
 
 { #category : #accessing }
-XMLEntityDeclarationWriter >> systemID: aSystemId [
-	self externalIDWriter systemID: aSystemId
+XMLEntityDeclarationWriter >> systemID: aSystemID [
+	self externalIDWriter systemID: aSystemID
 ]
 
 { #category : #private }

@@ -147,14 +147,14 @@ XMLTagWriter >> writePrologue [
 ]
 
 { #category : #private }
-XMLTagWriter >> writeXmlns: aPrefix uri: aUri [
+XMLTagWriter >> writeXmlns: aPrefix uri: aURI [
 	self writer
 		space;
 		writeName:
 			(aPrefix
 				ifEmpty: ['xmlns']
 				ifNotEmpty: ['xmlns:', aPrefix])
-		escapedContentValue: aUri
+		escapedContentValue: aURI
 ]
 
 { #category : #private }
@@ -195,9 +195,9 @@ XMLTagWriter >> xmlns [
 ]
 
 { #category : #accessing }
-XMLTagWriter >> xmlns: aUri [
+XMLTagWriter >> xmlns: aURI [
 	"set default namespace"
-	self xmlnsDeclarations at: '' put: aUri
+	self xmlnsDeclarations at: '' put: aURI
 ]
 
 { #category : #accessing }
@@ -222,7 +222,8 @@ XMLTagWriter >> xmlnsAt: aPrefix put: aValue [
 
 { #category : #accessing }
 XMLTagWriter >> xmlnsDeclarations [
-	^ xmlnsDeclarations ifNil: [xmlnsDeclarations := OrderPreservingStringDictionary new: 5]
+	^ xmlnsDeclarations
+		ifNil: [xmlnsDeclarations := OrderPreservingStringDictionary new: 5]
 ]
 
 { #category : #accessing }

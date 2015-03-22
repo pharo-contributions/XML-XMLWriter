@@ -5,8 +5,8 @@ Class {
 	#name : #XMLExternalIDWriter,
 	#superclass : #Object,
 	#instVars : [
-		'publicId',
-		'systemId'
+		'publicID',
+		'systemID'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -18,22 +18,22 @@ XMLExternalIDWriter >> hasExternalID [
 
 { #category : #accessing }
 XMLExternalIDWriter >> publicID [
-	^ publicId ifNil: [publicId := '']
+	^ publicID ifNil: [publicID := '']
 ]
 
 { #category : #accessing }
-XMLExternalIDWriter >> publicID: aPublicId [
-	publicId := aPublicId
+XMLExternalIDWriter >> publicID: aPublicID [
+	publicID := aPublicID
 ]
 
 { #category : #accessing }
 XMLExternalIDWriter >> systemID [
-	^ systemId ifNil: [systemId := '']
+	^ systemID ifNil: [systemID := '']
 ]
 
 { #category : #accessing }
-XMLExternalIDWriter >> systemID: aSystemId [
-	systemId := aSystemId
+XMLExternalIDWriter >> systemID: aSystemID [
+	systemID := aSystemID
 ]
 
 { #category : #'writing markup' }
