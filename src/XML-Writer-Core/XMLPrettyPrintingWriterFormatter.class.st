@@ -75,6 +75,6 @@ XMLPrettyPrintingWriterFormatter >> formatBeforeStartTag: aTagWriter [
 ]
 
 { #category : #formatting }
-XMLPrettyPrintingWriterFormatter >> formatBeforeXmlDeclaration: anXmlDeclarationWriter [
+XMLPrettyPrintingWriterFormatter >> formatBeforeXMLDeclaration: anXMLDeclarationWriter [
 	self writeLineBreak
 ]

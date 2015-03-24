@@ -2,7 +2,7 @@
 This class generates <?xml ...?> declarations.
 "
 Class {
-	#name : #XMLXmlDeclarationWriter,
+	#name : #XMLXMLDeclarationWriter,
 	#superclass : #XMLMarkupWriter,
 	#instVars : [
 		'encoding',
@@ -13,44 +13,44 @@ Class {
 }
 
 { #category : #accessing }
-XMLXmlDeclarationWriter >> encoding [
+XMLXMLDeclarationWriter >> encoding [
 	^ encoding ifNil: [encoding := 'UTF-8']
 ]
 
 { #category : #accessing }
-XMLXmlDeclarationWriter >> encoding: anEncoding [
+XMLXMLDeclarationWriter >> encoding: anEncoding [
 	encoding := anEncoding
 ]
 
 { #category : #accessing }
-XMLXmlDeclarationWriter >> standalone [
+XMLXMLDeclarationWriter >> standalone [
 	^ standalone ifNil: [standalone := false]
 ]
 
 { #category : #accessing }
-XMLXmlDeclarationWriter >> standalone: aBooleanOrString [
+XMLXMLDeclarationWriter >> standalone: aBooleanOrString [
 	aBooleanOrString isString
 		ifTrue: [standalone := aBooleanOrString = 'yes']
 		ifFalse: [standalone := aBooleanOrString].
 ]
 
 { #category : #accessing }
-XMLXmlDeclarationWriter >> version [
+XMLXMLDeclarationWriter >> version [
 	^ version ifNil: [version := '1.0']
 ]
 
 { #category : #accessing }
-XMLXmlDeclarationWriter >> version: aVersion [
+XMLXMLDeclarationWriter >> version: aVersion [
 	| versionString |
 
-	version :=
+	version := "avoid first: for portability"
 		(versionString := (aVersion ifNil: ['1.0']) asString)
-			copyFrom: 1 "avoid first: for portability"
+			copyFrom: 1
 			to: (3 min: versionString size)
 ]
 
 { #category : #private }
-XMLXmlDeclarationWriter >> writeBody [
+XMLXMLDeclarationWriter >> writeBody [
 	self omitIfCanonical: [
 		self writer
 			space;
@@ -70,14 +70,14 @@ XMLXmlDeclarationWriter >> writeBody [
 ]
 
 { #category : #private }
-XMLXmlDeclarationWriter >> writeEpilogue [
+XMLXMLDeclarationWriter >> writeEpilogue [
 	self omitIfCanonical: [self writer nextPutAll: '?>']
 ]
 
 { #category : #private }
-XMLXmlDeclarationWriter >> writePrologue [
+XMLXMLDeclarationWriter >> writePrologue [
 	self omitIfCanonical: [
 		self writer
-			formatBeforeXmlDeclaration: self;
+			formatBeforeXMLDeclaration: self;
 			nextPutAll: '<?xml']
 ]

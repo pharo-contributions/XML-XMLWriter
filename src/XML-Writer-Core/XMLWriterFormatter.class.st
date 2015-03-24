@@ -13,8 +13,8 @@ Class {
 }
 
 { #category : #'instance creation' }
-XMLWriterFormatter class >> writer: anXmlWriter [
-	^ self new setWriter: anXmlWriter
+XMLWriterFormatter class >> writer: aWriter [
+	^ self new setWriter: aWriter
 ]
 
 { #category : #private }
@@ -77,7 +77,7 @@ XMLWriterFormatter >> formatBeforeStartTag: aTagWriter [
 ]
 
 { #category : #formatting }
-XMLWriterFormatter >> formatBeforeXmlDeclaration: anXmlDeclarationWriter [
+XMLWriterFormatter >> formatBeforeXMLDeclaration: anXMLDeclarationWriter [
 ]
 
 { #category : #private }
@@ -102,8 +102,8 @@ XMLWriterFormatter >> outdent [
 ]
 
 { #category : #initialization }
-XMLWriterFormatter >> setWriter: anXmlWriter [
-	writer := anXmlWriter.
+XMLWriterFormatter >> setWriter: aWriter [
+	writer := aWriter.
 	currentIndentLevel := self defaultIndentLevel.
 	indentString := self defaultIndentString.
 ]

@@ -51,7 +51,7 @@ Class {
 		'isEscaping',
 		'isCanonical',
 		'outputsSelfClosingTags',
-		'omitsRedundantXmlnsDeclarations'
+		'omitsRedundantXMLNSDeclarations'
 	],
 	#classVars : [
 		'ContentEscapes',
@@ -351,9 +351,9 @@ XMLWriter >> formatBeforeStartTag: aTagWriter [
 ]
 
 { #category : #formatting }
-XMLWriter >> formatBeforeXmlDeclaration: anXmlDeclarationWriter [
+XMLWriter >> formatBeforeXMLDeclaration: anXMLDeclarationWriter [
 	formatter
-		ifNotNil: [formatter formatBeforeXmlDeclaration: anXmlDeclarationWriter]
+		ifNotNil: [formatter formatBeforeXMLDeclaration: anXMLDeclarationWriter]
 ]
 
 { #category : #accessing }
@@ -422,13 +422,13 @@ XMLWriter >> notationDeclaration [
 ]
 
 { #category : #testing }
-XMLWriter >> omitsRedundantXmlnsDeclarations [
-	^ omitsRedundantXmlnsDeclarations
+XMLWriter >> omitsRedundantXMLNSDeclarations [
+	^ omitsRedundantXMLNSDeclarations
 ]
 
 { #category : #accessing }
-XMLWriter >> omitsRedundantXmlnsDeclarations: aBoolean [
-	omitsRedundantXmlnsDeclarations := aBoolean
+XMLWriter >> omitsRedundantXMLNSDeclarations: aBoolean [
+	omitsRedundantXMLNSDeclarations := aBoolean
 ]
 
 { #category : #initialization }
@@ -449,7 +449,7 @@ XMLWriter >> on: aStream formatter: aFormatter [
 	isEscaping := true.
 	isCanonical := false.
 	outputsSelfClosingTags := true.
-	omitsRedundantXmlnsDeclarations := true.
+	omitsRedundantXMLNSDeclarations := true.
 ]
 
 { #category : #testing }
@@ -668,5 +668,5 @@ XMLWriter >> writeWith: aBlock [
 
 { #category : #'writing markup' }
 XMLWriter >> xml [
-	^ self pushNewMarkupWriter: XMLXmlDeclarationWriter
+	^ self pushNewMarkupWriter: XMLXMLDeclarationWriter
 ]
