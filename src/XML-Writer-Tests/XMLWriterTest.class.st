@@ -120,7 +120,7 @@ XMLWriterTest >> testCanonicalDTDs [
 ]
 
 { #category : #tests }
-XMLWriterTest >> testCanonicalOmitsRedundantXmlnsDeclarations [
+XMLWriterTest >> testCanonicalOmitsRedundantXMLNSDeclarations [
 	| withBlock |
 
 	withBlock := [:writer |
@@ -145,7 +145,7 @@ XMLWriterTest >> testCanonicalOmitsRedundantXmlnsDeclarations [
 			'</three></two></one>').
 	self assert:
 		(XMLWriter new
-			omitsRedundantXmlnsDeclarations: false;
+			omitsRedundantXMLNSDeclarations: false;
 			isCanonical: true;
 			writeWith: withBlock;
 			contents) =
@@ -308,7 +308,7 @@ XMLWriterTest >> testLineBreak [
 ]
 
 { #category : #tests }
-XMLWriterTest >> testOmitsRedundantXmlnsDeclarations [
+XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 	| withBlock |
 
 	withBlock := [:writer |
@@ -330,7 +330,7 @@ XMLWriterTest >> testOmitsRedundantXmlnsDeclarations [
 			'</two></one>').
 	self assert:
 		(XMLWriter new
-			omitsRedundantXmlnsDeclarations: false;
+			omitsRedundantXMLNSDeclarations: false;
 			writeWith: withBlock;
 			contents) =
 			('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
@@ -452,6 +452,16 @@ XMLWriterTest >> testPrettyPrintingElements [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testRaw [
+	self assert:
+		(XMLWriter writeWith: [:writer |
+			writer
+				tag: 'test'
+				with: [writer raw: '<raw name="&value;"/>']]) =
+				'<test><raw name="&value;"/></test>'
+]
+
+{ #category : #tests }
 XMLWriterTest >> testRedundantWrites [
 	self assert:
 		(XMLWriter writeWith: [:writer |
@@ -562,7 +572,7 @@ XMLWriterTest >> testSystemAndPublicIDs [
 ]
 
 { #category : #tests }
-XMLWriterTest >> testXmlDeclarations [
+XMLWriterTest >> testXMLDeclarations [
 	| writer  |
 
 	(writer := XMLWriter new)
@@ -602,7 +612,7 @@ XMLWriterTest >> testXmlDeclarations [
 ]
 
 { #category : #tests }
-XMLWriterTest >> testXmlnsDeclarations [
+XMLWriterTest >> testXMLNSDeclarations [
 	| writer tag |
 
 	writer := XMLWriter new.
