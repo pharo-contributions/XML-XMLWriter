@@ -151,9 +151,9 @@ XMLTagWriter >> writeXMLNS: aPrefix uri: aURI [
 	self writer
 		space;
 		writeName:
-			(aPrefix
-				ifEmpty: ['xmlns']
-				ifNotEmpty: ['xmlns:', aPrefix])
+			(aPrefix isEmpty
+				ifTrue: ['xmlns']
+				ifFalse: ['xmlns:', aPrefix])
 		escapedContentValue: aURI
 ]
 

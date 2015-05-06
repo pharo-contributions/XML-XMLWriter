@@ -1,5 +1,5 @@
 "
-A pretty printing formatter.
+A formatter that inserts ignorable whitespace to make the XML more readable.
 "
 Class {
 	#name : #XMLPrettyPrintingWriterFormatter,

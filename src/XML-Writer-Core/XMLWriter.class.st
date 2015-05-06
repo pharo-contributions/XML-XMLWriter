@@ -125,16 +125,12 @@ XMLWriter class >> new [
 
 { #category : #'instance creation' }
 XMLWriter class >> on: aStream [
-	^ self
-		on: aStream
-		formatter: nil
+	^ self basicNew initialize on: aStream
 ]
 
 { #category : #'instance creation' }
 XMLWriter class >> on: aStream formatter: aFormatter [
-	^ self basicNew initialize
-		on: aStream
-		formatter: aFormatter
+	^ (self on: aStream) formatter: aFormatter
 ]
 
 { #category : #'writing markup' }
@@ -191,6 +187,7 @@ XMLWriter >> asString [
 
 { #category : #testing }
 XMLWriter >> atBeginning [
+	"overridden in GS version to use Stream>>atBeginning"
 	^ stream position = 0
 ]
 
@@ -433,16 +430,8 @@ XMLWriter >> omitsRedundantXMLNSDeclarations: aBoolean [
 
 { #category : #initialization }
 XMLWriter >> on: aStream [
-	self
-		on: aStream
-		formatter: self formatter
-]
-
-{ #category : #initialization }
-XMLWriter >> on: aStream formatter: aFormatter [
 	stream := aStream.
 	markupWriterStack := OrderedCollection new.
-	formatter := aFormatter.
 	lineBreak := self defaultLineBreak.
 	contentEscapes := ContentEscapes.
 	contentStringEscapes := ContentStringEscapes.
@@ -523,11 +512,6 @@ XMLWriter >> space [
 { #category : #private }
 XMLWriter >> stream [
 	^ stream
-]
-
-{ #category : #private }
-XMLWriter >> stream: aStream [
-	stream := aStream
 ]
 
 { #category : #'writing markup' }
