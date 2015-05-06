@@ -51,12 +51,12 @@ XMLDoctypeDeclarationWriter >> systemID: aSystemID [
 	self externalIDWriter systemID: aSystemID
 ]
 
-{ #category : #'embedding markup' }
+{ #category : #embedding }
 XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
 	^ self with: aStringOrCollectionOrBlock
 ]
 
-{ #category : #'embedding markup' }
+{ #category : #embedding }
 XMLDoctypeDeclarationWriter >> writeBody: aStringOrCollectionOrBlock [
 	self omitIfCanonical: [super writeBody: aStringOrCollectionOrBlock]
 ]

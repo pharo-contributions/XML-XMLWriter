@@ -36,7 +36,7 @@ XMLExternalIDWriter >> systemID: aSystemID [
 	systemID := aSystemID
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLExternalIDWriter >> writeOn: aWriter [
 	self publicID
 		ifNotEmpty: [:id |

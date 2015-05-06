@@ -16,7 +16,23 @@ XMLMarkupWriter class >> writer: aWriter [
 	^ self new setWriter: aWriter
 ]
 
-{ #category : #'writing markup' }
+{ #category : #converting }
+XMLMarkupWriter >> asString [
+	"for GS compatibility"
+	^ self printString
+]
+
+{ #category : #writing }
+XMLMarkupWriter >> close [
+	self writer close
+]
+
+{ #category : #accessing }
+XMLMarkupWriter >> contents [
+	^ self writer contents
+]
+
+{ #category : #writing }
 XMLMarkupWriter >> finishWriting [
 	self hasEmbeddedMarkupWriters
 		ifTrue: [self writer writeUnwrittenMarkupWritersEmbeddedIn: self].
@@ -106,13 +122,13 @@ XMLMarkupWriter >> setWriter: aWriter [
 	isWriting := false.
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLMarkupWriter >> startWriting [
 	isWriting := true.
 	self writePrologue.
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLMarkupWriter >> write [
 	self isWriting
 		ifFalse: [

@@ -1,9 +1,11 @@
 "
 This class allows you to generate well-formed XML documents using an API similar to Seaside's canvas and tag brush API.
 
-Markup can be created by sending an instance any of the messages under ""writing markup."" The messages that take no arguments return an instance of an XMLMarkupWriter subclass. These objects can be configured with messages like #name: and #attributeAt:put:. Sending them #write or a specific writing message that accepts markup to embed within (the generic #with: message) causes the markup writer's configuration to be committed and its markup to be written to the output stream. For markup writers that can have embedded markup, the argument to the writing message can be a string, collection (of strings and blocks), a block, or nil. The block passed in can optionally take an argument, which will be the XMLWriter object that created the markup writer object. Within the block you can generate additional, child markup that will be contained by the parent. Creating additional non-embedded markup will cause any unwritten markup from a previous markup writer to be written, as will sending an XMLWriter or XMLMarkupWriter #contents, #printOn:, or the aforementioned #write.
+Markup can be created by sending an instance any of the messages under ""writing."" The messages that take no arguments return an instance of an XMLMarkupWriter subclass. These objects can be configured with messages like #name: and #attributeAt:put:. Sending them #write or #with: (if they can have embedded markup) causes the markup writer's configuration to be committed and its markup to be written to the output stream.
 
-Here is an example that you can highlight and evaluate with cmd-p to see the result:
+For markup writers that can have embedded markup, the argument to #with: can be a string, collection (of strings and blocks), a block, or nil. A block passed in can optionally take an argument, which will be the XMLWriter. Creating additional non-embedded markup will cause any unwritten markup from a previous markup writer to be written, as will sending an XMLWriter or markup writer #write, #contents, #printOn:, #asString, or #close.
+
+Here is an example (evaluate with cmd-p):
 
 	| writer |
 	writer := XMLWriter new.
@@ -21,22 +23,25 @@ Here is an example that you can highlight and evaluate with cmd-p to see the res
 				tag: 'age' with: '25';
 				tag: 'id' with: '101']
 
-Since the last message sent (#tag:with:) is an explicit serialization message, #write does not need to be sent. However, if you don't end with a serialization message, you must end with #write:
+If the last message sent isn't a serialization message like #with: or #tag:with:, you may need to send #write to force writing any unwritten markup:
 
-	| writer |
-	writer := XMLWriter new.
-	writer tag
-		name: 'emptyTag';
-		attributeAt: 'a' put: 'one';
-		write.
+	String streamContents: [:stream |
+		(XMLWriter on: stream)
+			tag: 'first';
+			tag: 'second';
+			write].
 
-Sending #write to the XMLWriter or markup writer object has the same effect. A simple way to avoid having to remember to send #write is to generate all markup within a top-level #writeWith: block, which will do it for you automatically:
+The second tag forces the first to be written, but the second won't be written unless #write is sent to its tag writer or the XMLWriter.
 
-	XMLWriter new
-		writeWith: [:writer |
-			writer tag
-				name: 'emptyTag';
-				attributeAt: 'a' put: 'value'].
+The #writeWith: message evaluates a block and automatically sends #write after, similar to how #fileNamed:do: will automatically send #close for you:
+
+	String streamContents: [:stream |
+		(XMLWriter  on: stream)
+			writeWith: [:writer |
+				writer
+					tag: 'first'
+					with: [writer tag: 'second'].
+				writer tag: 'third']].
 "
 Class {
 	#name : #XMLWriter,
@@ -133,19 +138,19 @@ XMLWriter class >> on: aStream formatter: aFormatter [
 	^ (self on: aStream) formatter: aFormatter
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter class >> writeWith: aBlock [
 	^ self new
 		writeWith: aBlock;
 		contents
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> % aParameterEntityReference [
 	self paramEntityRef: aParameterEntityReference
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> & anEntityReference [
 	self entityRef: anEntityReference
 ]
@@ -179,9 +184,9 @@ XMLWriter >> activeTagWriter [
 	^ nil.
 ]
 
-{ #category : #printing }
+{ #category : #converting }
 XMLWriter >> asString [
-	"for compatibility"
+	"for GS compatibility"
 	^ self printString
 ]
 
@@ -191,17 +196,17 @@ XMLWriter >> atBeginning [
 	^ stream position = 0
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> attributeDeclaration [
 	^ self pushNewMarkupWriter: XMLAttributeDeclarationWriter
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> cdata [
 	^ self pushNewMarkupWriter: XMLCDataWriter
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> cdata: aString [
 	self cdata
 		string: aString;
@@ -214,12 +219,12 @@ XMLWriter >> close [
 	stream close.
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> comment [
 	^ self pushNewMarkupWriter: XMLCommentWriter
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> comment: aString [
 	self comment
 		string: aString;
@@ -237,27 +242,27 @@ XMLWriter >> defaultLineBreak [
 	^ String cr
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> doctype [
 	^ self pushNewMarkupWriter: XMLDoctypeDeclarationWriter
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> elementDeclaration [
 	^ self pushNewMarkupWriter: XMLElementDeclarationWriter
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> enablePrettyPrinting [
 	self formatter: (XMLPrettyPrintingWriterFormatter writer: self)
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> entityDeclaration [
 	^ self pushNewMarkupWriter: XMLEntityDeclarationWriter
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> entityRef: aName [
 	(self pushNewMarkupWriter: XMLEntityReferenceWriter)
 		name: aName;
@@ -413,7 +418,7 @@ XMLWriter >> nextPutAll: aString [
 	^ stream nextPutAll: aString
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> notationDeclaration [
 	^ self pushNewMarkupWriter: XMLNotationDeclarationWriter
 ]
@@ -451,7 +456,7 @@ XMLWriter >> outputsSelfClosingTags: aBoolean [
 	outputsSelfClosingTags := aBoolean
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> paramEntityRef: aName [
 	(self pushNewMarkupWriter: XMLEntityReferenceWriter)
 		isParameter: true;
@@ -467,12 +472,12 @@ XMLWriter >> parentMarkupWriterOf: aMarkupWriter [
 	^ nil.
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> pcdata: aString [
 	self string: aString
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> pi [
 	^ self pushNewMarkupWriter: XMLPIWriter
 ]
@@ -497,7 +502,7 @@ XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
 	^ self markupWriterStack addLast: newMarkupWriter.
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> raw: aString [
 	self
 		newStringMarkup;
@@ -514,42 +519,47 @@ XMLWriter >> stream [
 	^ stream
 ]
 
-{ #category : #'writing markup' }
+{ #category : #private }
+XMLWriter >> stream: aStream [
+	self on: aStream
+]
+
+{ #category : #writing }
 XMLWriter >> string: aString [
 	self
 		newStringMarkup;
 		writeEscapedContent: aString
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> tag [
 	^ self pushNewMarkupWriter: XMLTagWriter
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> tag: aName [
 	^ self tag name: aName
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> tag: aName attributes: aDictionaryOrArray [
 	^ (self tag: aName)
 		attributes: aDictionaryOrArray
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> tag: aName attributes: aDictionaryOrArray with: aStringOrCollectionOrBlock [
 	^ (self tag: aName)
 		attributes: aDictionaryOrArray;
 		with: aStringOrCollectionOrBlock
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
 	^ (self tag: aName) with: aStringOrCollectionOrBlock
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> write [
 	self activeMarkupWriterDo: [:each |
 		each isWriting
@@ -644,13 +654,13 @@ XMLWriter >> writeUnwrittenMarkupWritersEmbeddedIn: aMarkupWriter [
 			ifFalse: [each write]]
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> writeWith: aBlock [
 	aBlock cull: self.
 	self write.
 ]
 
-{ #category : #'writing markup' }
+{ #category : #writing }
 XMLWriter >> xml [
 	^ self pushNewMarkupWriter: XMLXMLDeclarationWriter
 ]
