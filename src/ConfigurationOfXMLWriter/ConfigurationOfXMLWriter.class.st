@@ -94,7 +94,7 @@ ConfigurationOfXMLWriter class >> catalogChangeLog [
 { #category : #catalog }
 ConfigurationOfXMLWriter class >> catalogDescription [
 
-	^ 'XMLWriter allows you to generate well-formed XML documents using a nice API based on a canvas and tag brush API. It offers a compact way to produce XML documents without stupid syntactic mistakes.'
+	^ 'XMLWriter allows you to generate well-formed XML documents using an API based on Seaside''s canvas and tag brushes so all tags will be nested properly and not left unclosed.'
 
 ]
 
@@ -136,7 +136,7 @@ Here are examples of the API
 { #category : #catalog }
 ConfigurationOfXMLWriter class >> catalogKeywords [
 
-	^ #( XML )
+	^ #( XML HTML XHTML writer web markup document )
 					
 
 ]
@@ -576,12 +576,13 @@ ConfigurationOfXMLWriter >> baseline243: spec [
 ConfigurationOfXMLWriter >> baseline250: spec [
 	<version: '2.5.0-baseline'>
 
+	"this is the new default baseline others inherit from"
 	spec
 		for: #common
 		do: [ 
 			spec
 				blessing: #baseline;
-				description: 'standard baseline';
+				description: 'new standard baseline';
 				repository: 'http://smalltalkhub.com/mc/PharoExtras/XMLWriter/main'.
 			spec
 				project: 'OrderPreservingDictionary'
@@ -598,16 +599,16 @@ ConfigurationOfXMLWriter >> baseline250: spec [
 				group: 'Core' with: #('XML-Writer-Core');
 				group: 'Tests' with: #('XML-Writer-Tests') ].
 
-			"load gemstone methods"
+	"load gemstone compatibility methods"
+	spec
+		for: #'gemstone'
+		do: [
 			spec
-				for: #'gemstone'
-				do: [
-					spec
-						package: 'XML-Writer-Core'
-						with: [ spec includes: 'XML-Writer-GemstoneCompatibility' ].
-					spec
-						package: 'XML-Writer-GemstoneCompatibility'
-						with: [ spec requires: 'XML-Writer-Core' ]. ].
+				package: 'XML-Writer-Core'
+				with: [ spec includes: 'XML-Writer-GemstoneCompatibility' ].
+			spec
+				package: 'XML-Writer-GemstoneCompatibility'
+				with: [ spec requires: 'XML-Writer-Core' ]. ].
 ]
 
 { #category : #baselines }
@@ -646,7 +647,7 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 
-	spec for: #'common' version: '2.5.6'.
+	spec for: #'common' version: '2.5.7'.
 
 
 ]
@@ -1214,5 +1215,16 @@ ConfigurationOfXMLWriter >> version256: spec [
                 spec blessing: #release.
 			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.33'.
 			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.15'.
+                ].
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version257: spec [ 
+        <version: '2.5.7' imports: #('2.5.1-baseline')>
+
+        spec for: #common do: [
+                spec blessing: #release.
+			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.34'.
+			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.16'.
                 ].
 ]
