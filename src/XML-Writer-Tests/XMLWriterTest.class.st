@@ -38,6 +38,19 @@ XMLWriterTest >> prettyPrintedLines: anArrayOfLineArrays [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testAsString [
+	self assert:
+		(XMLWriter new
+			tag: 'one';
+			tag: 'two';
+			asString) = '<one /><two />'.
+	self assert:
+		(XMLWriter new
+			tag: 'one';
+			tag: 'two') asString = '<one /><two />'.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testAttributes [
 	| writer tag |
 
@@ -209,6 +222,21 @@ XMLWriterTest >> testCanonicalXMLDeclarationsAndPIs [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testClose [
+	self assert:
+		(String streamContents: [:stream |
+			(XMLWriter on: stream)
+				tag: 'one';
+				tag: 'two';
+				close]) = '<one /><two />'.
+	self assert:
+		(String streamContents: [:stream |
+			((XMLWriter on: stream)
+				tag: 'one';
+				tag: 'two') close]) = '<one /><two />'.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testContentEscaping [
 	| writer |
 
@@ -230,6 +258,19 @@ XMLWriterTest >> testContentEscaping [
 			attributeAt: 'unescaped' put: '& " < >';
 			with: '& " < >'.
 	self assert: writer contents = '<test xmlns="& " < >" unescaped="& " < >">& " < ></test>'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testContents [
+	self assert:
+		(XMLWriter new
+			tag: 'one';
+			tag: 'two';
+			contents) = '<one /><two />'.
+	self assert:
+		(XMLWriter new
+			tag: 'one';
+			tag: 'two') contents = '<one /><two />'.
 ]
 
 { #category : #tests }
