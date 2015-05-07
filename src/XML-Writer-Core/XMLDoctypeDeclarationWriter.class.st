@@ -53,7 +53,9 @@ XMLDoctypeDeclarationWriter >> systemID: aSystemID [
 
 { #category : #embedding }
 XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
-	^ self with: aStringOrCollectionOrBlock
+	self deprecated: 'use #write: instead'.
+
+	self with: aStringOrCollectionOrBlock.
 ]
 
 { #category : #embedding }
