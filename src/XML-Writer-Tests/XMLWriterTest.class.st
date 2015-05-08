@@ -367,6 +367,82 @@ XMLWriterTest >> testEscapesContentEntityReferences [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testFormattingContent [
+	| formatter writer tagWriter commentWriter piWriter entityRefWriter |
+
+	formatter := XMLWriterRecordingFormatterProxy new.
+	(writer := XMLWriter new) formatter: formatter.
+	(tagWriter := writer tag: 'empty') write.
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeStartTag: formatAfterEndTag:)
+			with: tagWriter).
+	(tagWriter := writer tag: 'not-empty')
+		with: [
+			(commentWriter := writer comment) string: 'test'.
+			(piWriter := writer pi)
+				target: 'test';
+				data: 'test'.
+			(entityRefWriter := writer entityRef) name: 'test'].
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeStartTag: formatAfterStartTag:)
+			with: tagWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeComment: formatAfterComment:)
+			with: commentWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforePI: formatAfterPI:)
+			with: piWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeEntityReference: formatAfterEntityReference:)
+			with: entityRefWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeEndTag: formatAfterEndTag:)
+			with: tagWriter).
+]
+
+{ #category : #tests }
+XMLWriterTest >> testFormattingProlog [
+	| formatter writer xmlDeclarationWriter doctypeWriter elementDeclarationWriter paramEntityRefWriter |
+
+	formatter := XMLWriterRecordingFormatterProxy new.
+	(writer := XMLWriter new) formatter: formatter.
+	(xmlDeclarationWriter := writer xml) write.
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeXMLDeclaration: formatAfterXMLDeclaration:)
+			with: xmlDeclarationWriter).
+	(doctypeWriter := writer doctype)
+		root: 'test';
+		with: [
+			(elementDeclarationWriter := writer elementDeclaration)
+				name: 'test';
+				contentModel: 'EMPTY'.
+			(paramEntityRefWriter := writer paramEntityRef) name: 'test'].
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeDoctypeDeclaration: formatBeforeInternalSubset:)
+			with: doctypeWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeDeclaration: formatAfterDeclaration:)
+			with: elementDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeEntityReference: formatAfterEntityReference:)
+			with: paramEntityRefWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatAfterInternalSubset: formatAfterDoctypeDeclaration:)
+			with: doctypeWriter).
+]
+
+{ #category : #tests }
 XMLWriterTest >> testLineBreak [
 	| writer  |
 
