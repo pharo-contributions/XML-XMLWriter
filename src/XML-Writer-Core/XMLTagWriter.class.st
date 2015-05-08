@@ -115,7 +115,8 @@ XMLTagWriter >> writeEndTag [
 		nextPut: $<;
 		nextPut: $/;
 		writeName: self name;
-		nextPut: $>
+		nextPut: $>;
+		formatAfterEndTag: self
 ]
 
 { #category : #private }
@@ -132,7 +133,8 @@ XMLTagWriter >> writeEpilogue [
 					self writer
 						space;
 						nextPut: $/;
-						nextPut: $>]].
+						nextPut: $>;
+						formatAfterEndTag: self]].
 ]
 
 { #category : #private }

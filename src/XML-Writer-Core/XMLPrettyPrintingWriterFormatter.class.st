@@ -1,5 +1,5 @@
 "
-A formatter that inserts ignorable whitespace to make the XML more readable.
+A formatter that inserts ignorable whitespace to make XML more readable.
 "
 Class {
 	#name : #XMLPrettyPrintingWriterFormatter,
@@ -63,8 +63,8 @@ XMLPrettyPrintingWriterFormatter >> formatBeforeInternalSubset: aDoctypeDeclarat
 ]
 
 { #category : #formatting }
-XMLPrettyPrintingWriterFormatter >> formatBeforePI: aPiWriter [
-	aPiWriter isEmbeddedWithStringMarkup
+XMLPrettyPrintingWriterFormatter >> formatBeforePI: aPIWriter [
+	aPIWriter isEmbeddedWithStringMarkup
 		ifFalse: [self writeLineBreak]
 ]
 

@@ -27,7 +27,10 @@ XMLCommentWriter >> writeBody [
 
 { #category : #private }
 XMLCommentWriter >> writeEpilogue [
-	self omitIfCanonicalInDTD: [self writer nextPutAll: '-->']
+	self omitIfCanonicalInDTD: [
+		self writer
+			nextPutAll: '-->';
+			formatAfterComment: self]
 ]
 
 { #category : #private }

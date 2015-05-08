@@ -41,7 +41,10 @@ XMLPIWriter >> writeBody [
 
 { #category : #private }
 XMLPIWriter >> writeEpilogue [
-	self omitIfCanonicalInDTD: [self writer nextPutAll: '?>']
+	self omitIfCanonicalInDTD: [
+		self writer
+			nextPutAll: '?>';
+			formatAfterPI: self]
 ]
 
 { #category : #private }

@@ -27,7 +27,10 @@ XMLMarkupDeclarationWriter >> name: aName [
 
 { #category : #private }
 XMLMarkupDeclarationWriter >> writeEpilogue [
-	self omitIfCanonical: [self writer nextPut: $>]
+	self omitIfCanonical: [
+		self writer
+			nextPut: $>;
+			formatAfterDeclaration: self]
 ]
 
 { #category : #private }

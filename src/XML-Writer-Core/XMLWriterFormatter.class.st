@@ -1,5 +1,5 @@
 "
-An abstract class for formatters used to decorate markup writers.
+An abstract class for formatters used to decorate markup writers. Override the ""formatting"" messages.
 "
 Class {
 	#name : #XMLWriterFormatter,
@@ -33,7 +33,23 @@ XMLWriterFormatter >> defaultIndentString [
 ]
 
 { #category : #formatting }
+XMLWriterFormatter >> formatAfterComment: aCommentWriter [
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatAfterDeclaration: aDeclarationWriter [
+]
+
+{ #category : #formatting }
 XMLWriterFormatter >> formatAfterDoctypeDeclaration: aDoctypeDeclarationWriter [
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatAfterEndTag: aTagWriter [
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatAfterEntityReference: anEntityReferenceWriter [
 ]
 
 { #category : #formatting }
@@ -41,7 +57,15 @@ XMLWriterFormatter >> formatAfterInternalSubset: aDoctypeDeclarationWriter [
 ]
 
 { #category : #formatting }
+XMLWriterFormatter >> formatAfterPI: aPIWriter [
+]
+
+{ #category : #formatting }
 XMLWriterFormatter >> formatAfterStartTag: aTagWriter [
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatAfterXMLDeclaration: anXMLDeclarationWriter [
 ]
 
 { #category : #formatting }
@@ -69,7 +93,7 @@ XMLWriterFormatter >> formatBeforeInternalSubset: aDoctypeDeclarationWriter [
 ]
 
 { #category : #formatting }
-XMLWriterFormatter >> formatBeforePI: aPiWriter [
+XMLWriterFormatter >> formatBeforePI: aPIWriter [
 ]
 
 { #category : #formatting }

@@ -71,7 +71,10 @@ XMLXMLDeclarationWriter >> writeBody [
 
 { #category : #private }
 XMLXMLDeclarationWriter >> writeEpilogue [
-	self omitIfCanonical: [self writer nextPutAll: '?>']
+	self omitIfCanonical: [
+		self writer
+			nextPutAll: '?>';
+			formatAfterXMLDeclaration: self]
 ]
 
 { #category : #private }

@@ -263,8 +263,13 @@ XMLWriter >> entityDeclaration [
 ]
 
 { #category : #writing }
+XMLWriter >> entityRef [
+	^ self pushNewMarkupWriter: XMLEntityReferenceWriter
+]
+
+{ #category : #writing }
 XMLWriter >> entityRef: aName [
-	(self pushNewMarkupWriter: XMLEntityReferenceWriter)
+	self entityRef
 		name: aName;
 		write
 ]
@@ -287,9 +292,33 @@ XMLWriter >> escapesContentEntityReferences: aBoolean [
 ]
 
 { #category : #formatting }
+XMLWriter >> formatAfterComment: aCommentWriter [
+	formatter
+		ifNotNil: [formatter formatAfterComment: aCommentWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatAfterDeclaration: aDeclarationWriter [
+	formatter
+		ifNotNil: [formatter formatAfterDeclaration: aDeclarationWriter]
+]
+
+{ #category : #formatting }
 XMLWriter >> formatAfterDoctypeDeclaration: aDoctypeDeclarationWriter [
 	formatter
 		ifNotNil: [formatter formatAfterDoctypeDeclaration: aDoctypeDeclarationWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatAfterEndTag: aTagWriter [
+	formatter
+		ifNotNil: [formatter formatAfterEndTag: aTagWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatAfterEntityReference: anEntityReferenceWriter [
+	formatter
+		ifNotNil: [formatter formatAfterEntityReference: anEntityReferenceWriter]
 ]
 
 { #category : #formatting }
@@ -299,9 +328,21 @@ XMLWriter >> formatAfterInternalSubset: aDoctypeDeclarationWriter [
 ]
 
 { #category : #formatting }
+XMLWriter >> formatAfterPI: aPIWriter [
+	formatter
+		ifNotNil: [formatter formatAfterPI: aPIWriter]
+]
+
+{ #category : #formatting }
 XMLWriter >> formatAfterStartTag: aTagWriter [
 	formatter
 		ifNotNil: [formatter formatAfterStartTag: aTagWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatAfterXMLDeclaration: anXMLDeclarationWriter [
+	formatter
+		ifNotNil: [formatter formatAfterXMLDeclaration: anXMLDeclarationWriter]
 ]
 
 { #category : #formatting }
@@ -341,9 +382,9 @@ XMLWriter >> formatBeforeInternalSubset: aDoctypeDeclarationWriter [
 ]
 
 { #category : #formatting }
-XMLWriter >> formatBeforePI: aPiWriter [
+XMLWriter >> formatBeforePI: aPIWriter [
 	formatter
-		ifNotNil: [formatter formatBeforePI: aPiWriter]
+		ifNotNil: [formatter formatBeforePI: aPIWriter]
 ]
 
 { #category : #formatting }
@@ -457,9 +498,13 @@ XMLWriter >> outputsSelfClosingTags: aBoolean [
 ]
 
 { #category : #writing }
+XMLWriter >> paramEntityRef [
+	^ (self pushNewMarkupWriter: XMLEntityReferenceWriter) isParameter: true
+]
+
+{ #category : #writing }
 XMLWriter >> paramEntityRef: aName [
-	(self pushNewMarkupWriter: XMLEntityReferenceWriter)
-		isParameter: true;
+	self paramEntityRef
 		name: aName;
 		write
 ]

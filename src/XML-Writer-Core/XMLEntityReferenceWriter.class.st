@@ -38,7 +38,9 @@ XMLEntityReferenceWriter >> writeBody [
 
 { #category : #private }
 XMLEntityReferenceWriter >> writeEpilogue [
-	self writer nextPut: $;
+	self writer
+		nextPut: $;;
+		formatAfterEntityReference: self
 ]
 
 { #category : #private }
