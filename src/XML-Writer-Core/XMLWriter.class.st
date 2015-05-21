@@ -63,7 +63,8 @@ Class {
 		'ContentNonEntityEscapes',
 		'ContentStringEscapes',
 		'ContentStringNonEntityEscapes',
-		'EntityValueEscapes'
+		'EntityValueEscapes',
+		'SpaceCharacter'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -77,7 +78,8 @@ XMLWriter class >> initialize [
 		initializeContentNonEntityEscapes;
 		initializeContentStringEscapes;
 		initializeContentStringNonEntityEscapes;
-		initializeEntityValueEscapes
+		initializeEntityValueEscapes;
+		initializeSpaceCharacter
 ]
 
 { #category : #'class initialization' }
@@ -123,6 +125,11 @@ XMLWriter class >> initializeEntityValueEscapes [
 		at: Character lf asciiValue put: #LineBreak
 ]
 
+{ #category : #'class initialization' }
+XMLWriter class >> initializeSpaceCharacter [
+	SpaceCharacter := Character space
+]
+
 { #category : #'instance creation' }
 XMLWriter class >> new [
 	^ self on: (String new: 512) writeStream
@@ -156,10 +163,20 @@ XMLWriter >> & anEntityReference [
 ]
 
 { #category : #accessing }
+XMLWriter >> activeDoctypeWriter [
+	self markupWriterStack reverseDo: [:each |
+		each isDoctypeWriter
+			ifTrue: [^ each]].
+	^ nil.
+]
+
+{ #category : #accessing }
 XMLWriter >> activeMarkupWriter [
+	| stackSize |
+
 	"for speed"
-	^ markupWriterStack size > 0
-		ifTrue: [markupWriterStack at: markupWriterStack size]
+	^ (stackSize := markupWriterStack size) > 0
+		ifTrue: [markupWriterStack at: stackSize]
 		ifFalse: [nil]
 ]
 
@@ -213,7 +230,7 @@ XMLWriter >> cdata: aString [
 		write
 ]
 
-{ #category : #'writing markup' }
+{ #category : #closing }
 XMLWriter >> close [
 	self write.
 	stream close.
@@ -556,7 +573,7 @@ XMLWriter >> raw: aString [
 
 { #category : #private }
 XMLWriter >> space [
-	stream space
+	stream nextPut: SpaceCharacter
 ]
 
 { #category : #private }

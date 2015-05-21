@@ -22,7 +22,7 @@ XMLMarkupWriter >> asString [
 	^ self printString
 ]
 
-{ #category : #writing }
+{ #category : #closing }
 XMLMarkupWriter >> close [
 	self writer close
 ]
