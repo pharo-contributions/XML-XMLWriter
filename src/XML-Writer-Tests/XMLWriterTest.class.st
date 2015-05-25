@@ -9,16 +9,6 @@ Class {
 }
 
 { #category : #private }
-XMLWriterTest >> defaultIndentString [
-	^ '    '
-]
-
-{ #category : #private }
-XMLWriterTest >> defaultLineBreak [
-	^ Character cr
-]
-
-{ #category : #private }
 XMLWriterTest >> prettyPrintedLines: anArrayOfLineArrays [
 	| lineNumber |
 	"takes an array of arrays where the first element of each is the indent level
@@ -27,12 +17,14 @@ XMLWriterTest >> prettyPrintedLines: anArrayOfLineArrays [
 	lineNumber := 1.
 	^ String streamContents: [:stream |
 		anArrayOfLineArrays do: [:each | | indentLevel |
-			indentLevel := each first.
+			indentLevel := XMLPrettyPrintingWriterFormatter defaultIndentLevel + each first.
 			2 to: each size do: [:lineIndex |
 				lineNumber > 1
 					ifTrue: [
-						stream nextPutAll: self defaultLineBreak asString.
-						indentLevel timesRepeat: [stream nextPutAll: self defaultIndentString]].
+						stream nextPutAll: XMLWriter defaultLineBreak.
+						indentLevel timesRepeat: [
+							stream nextPutAll:
+								XMLPrettyPrintingWriterFormatter defaultIndentString]].
 				stream nextPutAll: (each at: lineIndex).
 				lineNumber := lineNumber + 1]]]
 ]
@@ -491,6 +483,24 @@ XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testOutputsSelfClosingTags [
+	| writer |
+
+	(writer := XMLWriter new)
+		tag: 'tags' with: [
+			writer
+				tag: 'self-closing' with: nil;
+				outputsSelfClosingTags: false;
+				tag: 'not-self-closing' with: nil;
+				outputsSelfClosingTags: true;
+				tag: 'self-closing' with: nil].
+
+	self assert:
+		writer printString =
+			'<tags><self-closing /><not-self-closing></not-self-closing><self-closing /></tags>'.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testPrettyPrintingDTDs [
 	| writer  |
 
@@ -631,24 +641,6 @@ XMLWriterTest >> testRedundantWrites [
 			'<name>TestName - Report</name>',
 			'<finality>succeed</finality>',
 			'</report>')
-]
-
-{ #category : #tests }
-XMLWriterTest >> testSelfClosingTags [
-	| writer |
-
-	(writer := XMLWriter new)
-		tag: 'tags' with: [
-			writer
-				tag: 'self-closing' with: nil;
-				outputsSelfClosingTags: false;
-				tag: 'not-self-closing' with: nil;
-				outputsSelfClosingTags: true;
-				tag: 'self-closing' with: nil].
-
-	self assert:
-		writer printString =
-			'<tags><self-closing /><not-self-closing></not-self-closing><self-closing /></tags>'.
 ]
 
 { #category : #tests }
