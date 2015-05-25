@@ -39,14 +39,14 @@ XMLExternalIDWriter >> systemID: aSystemID [
 { #category : #writing }
 XMLExternalIDWriter >> writeOn: aWriter [
 	self publicID
+		ifEmpty: [
+			self systemID
+				ifNotEmpty: [aWriter nextPutAll: 'SYSTEM']]
 		ifNotEmpty: [:id |
 			aWriter
 				nextPutAll: 'PUBLIC';
 				space;
-				writeUnescapedString: id]
-		ifEmpty: [
-			self systemID
-				ifNotEmpty: [aWriter nextPutAll: 'SYSTEM']].
+				writeUnescapedString: id].
 
 	self systemID ifNotEmpty: [:id |
 		aWriter

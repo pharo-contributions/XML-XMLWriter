@@ -79,7 +79,6 @@ XMLEntityDeclarationWriter >> systemID: aSystemID [
 XMLEntityDeclarationWriter >> writeBody [
 	self omitIfCanonical: [
 		self replacement
-			ifNotEmpty: [self writer writeEscapedEntityValueString: self replacement]
 			ifEmpty: [
 				self externalIDWriter writeOn: self writer.
 				(self isParameter not and: [self ndata notEmpty])
@@ -88,5 +87,6 @@ XMLEntityDeclarationWriter >> writeBody [
 							space;
 							nextPutAll: 'NDATA';
 							space;
-							writeName: self ndata]]]
+							writeName: self ndata]]
+			ifNotEmpty: [self writer writeEscapedEntityValueString: self replacement]]
 ]

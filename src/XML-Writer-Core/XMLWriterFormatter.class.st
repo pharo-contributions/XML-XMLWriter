@@ -12,6 +12,16 @@ Class {
 	#category : #'XML-Writer-Core'
 }
 
+{ #category : #private }
+XMLWriterFormatter class >> defaultIndentLevel [
+	^ 0
+]
+
+{ #category : #private }
+XMLWriterFormatter class >> defaultIndentString [
+	^ '    '
+]
+
 { #category : #'instance creation' }
 XMLWriterFormatter class >> writer: aWriter [
 	^ self new setWriter: aWriter
@@ -20,16 +30,6 @@ XMLWriterFormatter class >> writer: aWriter [
 { #category : #private }
 XMLWriterFormatter >> currentIndentLevel [
 	^ currentIndentLevel
-]
-
-{ #category : #private }
-XMLWriterFormatter >> defaultIndentLevel [
-	^ 0
-]
-
-{ #category : #private }
-XMLWriterFormatter >> defaultIndentString [
-	^ '    '
 ]
 
 { #category : #formatting }
@@ -128,8 +128,8 @@ XMLWriterFormatter >> outdent [
 { #category : #initialization }
 XMLWriterFormatter >> setWriter: aWriter [
 	writer := aWriter.
-	currentIndentLevel := self defaultIndentLevel.
-	indentString := self defaultIndentString.
+	currentIndentLevel := self class defaultIndentLevel.
+	indentString := self class defaultIndentString.
 ]
 
 { #category : #private }

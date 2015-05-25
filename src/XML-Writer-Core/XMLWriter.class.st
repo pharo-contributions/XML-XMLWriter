@@ -69,6 +69,11 @@ Class {
 	#category : #'XML-Writer-Core'
 }
 
+{ #category : #private }
+XMLWriter class >> defaultLineBreak [
+	^ String cr
+]
+
 { #category : #'class initialization' }
 XMLWriter class >> initialize [
 	"self initialize"
@@ -252,11 +257,6 @@ XMLWriter >> comment: aString [
 XMLWriter >> contents [
 	self write.
 	^ stream contents.
-]
-
-{ #category : #private }
-XMLWriter >> defaultLineBreak [
-	^ String cr
 ]
 
 { #category : #writing }
@@ -495,7 +495,7 @@ XMLWriter >> omitsRedundantXMLNSDeclarations: aBoolean [
 XMLWriter >> on: aStream [
 	stream := aStream.
 	markupWriterStack := OrderedCollection new.
-	lineBreak := self defaultLineBreak.
+	lineBreak := self class defaultLineBreak.
 	contentEscapes := ContentEscapes.
 	contentStringEscapes := ContentStringEscapes.
 	isEscaping := true.
@@ -573,6 +573,7 @@ XMLWriter >> raw: aString [
 
 { #category : #private }
 XMLWriter >> space [
+	"redefined for speed and portability"
 	stream nextPut: SpaceCharacter
 ]
 
