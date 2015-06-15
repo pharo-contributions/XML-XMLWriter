@@ -1,7 +1,9 @@
 "
-This class generates XML tags for elements. You can specifiy the attributes of the start tag using the #attribute* messages, and you can add xmlns: namespace declarations using the #xmlns* messages. If you do not send #with:, or if you do but the argument is nil or a block that generates no markup, then only a single, empty tag in the form of ""<empty />"" will be generated, unless the writer object that created the tag writer object is configured to generate canonical XML, in which case an empty start/end tag pair like ""<empty></empty>"" will be generated.
+This class generates XML tags. You can specifiy the attributes of the start tag using the #attribute* messages, and you can add xmlns: namespace declarations using the #xmlns* messages.
 
-You can supply child markup content using #with:. Namespace declarations will be ignored if a parent element has equivalent declarations (and they were thus already generated).
+Empty elements will generate self-closed tags like ""<empty/>"" unless isCanonical is enabled or outputsSelfClosingTags is disabled.
+
+Redundant namespace declarations won't be generated unless omitsRedundantXMLNSDeclarations is disabled.
 "
 Class {
 	#name : #XMLTagWriter,

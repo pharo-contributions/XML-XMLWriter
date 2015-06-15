@@ -1,12 +1,11 @@
 "
-This class allows you to generate well-formed XML documents using an API similar to Seaside's canvas and tag brush API.
+XMLWriter generates well-formed XML documents using an API similar to Seaside's canvas and tag brushes.
 
-Markup can be created by sending an instance any of the messages under ""writing."" The messages that take no arguments return an instance of an XMLMarkupWriter subclass. These objects can be configured with messages like #name: and #attributeAt:put:. Sending them #write or #with: (if they can have embedded markup) causes the markup writer's configuration to be committed and its markup to be written to the output stream.
+Markup can be created with the messages under ""writing."" The ones that take no arguments return instances of XMLMarkupWriter subclasses that can be configured with messages like #name: or #attributeAt:put:. Sending them #write or #with: (if they can have embedded markup) causes the markup writer's configuration to be committed and its markup to be written.
 
-For markup writers that can have embedded markup, the argument to #with: can be a string, collection (of strings and blocks), a block, or nil. A block passed in can optionally take an argument, which will be the XMLWriter. Creating additional non-embedded markup will cause any unwritten markup from a previous markup writer to be written, as will sending an XMLWriter or markup writer #write, #contents, #printOn:, #asString, or #close.
+For markup writers that can have embedded markup, the argument to #with: can be a string, a block, a collection (of strings and blocks), or nil. A block can optionally take an argument, the XMLWriter. Creating additional markup will cause any unwritten markup from a previous markup writer to be written, as will sending #write, #contents, #printOn:, #asString, or #close.
 
 Here is an example (evaluate with cmd-p):
-
 	| writer |
 	writer := XMLWriter new.
 	writer
@@ -23,8 +22,7 @@ Here is an example (evaluate with cmd-p):
 				tag: 'age' with: '25';
 				tag: 'id' with: '101']
 
-If the last message sent isn't a serialization message like #with: or #tag:with:, you may need to send #write to force writing any unwritten markup:
-
+If the last message sent isn't a writing message like #with: or #tag:with:, you may need to send #write to force writing any unwritten markup:
 	String streamContents: [:stream |
 		(XMLWriter on: stream)
 			tag: 'first';
@@ -33,8 +31,7 @@ If the last message sent isn't a serialization message like #with: or #tag:with:
 
 The second tag forces the first to be written, but the second won't be written unless #write is sent to its tag writer or the XMLWriter.
 
-The #writeWith: message evaluates a block and automatically sends #write after, similar to how #fileNamed:do: will automatically send #close for you:
-
+The #writeWith: message evaluates a block and automatically sends #write after, like how #fileNamed:do: automatically sends #close after:
 	String streamContents: [:stream |
 		(XMLWriter  on: stream)
 			writeWith: [:writer |
@@ -187,8 +184,8 @@ XMLWriter >> activeMarkupWriter [
 
 { #category : #private }
 XMLWriter >> activeMarkupWriterDo: aBlock [
-	"This evaluates aBlock for the active (top) markup writer until
-	it is nil or is the same (still active) writer after evaluating aBlock"
+	"evaluate aBlock for the active (top) markup writer until it
+	is nil or is the same (still active) writer after evaluating"
 	| activeMarkupWriter previousActiveMarkupWriter |
 
 	[(activeMarkupWriter := self activeMarkupWriter) isNil
@@ -702,7 +699,7 @@ XMLWriter >> writeUnescapedString: aString [
 			ifFalse: [$"].
 	self nextPut: quote.
 	aString do: [:each |
-		"strip delimiter because it can't be escaped with an entity in this type of string"
+		"delimiters are skipped because they can't be escaped here"
 		each == quote
 			ifFalse: [self nextPut: each]].
 	self nextPut: quote.

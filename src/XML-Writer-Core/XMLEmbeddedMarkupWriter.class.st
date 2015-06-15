@@ -1,5 +1,5 @@
 "
-This class is a markup writer that supports embedding of child markup.
+This is an abstract class for markup writers that support embedding markup using #with:.
 "
 Class {
 	#name : #XMLEmbeddedMarkupWriter,

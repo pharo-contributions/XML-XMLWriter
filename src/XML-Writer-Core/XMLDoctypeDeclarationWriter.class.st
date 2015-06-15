@@ -1,5 +1,5 @@
 "
-This class writes <!DOCTYPE ...> declarations. You can set the root element, public ID and system ID using the messages under ""accessing"" before specifying any internal subset with #internalSubset: (which results in the declaration being written). If no public ID is supplied, then the declaration written will be of type ""SYSTEM"" rather than ""PUBLIC"" and will not have any Formal Public Identifier (FPI). The internal subset, if supplied, should consist of markup declarations generated with instances of XMLMarkupDeclarationWriter subclasses.
+This class writes <!DOCTYPE ...> declarations. You can set the root element and the public and system IDs using the messages under ""accessing"" before specifying any internal subset with #with:.
 "
 Class {
 	#name : #XMLDoctypeDeclarationWriter,
@@ -53,7 +53,7 @@ XMLDoctypeDeclarationWriter >> systemID: aSystemID [
 
 { #category : #embedding }
 XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
-	self deprecated: 'use #write: instead'.
+	self deprecated: 'use #with: instead'.
 
 	self with: aStringOrCollectionOrBlock.
 ]

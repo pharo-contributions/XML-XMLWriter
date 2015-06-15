@@ -14,7 +14,7 @@ Class {
 
 { #category : #accessing }
 XMLXMLDeclarationWriter >> encoding [
-	^ encoding ifNil: [encoding := 'UTF-8']
+	^ encoding ifNil: [encoding := '']
 ]
 
 { #category : #accessing }
@@ -40,11 +40,12 @@ XMLXMLDeclarationWriter >> version [
 ]
 
 { #category : #accessing }
-XMLXMLDeclarationWriter >> version: aVersion [
+XMLXMLDeclarationWriter >> version: aVersionFloatOrString [
 	| versionString |
 
-	version := "avoid first: for portability"
-		(versionString := (aVersion ifNil: ['1.0']) asString)
+	versionString := (aVersionFloatOrString ifNil: ['1.0']) asString.
+	version :=
+		versionString "cutoff excess digits without first: for GS portability"
 			copyFrom: 1
 			to: (3 min: versionString size)
 ]
