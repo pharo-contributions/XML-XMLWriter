@@ -43,6 +43,21 @@ XMLWriterTest >> testAsString [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testAtBeginning [
+	"on GS writeStream gives an ANSI 0-based position stream,
+	on: doesn't, so both are tested"
+	(Array
+		with: String new writeStream
+		with: (WriteStream on: String new))
+		do: [:stream | | writer |
+			writer := XMLWriter on: stream.
+			self assert: writer atBeginning.
+
+			stream nextPut: $<.
+			self deny: writer atBeginning]
+]
+
+{ #category : #tests }
 XMLWriterTest >> testAttributes [
 	| writer tag |
 
@@ -444,7 +459,7 @@ XMLWriterTest >> testLineBreak [
 	writer
 		xml;
 		tag: 'test'.
-	self assert: writer contents = '<?xml version="1.0" encoding="UTF-8"?>N<test />'
+	self assert: writer contents = '<?xml version="1.0"?>N<test />'
 ]
 
 { #category : #tests }
@@ -534,7 +549,7 @@ XMLWriterTest >> testPrettyPrintingDTDs [
 	self assert:
 		writer contents =
 			(self prettyPrintedLines: #(
-				#(0 '<?xml version="1.0" encoding="UTF-8"?>'
+				#(0 '<?xml version="1.0"?>'
 					'<!DOCTYPE pretty [')
 				#(1 '<!--element-->'
 					'<!ELEMENT pretty EMPTY>'
@@ -592,7 +607,7 @@ XMLWriterTest >> testPrettyPrintingElements [
 	self assert:
 		writer contents =
 			(self prettyPrintedLines: #(
-				#(0 '<?xml version="1.0" encoding="UTF-8"?>'
+				#(0 '<?xml version="1.0"?>'
 					'<!--an example-->'
 					'<example:user xmlns:example="urn://example">')
 				#(1 '<username>')
@@ -743,11 +758,11 @@ XMLWriterTest >> testXMLDeclarations [
 		
 	self assert:
 		writer printString =
-			('<?xml version="1.0" encoding="UTF-8"?>',
+			('<?xml version="1.0"?>',
 			'<?xml version="1.1" encoding="UTF-16"?>',
-			'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+			'<?xml version="1.0" standalone="yes"?>',
 			'<?xml version="1.1" encoding="UTF-16LE" standalone="yes"?>',
-			'<?xml version="1.0" encoding="UTF-8"?>',
+			'<?xml version="1.0"?>',
 			'<?xml version="1.0"?>').
 ]
 
