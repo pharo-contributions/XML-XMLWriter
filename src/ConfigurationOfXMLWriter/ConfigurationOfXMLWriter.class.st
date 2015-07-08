@@ -608,7 +608,8 @@ ConfigurationOfXMLWriter >> baseline250: spec [
 				with: [ spec includes: 'XML-Writer-GemstoneCompatibility' ].
 			spec
 				package: 'XML-Writer-GemstoneCompatibility'
-				with: [ spec requires: 'XML-Writer-Core' ]. ].
+				with: [ spec requires: 'XML-Writer-Core' ].
+			spec preLoadDoIt: #preLoadForGemstone. ].
 ]
 
 { #category : #baselines }
@@ -628,6 +629,14 @@ ConfigurationOfXMLWriter >> development: spec [
 
 	spec for: #'common' version: '2.5.1-baseline'.
 
+]
+
+{ #category : #preloading }
+ConfigurationOfXMLWriter >> preLoadForGemstone [
+	"the GS package overrides methods, so it must be loaded whenever the project
+	is loaded, and removing it first forces Metacello to load it again"
+	
+	(MCPackage named: 'XML-Writer-GemstoneCompatibility') unload
 ]
 
 { #category : #accessing }
