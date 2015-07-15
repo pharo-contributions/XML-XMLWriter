@@ -608,7 +608,8 @@ ConfigurationOfXMLWriter >> baseline250: spec [
 				with: [ spec includes: 'XML-Writer-GemstoneCompatibility' ].
 			spec
 				package: 'XML-Writer-GemstoneCompatibility'
-				with: [ spec requires: 'XML-Writer-Core' ]. ].
+				with: [ spec requires: 'XML-Writer-Core' ].
+			spec postLoadDoIt: #'postLoadForGemstone:spec:'.].
 ]
 
 { #category : #baselines }
@@ -628,6 +629,24 @@ ConfigurationOfXMLWriter >> development: spec [
 
 	spec for: #'common' version: '2.5.1-baseline'.
 
+]
+
+{ #category : #'post loading' }
+ConfigurationOfXMLWriter >> postLoadForGemstone: aLoader spec: aSpec [
+	"this forces the GS package to always be loaded after, even if it hasn't
+	changed between versions, because it needs to override methods in the base"
+
+	| packageName fileName |
+
+	packageName := 'XML-Writer-GemstoneCompatibility'.
+	fileName :=
+		(aSpec
+			packageNamed: packageName
+			ifAbsent: [^ self]) file.
+	Gofer it
+		url: aSpec repositories list first name;
+		package: packageName constraint: [:version | version name = fileName];
+		load.
 ]
 
 { #category : #accessing }
