@@ -30,6 +30,47 @@ XMLWriterTest >> prettyPrintedLines: anArrayOfLineArrays [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testActiveDoctypeWriter [
+	| writer doctypeWriter |
+
+	writer := XMLWriter new.
+	self assert: writer activeDoctypeWriter isNil.
+
+	doctypeWriter := writer doctype.
+	self assert: writer activeDoctypeWriter == doctypeWriter.
+
+	doctypeWriter with: [
+		writer comment: 'test'.
+		self assert: writer activeDoctypeWriter == doctypeWriter].
+
+	self assert: writer activeDoctypeWriter isNil.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testActiveTagWriter [
+	| writer tagWriter |
+
+	writer := XMLWriter new.
+	self assert: writer activeTagWriter isNil.
+	writer xml.
+	self assert: writer activeTagWriter isNil.
+
+	tagWriter := writer tag: 'one'.
+	self assert: writer activeTagWriter == tagWriter.
+
+	tagWriter with: [| newTagWriter |
+		self assert: writer activeTagWriter == tagWriter.
+
+		newTagWriter := writer tag: 'three'.
+		self assert: writer activeTagWriter == newTagWriter.
+	
+		newTagWriter write.
+		self assert: writer activeTagWriter == tagWriter].
+
+	self assert: writer activeTagWriter isNil.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testAsString [
 	self assert:
 		(XMLWriter new
@@ -374,6 +415,18 @@ XMLWriterTest >> testEscapesContentEntityReferences [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testFormatter [
+	| writer formatter |
+
+	writer := XMLWriter new.
+	self assert: writer formatter isNil.
+
+	formatter := XMLWriterRecordingFormatterProxy new.
+	writer formatter: formatter.
+	self assert: writer formatter == formatter.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testFormattingContent [
 	| formatter writer tagWriter commentWriter piWriter entityRefWriter |
 
@@ -495,6 +548,18 @@ XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 	self assert:
 		(XMLWriter writeWith: [:writer | (writer tag: 'empty') xmlns: '']) =
 			'<empty xmlns="" />'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testOnFormatter [
+	| stream formatter writer |
+
+	stream := String new writeStream.
+	formatter := XMLWriterRecordingFormatterProxy new.
+	writer := XMLWriter on: stream formatter: formatter.
+	self
+		assert: writer stream == stream;
+		assert: writer formatter == formatter.
 ]
 
 { #category : #tests }
