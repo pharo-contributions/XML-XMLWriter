@@ -29,7 +29,7 @@ If the last message sent isn't a writing message like #with: or #tag:with:, you 
 			tag: 'second';
 			write].
 
-The second tag forces the first to be written, but the second won't be written unless #write is sent to its tag writer or the XMLWriter.
+The second tag forces the first to be written, but the second wouldn't be written if #write wasn't sent.
 
 The #writeWith: message evaluates a block and automatically sends #write after, like how #fileNamed:do: automatically sends #close after:
 	String streamContents: [:stream |

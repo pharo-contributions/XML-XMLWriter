@@ -54,7 +54,7 @@ XMLEmbeddedMarkupWriter >> setWriter: aWriter [
 	hasEmbeddedMarkupWriters := false.
 ]
 
-{ #category : #embedding }
+{ #category : #writing }
 XMLEmbeddedMarkupWriter >> with: aStringOrCollectionOrBlock [
 	self isWriting ifFalse: [
 		self
@@ -63,12 +63,12 @@ XMLEmbeddedMarkupWriter >> with: aStringOrCollectionOrBlock [
 			finishWriting]
 ]
 
-{ #category : #writing }
+{ #category : #private }
 XMLEmbeddedMarkupWriter >> writeBody [
 	self writeBody: nil
 ]
 
-{ #category : #embedding }
+{ #category : #private }
 XMLEmbeddedMarkupWriter >> writeBody: aStringOrCollectionOrBlock [
 	aStringOrCollectionOrBlock embedInMarkupWriter: self
 ]

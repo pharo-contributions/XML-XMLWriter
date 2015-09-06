@@ -47,11 +47,6 @@ XMLTagWriter >> attributes: aDictionaryOrArray [
 ]
 
 { #category : #testing }
-XMLTagWriter >> escapesEmbeddedStrings [
-	^ true
-]
-
-{ #category : #testing }
 XMLTagWriter >> hasAttributes [
 	^ self attributes notEmpty
 ]
@@ -215,8 +210,8 @@ XMLTagWriter >> xmlnsAt: aPrefix ifAbsent: aBlock [
 ]
 
 { #category : #accessing }
-XMLTagWriter >> xmlnsAt: aPrefix ifAbsentPut: aUriBlock [
-	^ self xmlnsDeclarations at: aPrefix ifAbsentPut: aUriBlock
+XMLTagWriter >> xmlnsAt: aPrefix ifAbsentPut: aBlock [
+	^ self xmlnsDeclarations at: aPrefix ifAbsentPut: aBlock
 ]
 
 { #category : #accessing }
