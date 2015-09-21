@@ -633,8 +633,9 @@ ConfigurationOfXMLWriter >> development: spec [
 
 { #category : #'post loading' }
 ConfigurationOfXMLWriter >> postLoadForGemstone: aLoader spec: aSpec [
-	"this forces the GS package to always be loaded after, even if it hasn't
-	changed between versions, because it needs to override methods in the base"
+	"This forces the GS compatibility package to always be loaded, even if
+	it hasn't changed between versions, because it needs to override methods
+	in the base. If removed, upgrading on GS may not work."
 
 	| packageName fileName |
 
@@ -666,7 +667,7 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 
-	spec for: #'common' version: '2.6.4'.
+	spec for: #'common' version: '2.6.5'.
 
 
 ]
@@ -1322,5 +1323,16 @@ ConfigurationOfXMLWriter >> version264: spec [
                 spec blessing: #release.
 			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.41'.
 			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.21'.
+                ].
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version265: spec [ 
+        <version: '2.6.5' imports: #('2.5.1-baseline')>
+
+        spec for: #common do: [
+                spec blessing: #release.
+			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.42'.
+			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.22'.
                 ].
 ]
