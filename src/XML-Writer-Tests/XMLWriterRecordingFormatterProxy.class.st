@@ -12,7 +12,8 @@ Class {
 
 { #category : #'reflective operations' }
 XMLWriterRecordingFormatterProxy >> doesNotUnderstand: aMessage [
-	messageQueue addLast: aMessage
+	(XMLWriterFormatter whichCategoryIncludesSelector: aMessage selector) = #formatting
+		ifTrue: [messageQueue addLast: aMessage]
 ]
 
 { #category : #initialization }
@@ -24,7 +25,7 @@ XMLWriterRecordingFormatterProxy >> initialize [
 { #category : #testing }
 XMLWriterRecordingFormatterProxy >> receivedNext: aSelector with: anArgument [
 	^ self
-		receivedNextAll: (Array with:aSelector)
+		receivedNextAll: (Array with: aSelector)
 		with: anArgument
 ]
 

@@ -421,9 +421,11 @@ XMLWriterTest >> testFormatter [
 	writer := XMLWriter new.
 	self assert: writer formatter isNil.
 
-	formatter := XMLWriterRecordingFormatterProxy new.
+	formatter := XMLPrettyPrintingWriterFormatter new.
 	writer formatter: formatter.
-	self assert: writer formatter == formatter.
+	self
+		assert: writer formatter == formatter;
+		assert: formatter writer == writer.
 ]
 
 { #category : #tests }
@@ -437,7 +439,10 @@ XMLWriterTest >> testFormattingContent [
 		(formatter
 			receivedNextAll: #(formatBeforeStartTag: formatAfterEndTag:)
 			with: tagWriter).
+	
 	(tagWriter := writer tag: 'not-empty')
+		xmlns: 'defaultNS';
+		attributeAt: 'name' put: 'value';
 		with: [
 			(commentWriter := writer comment) string: 'test'.
 			(piWriter := writer pi)
@@ -446,7 +451,19 @@ XMLWriterTest >> testFormattingContent [
 			(entityRefWriter := writer entityRef) name: 'test'].
 	self assert:
 		(formatter
-			receivedNextAll: #(formatBeforeStartTag: formatAfterStartTag:)
+			receivedNext: #formatBeforeStartTag:
+			with: tagWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'defaultNS').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'value').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterStartTag:
 			with: tagWriter).
 	self assert:
 		(formatter
@@ -464,25 +481,42 @@ XMLWriterTest >> testFormattingContent [
 		(formatter
 			receivedNextAll: #(formatBeforeEndTag: formatAfterEndTag:)
 			with: tagWriter).
+
+	writer outputsSelfClosingTags: false.
+	(tagWriter := writer tag: 'empty') write.
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeStartTag: formatAfterStartTag: formatBeforeEndTag: formatAfterEndTag:)
+			with: tagWriter).
 ]
 
 { #category : #tests }
 XMLWriterTest >> testFormattingProlog [
-	| formatter writer xmlDeclarationWriter doctypeWriter elementDeclarationWriter paramEntityRefWriter |
+	| formatter writer xmlDeclarationWriter doctypeWriter paramEntityDeclarationWriter paramEntityRefWriter |
 
 	formatter := XMLWriterRecordingFormatterProxy new.
 	(writer := XMLWriter new) formatter: formatter.
 	(xmlDeclarationWriter := writer xml) write.
 	self assert:
 		(formatter
-			receivedNextAll: #(formatBeforeXMLDeclaration: formatAfterXMLDeclaration:)
+			receivedNext: #formatBeforeXMLDeclaration:
 			with: xmlDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: '1.0').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterXMLDeclaration:
+			with: xmlDeclarationWriter).
+
 	(doctypeWriter := writer doctype)
 		root: 'test';
 		with: [
-			(elementDeclarationWriter := writer elementDeclaration)
+			(paramEntityDeclarationWriter := writer entityDeclaration)
+				isParameter: true;
 				name: 'test';
-				contentModel: 'EMPTY'.
+				replacement: 'replacement'.
 			(paramEntityRefWriter := writer paramEntityRef) name: 'test'].
 	self assert:
 		(formatter
@@ -490,8 +524,16 @@ XMLWriterTest >> testFormattingProlog [
 			with: doctypeWriter).
 	self assert:
 		(formatter
-			receivedNextAll: #(formatBeforeDeclaration: formatAfterDeclaration:)
-			with: elementDeclarationWriter).
+			receivedNext: #formatBeforeDeclaration:
+			with: paramEntityDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'replacement').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: paramEntityDeclarationWriter).
 	self assert:
 		(formatter
 			receivedNextAll: #(formatBeforeEntityReference: formatAfterEntityReference:)
@@ -500,6 +542,39 @@ XMLWriterTest >> testFormattingProlog [
 		(formatter
 			receivedNextAll: #(formatAfterInternalSubset: formatAfterDoctypeDeclaration:)
 			with: doctypeWriter).
+]
+
+{ #category : #tests }
+XMLWriterTest >> testFormattingUnsafeTagWriters [
+	| formatter writer tagWriter |
+
+	formatter := XMLWriterRecordingFormatterProxy new.
+	(writer := XMLWriter new) formatter: formatter.
+	(tagWriter := writer startTag: 'test')
+		xmlns: 'defaultNS';
+		attributeAt: 'name' put: 'value';
+		write.
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeStartTag:
+			with: tagWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'defaultNS').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'value').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterStartTag:
+			with: tagWriter).
+	(tagWriter := writer endTag: 'empty') write.
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeEndTag: formatAfterEndTag:)
+			with: tagWriter).
 ]
 
 { #category : #tests }
@@ -578,6 +653,32 @@ XMLWriterTest >> testOutputsSelfClosingTags [
 	self assert:
 		writer printString =
 			'<tags><self-closing /><not-self-closing></not-self-closing><self-closing /></tags>'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testParentMarkupWriter [
+	| writer xmlDeclarationWriter tagWriter |
+
+	writer := XMLWriter new.
+	self assert: writer parentMarkupWriter isNil.
+	xmlDeclarationWriter := writer xml.
+	self
+		assert: writer parentMarkupWriter isNil;
+		assert: xmlDeclarationWriter parentMarkupWriter isNil;
+		assert: (writer parentMarkupWriterOf: xmlDeclarationWriter) isNil.
+
+	tagWriter := writer tag: 'one'.
+	self
+		assert: writer parentMarkupWriter isNil;
+		assert: tagWriter parentMarkupWriter isNil;
+		assert: (writer parentMarkupWriterOf: tagWriter) isNil.
+
+	tagWriter with: [| newTagWriter |
+		newTagWriter := writer tag: 'two'.
+		self
+			assert: writer parentMarkupWriter == tagWriter;
+			assert: newTagWriter parentMarkupWriter == tagWriter;
+			assert: (writer parentMarkupWriterOf: newTagWriter) == tagWriter].
 ]
 
 { #category : #tests }
@@ -792,6 +893,18 @@ XMLWriterTest >> testSystemAndPublicIDs [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testUnsafeTagWriters [
+	self assert:
+		(XMLWriter writeWith: [:writer |
+			writer
+				startTag: 'one';
+				startTag: 'two' attributes: (Array with: 'name' -> 'value');
+				string: 'test';
+				endTag: 'two';
+				endTag: 'one']) = '<one><two name="value">test</two></one>'
+]
+
+{ #category : #tests }
 XMLWriterTest >> testXMLDeclarations [
 	| writer  |
 
@@ -837,8 +950,16 @@ XMLWriterTest >> testXMLNSDeclarations [
 
 	writer := XMLWriter new.
 	tag := writer  tag: 'test'.
+	self
+		deny: tag hasXMLNSDeclarations;
+		deny: (tag includesXMLNS: '');
+		deny: (tag includesXMLNS: 'ns1').
+
 	tag xmlnsDeclarations: (Array with: '' -> 'default1' with: 'ns1' -> 'first').
 	self
+		assert: tag hasXMLNSDeclarations;
+		assert: (tag includesXMLNS: '');
+		assert: (tag includesXMLNS: 'ns1');
 		assert: tag xmlns = 'default1';
 		assert: (tag xmlnsAt: '') = 'default1';
 		assert: (tag xmlns: 'default2') = tag;
