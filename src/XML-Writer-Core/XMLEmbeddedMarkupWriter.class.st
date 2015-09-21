@@ -26,6 +26,14 @@ XMLEmbeddedMarkupWriter >> hasEmbeddedStringMarkup [
 	^ hasEmbeddedStringMarkup
 ]
 
+{ #category : #initialization }
+XMLEmbeddedMarkupWriter >> initialize [
+	super initialize.
+
+	hasEmbeddedStringMarkup := false.
+	hasEmbeddedMarkupWriters := false.
+]
+
 { #category : #private }
 XMLEmbeddedMarkupWriter >> newMarkupWriterBeingPushed [
 	self isWriting
@@ -44,14 +52,6 @@ XMLEmbeddedMarkupWriter >> newStringMarkupBeingWritten [
 				ifFalse: [self writeEmbeddedMarkupPrologue].
 			hasEmbeddedStringMarkup := true]
 		ifFalse: [self write]
-]
-
-{ #category : #initialization }
-XMLEmbeddedMarkupWriter >> setWriter: aWriter [
-	super setWriter: aWriter.
-
-	hasEmbeddedStringMarkup := false.
-	hasEmbeddedMarkupWriters := false.
 ]
 
 { #category : #writing }

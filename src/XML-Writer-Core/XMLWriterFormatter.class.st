@@ -24,12 +24,20 @@ XMLWriterFormatter class >> defaultIndentString [
 
 { #category : #'instance creation' }
 XMLWriterFormatter class >> writer: aWriter [
-	^ self new setWriter: aWriter
+	^ self new writer: aWriter
 ]
 
 { #category : #private }
 XMLWriterFormatter >> currentIndentLevel [
 	^ currentIndentLevel
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatAfterCData: aCDataWriter [
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatAfterCharacterEscape: aCharacterEscape [
 ]
 
 { #category : #formatting }
@@ -61,11 +69,23 @@ XMLWriterFormatter >> formatAfterPI: aPIWriter [
 ]
 
 { #category : #formatting }
+XMLWriterFormatter >> formatAfterQuotedStringValue: aString [
+]
+
+{ #category : #formatting }
 XMLWriterFormatter >> formatAfterStartTag: aTagWriter [
 ]
 
 { #category : #formatting }
 XMLWriterFormatter >> formatAfterXMLDeclaration: anXMLDeclarationWriter [
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatBeforeCData: aCDataWriter [
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatBeforeCharacterEscape: aCharacterEscape [
 ]
 
 { #category : #formatting }
@@ -97,6 +117,10 @@ XMLWriterFormatter >> formatBeforePI: aPIWriter [
 ]
 
 { #category : #formatting }
+XMLWriterFormatter >> formatBeforeQuotedStringValue: aString [
+]
+
+{ #category : #formatting }
 XMLWriterFormatter >> formatBeforeStartTag: aTagWriter [
 ]
 
@@ -120,16 +144,17 @@ XMLWriterFormatter >> indentString: aString [
 	indentString := aString.
 ]
 
+{ #category : #initialization }
+XMLWriterFormatter >> initialize [
+	super initialize.
+
+	currentIndentLevel := self class defaultIndentLevel.
+	indentString := self class defaultIndentString.
+]
+
 { #category : #private }
 XMLWriterFormatter >> outdent [
 	currentIndentLevel := self currentIndentLevel - 1
-]
-
-{ #category : #initialization }
-XMLWriterFormatter >> setWriter: aWriter [
-	writer := aWriter.
-	currentIndentLevel := self class defaultIndentLevel.
-	indentString := self class defaultIndentString.
 ]
 
 { #category : #private }
@@ -151,4 +176,9 @@ XMLWriterFormatter >> writeLineBreak [
 { #category : #accessing }
 XMLWriterFormatter >> writer [
 	^ writer
+]
+
+{ #category : #accessing }
+XMLWriterFormatter >> writer: aWriter [
+	writer := aWriter
 ]

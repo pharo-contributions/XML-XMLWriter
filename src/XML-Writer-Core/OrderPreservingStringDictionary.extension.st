@@ -1,17 +1,17 @@
 Extension { #name : #OrderPreservingStringDictionary }
 
 { #category : #'*XML-Writer-Core' }
-OrderPreservingStringDictionary >> writeAttributesOn: aTagWriter [
+OrderPreservingStringDictionary >> writeAttributesOn: aWriter [
 	self keysDo: [:attributeName |
-		aTagWriter
+		aWriter
 			writeAttributeName: attributeName
 			value: (self at: attributeName ifAbsent: '')]
 ]
 
 { #category : #'*XML-Writer-Core' }
-OrderPreservingStringDictionary >> writeSortedAttributesOn: aTagWriter [
+OrderPreservingStringDictionary >> writeSortedAttributesOn: aWriter [
 	self keys sort do: [:attributeName |
-		aTagWriter
+		aWriter
 			writeAttributeName: attributeName
 			value: (self at: attributeName ifAbsent: '')]
 ]

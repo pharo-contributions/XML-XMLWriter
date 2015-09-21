@@ -32,10 +32,16 @@ XMLCDataWriter >> writeBody [
 
 { #category : #private }
 XMLCDataWriter >> writeEpilogue [
-	self omitIfCanonical: [self writer nextPutAll: ']]>']
+	self omitIfCanonical: [
+		self writer
+			nextPutAll: ']]>';
+			formatAfterCData: self]
 ]
 
 { #category : #private }
 XMLCDataWriter >> writePrologue [
-	self omitIfCanonical: [self writer nextPutAll: '<![CDATA[']
+	self omitIfCanonical: [
+		self writer
+			formatBeforeCData: self;
+			nextPutAll: '<![CDATA[']
 ]

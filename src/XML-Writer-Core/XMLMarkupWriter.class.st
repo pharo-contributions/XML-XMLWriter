@@ -13,13 +13,12 @@ Class {
 
 { #category : #'instance creation' }
 XMLMarkupWriter class >> writer: aWriter [
-	^ self new setWriter: aWriter
+	^ self new writer: aWriter
 ]
 
 { #category : #converting }
 XMLMarkupWriter >> asString [
-	"for GS compatibility"
-	^ self printString
+	^ self writer asString
 ]
 
 { #category : #closing }
@@ -57,6 +56,13 @@ XMLMarkupWriter >> hasEmbeddedStringMarkup [
 	^ false
 ]
 
+{ #category : #initialization }
+XMLMarkupWriter >> initialize [
+	super initialize.
+
+	isWriting := false.
+]
+
 { #category : #testing }
 XMLMarkupWriter >> isDoctypeWriter [
 	^ false
@@ -72,6 +78,11 @@ XMLMarkupWriter >> isEmbeddedWithStringMarkup [
 
 { #category : #testing }
 XMLMarkupWriter >> isTagWriter [
+	^ false
+]
+
+{ #category : #testing }
+XMLMarkupWriter >> isUnsafeTagWriter [
 	^ false
 ]
 
@@ -116,12 +127,6 @@ XMLMarkupWriter >> printOn: aStream [
 	self writer printOn: aStream
 ]
 
-{ #category : #initialization }
-XMLMarkupWriter >> setWriter: aWriter [
-	writer := aWriter.
-	isWriting := false.
-]
-
 { #category : #writing }
 XMLMarkupWriter >> startWriting [
 	isWriting := true.
@@ -153,4 +158,9 @@ XMLMarkupWriter >> writePrologue [
 { #category : #accessing }
 XMLMarkupWriter >> writer [
 	^ writer
+]
+
+{ #category : #accessing }
+XMLMarkupWriter >> writer: aWriter [
+	writer := aWriter
 ]

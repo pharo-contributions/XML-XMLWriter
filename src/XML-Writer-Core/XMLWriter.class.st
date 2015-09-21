@@ -272,6 +272,18 @@ XMLWriter >> enablePrettyPrinting [
 ]
 
 { #category : #writing }
+XMLWriter >> endTag [
+	"use the #tag* messages instead if possible"
+	^ self pushNewMarkupWriter: XMLUnsafeEndTagWriter
+]
+
+{ #category : #writing }
+XMLWriter >> endTag: aName [
+	"use the #tag* messages instead if possible"
+	^ self endTag name: aName
+]
+
+{ #category : #writing }
 XMLWriter >> entityDeclaration [
 	^ self pushNewMarkupWriter: XMLEntityDeclarationWriter
 ]
@@ -303,6 +315,18 @@ XMLWriter >> escapesContentEntityReferences: aBoolean [
 		ifFalse: [
 			contentEscapes := ContentNonEntityEscapes.
 			contentStringEscapes := ContentStringNonEntityEscapes]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatAfterCData: aCDataWriter [
+	formatter
+		ifNotNil: [formatter formatAfterCData: aCDataWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatAfterCharacterEscape: aCharacterEscape [
+	formatter
+		ifNotNil: [formatter formatAfterCharacterEscape: aCharacterEscape]
 ]
 
 { #category : #formatting }
@@ -348,6 +372,12 @@ XMLWriter >> formatAfterPI: aPIWriter [
 ]
 
 { #category : #formatting }
+XMLWriter >> formatAfterQuotedStringValue: aString [
+	formatter
+		ifNotNil: [formatter formatAfterQuotedStringValue: aString]
+]
+
+{ #category : #formatting }
 XMLWriter >> formatAfterStartTag: aTagWriter [
 	formatter
 		ifNotNil: [formatter formatAfterStartTag: aTagWriter]
@@ -357,6 +387,18 @@ XMLWriter >> formatAfterStartTag: aTagWriter [
 XMLWriter >> formatAfterXMLDeclaration: anXMLDeclarationWriter [
 	formatter
 		ifNotNil: [formatter formatAfterXMLDeclaration: anXMLDeclarationWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeCData: aCDataWriter [
+	formatter
+		ifNotNil: [formatter formatBeforeCData: aCDataWriter]
+]
+
+{ #category : #formatting }
+XMLWriter >> formatBeforeCharacterEscape: aCharacterEscape [
+	formatter
+		ifNotNil: [formatter formatBeforeCharacterEscape: aCharacterEscape]
 ]
 
 { #category : #formatting }
@@ -402,6 +444,12 @@ XMLWriter >> formatBeforePI: aPIWriter [
 ]
 
 { #category : #formatting }
+XMLWriter >> formatBeforeQuotedStringValue: aString [
+	formatter
+		ifNotNil: [formatter formatBeforeQuotedStringValue: aString]
+]
+
+{ #category : #formatting }
 XMLWriter >> formatBeforeStartTag: aTagWriter [
 	formatter
 		ifNotNil: [formatter formatBeforeStartTag: aTagWriter]
@@ -420,7 +468,7 @@ XMLWriter >> formatter [
 
 { #category : #accessing }
 XMLWriter >> formatter: aFormatter [
-	formatter := aFormatter
+	(formatter := aFormatter) writer: self
 ]
 
 { #category : #testing }
@@ -524,6 +572,12 @@ XMLWriter >> paramEntityRef: aName [
 ]
 
 { #category : #accessing }
+XMLWriter >> parentMarkupWriter [
+	^ self activeMarkupWriter
+		ifNotNil: [:activeMarkupWriter | self parentMarkupWriterOf: activeMarkupWriter]
+]
+
+{ #category : #accessing }
 XMLWriter >> parentMarkupWriterOf: aMarkupWriter [
 	self markupWriterStack size to: 2 by: -1 do: [:i |
 		(self markupWriterStack at: i) == aMarkupWriter
@@ -555,7 +609,7 @@ XMLWriter >> printOn: aStream [
 XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
 	| newMarkupWriter |
 
-	newMarkupWriter := aMarkupWriterClass writer: self.
+	(newMarkupWriter := aMarkupWriterClass new) writer: self.
 	self activeMarkupWriterDo: [:each | each newMarkupWriterBeingPushed].
 
 	^ self markupWriterStack addLast: newMarkupWriter.
@@ -572,6 +626,25 @@ XMLWriter >> raw: aString [
 XMLWriter >> space [
 	"redefined for speed and portability"
 	stream nextPut: SpaceCharacter
+]
+
+{ #category : #writing }
+XMLWriter >> startTag [
+	"use the #tag* messages instead if possible"
+	^ self pushNewMarkupWriter: XMLUnsafeStartTagWriter
+]
+
+{ #category : #writing }
+XMLWriter >> startTag: aName [
+	"use the #tag* messages instead if possible"
+	^ self startTag name: aName
+]
+
+{ #category : #writing }
+XMLWriter >> startTag: aName attributes: aDictionaryOrArray [
+	"use the #tag* messages instead if possible"
+	^ (self startTag: aName)
+		attributes: aDictionaryOrArray
 ]
 
 { #category : #private }
@@ -637,12 +710,30 @@ XMLWriter >> write: aString escapedWith: anEscapeTable [
 					and: [asciiValue <= tableSize
 						and: [(anEscapeTable at: asciiValue) notNil]])
 					ifTrue: [| replacement |
-						stream nextPutAll:
-							((replacement := anEscapeTable at: asciiValue) == #LineBreak
-								ifTrue: [self lineBreak]
-								ifFalse: [replacement])]
+						(replacement := anEscapeTable at: asciiValue) == #LineBreak
+							ifTrue: [stream nextPutAll: self lineBreak]
+							ifFalse: [
+								self formatBeforeCharacterEscape: replacement.
+								stream nextPutAll: replacement.
+								self formatAfterCharacterEscape: replacement]]
 					ifFalse: [stream nextPut: nextChar]]]
 		ifFalse: [stream nextPutAll: aString]
+]
+
+{ #category : #private }
+XMLWriter >> writeAttributeName: aName value: aValue [ 
+	self
+		space;
+		writeName: aName escapedContentValue: aValue
+]
+
+{ #category : #private }
+XMLWriter >> writeAttributes: anAttributeCollection [
+	anAttributeCollection
+		ifNotNil: [
+			self isCanonical
+				ifTrue: [anAttributeCollection writeSortedAttributesOn: self]
+				ifFalse: [anAttributeCollection writeAttributesOn: self]]
 ]
 
 { #category : #private }
@@ -656,7 +747,9 @@ XMLWriter >> writeEscapedContent: aString [
 XMLWriter >> writeEscapedContentString: aString [
 	self
 		nextPut: $";
+		formatBeforeQuotedStringValue: aString;
 		write: aString escapedWith: contentStringEscapes;
+		formatAfterQuotedStringValue: aString;
 		nextPut: $"
 ]
 
@@ -664,7 +757,9 @@ XMLWriter >> writeEscapedContentString: aString [
 XMLWriter >> writeEscapedEntityValueString: aString [
 	self
 		nextPut: $";
+		formatBeforeQuotedStringValue: aString;
 		write: aString escapedWith: EntityValueEscapes;
+		formatAfterQuotedStringValue: aString;
 		nextPut: $"
 ]
 
@@ -697,12 +792,16 @@ XMLWriter >> writeUnescapedString: aString [
 		(aString includes: $")
 			ifTrue: [$']
 			ifFalse: [$"].
-	self nextPut: quote.
+	self
+		nextPut: quote;
+		formatBeforeQuotedStringValue: aString.
 	aString do: [:each |
 		"delimiters are skipped because they can't be escaped here"
 		each == quote
 			ifFalse: [self nextPut: each]].
-	self nextPut: quote.
+	self	
+		formatAfterQuotedStringValue: aString;
+		nextPut: quote.
 ]
 
 { #category : #private }
@@ -718,6 +817,48 @@ XMLWriter >> writeUnwrittenMarkupWritersEmbeddedIn: aMarkupWriter [
 XMLWriter >> writeWith: aBlock [
 	aBlock cull: self.
 	self write.
+]
+
+{ #category : #private }
+XMLWriter >> writeXMLNS: aPrefix uri: aURI [
+	self
+		space;
+		writeName:
+			(aPrefix isEmpty
+				ifTrue: ['xmlns']
+				ifFalse: ['xmlns:', aPrefix])
+		escapedContentValue: aURI
+]
+
+{ #category : #private }
+XMLWriter >> writeXMLNSDeclarations: aDictionary [
+	| checkForDuplicates parentMarkupWriter |
+
+	aDictionary
+		ifNil: [^ self].
+	checkForDuplicates := 
+		self omitsRedundantXMLNSDeclarations
+			and: [(parentMarkupWriter := self parentMarkupWriter) notNil
+				and: [parentMarkupWriter isTagWriter]].
+	self isCanonical
+		ifTrue: [
+			(aDictionary keys reject: [:prefix |
+				(checkForDuplicates
+					and: [parentMarkupWriter xmlnsAt: prefix]) = (aDictionary at: prefix)])
+				sort;
+				do: [:prefix |
+					self
+						writeXMLNS: prefix
+						uri: (aDictionary at: prefix)]]
+		ifFalse: [
+			aDictionary keysDo: [:prefix | | uri |
+				uri := aDictionary at: prefix.
+				(checkForDuplicates
+					and: [(parentMarkupWriter xmlnsAt: prefix) = uri])
+					ifFalse: [
+						self
+							writeXMLNS: prefix
+							uri: uri]]].
 ]
 
 { #category : #writing }

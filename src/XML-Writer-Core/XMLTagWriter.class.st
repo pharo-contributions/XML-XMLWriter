@@ -48,12 +48,22 @@ XMLTagWriter >> attributes: aDictionaryOrArray [
 
 { #category : #testing }
 XMLTagWriter >> hasAttributes [
-	^ self attributes notEmpty
+	^ attributes notNil and: [attributes notEmpty]
+]
+
+{ #category : #testing }
+XMLTagWriter >> hasXMLNSDeclarations [
+	^ xmlnsDeclarations notNil and: [xmlnsDeclarations notEmpty]
 ]
 
 { #category : #testing }
 XMLTagWriter >> includesAttribute: anAttribute [
 	^ self attributes includesKey: anAttribute
+]
+
+{ #category : #testing }
+XMLTagWriter >> includesXMLNS: aPrefix [
+	^ self xmlnsDeclarations includesKey: aPrefix
 ]
 
 { #category : #testing }
@@ -63,7 +73,7 @@ XMLTagWriter >> isTagWriter [
 
 { #category : #accessing }
 XMLTagWriter >> name [
-	^ name ifNil: ['']
+	^ name ifNil: [name := '']
 ]
 
 { #category : #accessing }
@@ -82,23 +92,6 @@ XMLTagWriter >> setXMLNSDeclarations: aDictionary [
 ]
 
 { #category : #private }
-XMLTagWriter >> writeAttributeName: aName value: aValue [ 
-	self writer
-		space;
-		writeName: aName
-		escapedContentValue: aValue
-]
-
-{ #category : #private }
-XMLTagWriter >> writeAttributes [
-	attributes
-		ifNotNil: [
-			self writer isCanonical
-				ifTrue: [attributes writeSortedAttributesOn: self]
-				ifFalse: [attributes writeAttributesOn: self]]
-]
-
-{ #category : #private }
 XMLTagWriter >> writeEmbeddedMarkupPrologue [
 	self writer
 		nextPut: $>;
@@ -106,32 +99,29 @@ XMLTagWriter >> writeEmbeddedMarkupPrologue [
 ]
 
 { #category : #private }
-XMLTagWriter >> writeEndTag [
-	self writer
-		formatBeforeEndTag: self;
-		nextPut: $<;
-		nextPut: $/;
-		writeName: self name;
-		nextPut: $>;
-		formatAfterEndTag: self
-]
-
-{ #category : #private }
 XMLTagWriter >> writeEpilogue [
-	self hasEmbeddedMarkup
-		ifTrue: [self writeEndTag]
-		ifFalse: [
-			(self writer isCanonical
-				or: [self writer outputsSelfClosingTags not])
-				ifTrue: [
-					self writer nextPut: $>.
-					self writeEndTag]
+	(self hasEmbeddedMarkup
+		or: [self writer isCanonical
+			or: [self writer outputsSelfClosingTags not]])
+		ifTrue: [
+			self hasEmbeddedMarkup
 				ifFalse: [
 					self writer
-						space;
-						nextPut: $/;
 						nextPut: $>;
-						formatAfterEndTag: self]].
+						formatAfterStartTag: self].
+			self writer
+				formatBeforeEndTag: self;
+				nextPut: $<;
+				nextPut: $/;
+				writeName: self name;
+				nextPut: $>;
+				formatAfterEndTag: self]
+		ifFalse: [
+			self writer
+				space;
+				nextPut: $/;
+				nextPut: $>;
+				formatAfterEndTag: self]
 ]
 
 { #category : #private }
@@ -139,52 +129,9 @@ XMLTagWriter >> writePrologue [
 	self writer
 		formatBeforeStartTag: self;
 		nextPut: $<;
-		writeName: self name.
-	self
-		writeXMLNSDeclarations;
-		writeAttributes.
-]
-
-{ #category : #private }
-XMLTagWriter >> writeXMLNS: aPrefix uri: aURI [
-	self writer
-		space;
-		writeName:
-			(aPrefix isEmpty
-				ifTrue: ['xmlns']
-				ifFalse: ['xmlns:', aPrefix])
-		escapedContentValue: aURI
-]
-
-{ #category : #private }
-XMLTagWriter >> writeXMLNSDeclarations [
-	| checkForDuplicates parentMarkupWriter |
-
-	xmlnsDeclarations
-		ifNil: [^ self].
-	checkForDuplicates := 
-		self writer omitsRedundantXMLNSDeclarations
-			and: [(parentMarkupWriter := self parentMarkupWriter) notNil
-				and: [parentMarkupWriter isTagWriter]].
-	self writer isCanonical
-		ifTrue: [
-			(xmlnsDeclarations keys reject: [:prefix |
-				(checkForDuplicates
-					and: [parentMarkupWriter xmlnsAt: prefix]) = (xmlnsDeclarations at: prefix)])
-				sort;
-				do: [:prefix |
-					self
-						writeXMLNS: prefix
-						uri: (xmlnsDeclarations at: prefix)]]
-		ifFalse: [
-			xmlnsDeclarations keysDo: [:prefix | | uri |
-				uri := xmlnsDeclarations at: prefix.
-				(checkForDuplicates
-					and: [(parentMarkupWriter xmlnsAt: prefix) = uri])
-					ifFalse: [
-						self
-							writeXMLNS: prefix
-							uri: uri]]].
+		writeName: self name;
+		writeXMLNSDeclarations: xmlnsDeclarations;
+		writeAttributes: attributes
 ]
 
 { #category : #accessing }
