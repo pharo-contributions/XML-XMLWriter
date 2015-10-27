@@ -109,10 +109,11 @@ XMLWriterTest >> testAttributes [
 		assert: (tag attributeAt: 'first') = 'one';
 		assert: (tag attributeAt: 'second' put: 'two') = 'two';
 		assert: (tag attributeAt: 'third' ifAbsentPut: ['three']) = 'three';
-		assert: (tag attributeAt: 'fourth' ifAbsent: [true]);
+		assert: (tag attributeAt: 'fourth' ifAbsent: [nil]) isNil;
 		assert: (tag attributeAt: 'fourth') isEmpty;
 		assert: (tag attributes at: 'fourth') isEmpty;
 		deny: (tag includesAttribute: 'fourth').
+
 	tag with: [
 		writer
 			tag: 'inner'
@@ -896,12 +897,74 @@ XMLWriterTest >> testSystemAndPublicIDs [
 XMLWriterTest >> testUnsafeTagWriters [
 	self assert:
 		(XMLWriter writeWith: [:writer |
+			writer startTag name: 'one'.
 			writer
-				startTag: 'one';
-				startTag: 'two' attributes: (Array with: 'name' -> 'value');
-				string: 'test';
+				startTag: 'two'
+				attributes: (Array with: 'name' -> 'value');
+				startTag: 'three']) = '<one><two name="value"><three>'.
+
+	self assert:
+		(XMLWriter writeWith: [:writer |
+			writer endTag name: 'three'.
+			writer
 				endTag: 'two';
-				endTag: 'one']) = '<one><two name="value">test</two></one>'
+				endTag: 'one']) = '</three></two></one>'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testUnsafeTagWritersAttributes [
+	| writer tag |
+
+	writer := XMLWriter new.
+	tag := writer  startTag: 'outer' attributes: (Array with: 'first' -> 'one').
+	self
+		assert: tag hasAttributes;
+		assert: (tag attributeAt: 'first') = 'one';
+		assert: (tag attributeAt: 'second' put: 'two') = 'two';
+		assert: (tag attributeAt: 'third' ifAbsentPut: ['three']) = 'three';
+		assert: (tag attributeAt: 'fourth' ifAbsent: [nil]) isNil;
+		assert: (tag attributeAt: 'fourth') isEmpty;
+		assert: (tag attributes at: 'fourth') isEmpty;
+		deny: (tag includesAttribute: 'fourth').
+
+	writer
+		startTag: 'inner'
+		attributes: (Dictionary with: 'fourth' -> 'four').
+	self assert:
+		writer contents =
+			'<outer first="one" second="two" third="three"><inner fourth="four">'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testUnsafeTagWritersXMLNSDeclarations [
+	| writer tag |
+
+	writer := XMLWriter new.
+	tag := writer  startTag: 'test'.
+	self
+		deny: tag hasXMLNSDeclarations;
+		deny: (tag includesXMLNS: '');
+		deny: (tag includesXMLNS: 'ns1').
+
+	tag xmlnsDeclarations: (Array with: '' -> 'default1' with: 'ns1' -> 'first').
+	self
+		assert: tag hasXMLNSDeclarations;
+		assert: (tag includesXMLNS: '');
+		assert: (tag includesXMLNS: 'ns1');
+		assert: tag xmlns = 'default1';
+		assert: (tag xmlnsAt: '') = 'default1';
+		assert: (tag xmlns: 'default2') = tag;
+		assert: tag xmlns = 'default2';
+		assert: (tag xmlnsAt: 'ns1') = 'first';
+		assert: (tag xmlnsAt: 'ns2' put: 'second') = 'second';
+		assert: (tag xmlnsAt: 'ns3' ifAbsentPut: ['third']) = 'third';
+		assert: (tag xmlnsAt: 'ns4' ifAbsent: [nil]) isNil;
+		assert: (tag xmlnsAt: 'ns4') isEmpty;
+		assert: (tag xmlnsDeclarations at: 'ns4') isEmpty.
+
+	self assert:
+		writer contents =
+			'<test xmlns="default2" xmlns:ns1="first" xmlns:ns2="second" xmlns:ns3="third">'.
 ]
 
 { #category : #tests }
@@ -967,7 +1030,7 @@ XMLWriterTest >> testXMLNSDeclarations [
 		assert: (tag xmlnsAt: 'ns1') = 'first';
 		assert: (tag xmlnsAt: 'ns2' put: 'second') = 'second';
 		assert: (tag xmlnsAt: 'ns3' ifAbsentPut: ['third']) = 'third';
-		assert: (tag xmlnsAt: 'ns4' ifAbsent: [true]);
+		assert: (tag xmlnsAt: 'ns4' ifAbsent: [nil]) isNil;
 		assert: (tag xmlnsAt: 'ns4') isEmpty;
 		assert: (tag xmlnsDeclarations at: 'ns4') isEmpty.
 
