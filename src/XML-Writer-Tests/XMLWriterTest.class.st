@@ -346,11 +346,13 @@ XMLWriterTest >> testEmbedInMarkupWriter [
 			writer
 				tag: 'test'
 				with: $<]) = '<test>&lt;</test>'.
-	self assert:
-		(XMLWriter writeWith: [:writer |
-			writer
-				tag: 'test'
-				with: nil]) = '<test />'.
+		
+	(Array with: nil with: '' with: #() with: []) do: [:each |
+		self assert:
+			(XMLWriter writeWith: [:writer |
+				writer
+					tag: 'test'
+					with: each]) = '<test />'].
 ]
 
 { #category : #tests }
@@ -798,7 +800,12 @@ XMLWriterTest >> testRaw [
 			writer
 				tag: 'test'
 				with: [writer raw: '<raw name="&value;"/>']]) =
-				'<test><raw name="&value;"/></test>'
+					'<test><raw name="&value;"/></test>'.
+	self assert:
+		(XMLWriter writeWith: [:writer |
+			writer
+				tag: 'test'
+				with: [writer raw: '']]) = '<test />'.
 ]
 
 { #category : #tests }
@@ -877,6 +884,21 @@ XMLWriterTest >> testStartingAndFinishing [
 	self assert:
 		writer contents =
 			'<outer xmlns="default" test="value"><inner>test<empty /></inner></outer>'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testString [
+	self assert:
+		(XMLWriter writeWith: [:writer |
+			writer
+				tag: 'test'
+				with: [writer string: '<escaped name="&value;"/>']]) =
+					'<test>&lt;escaped name="&amp;value;"/&gt;</test>'.
+	self assert:
+		(XMLWriter writeWith: [:writer |
+			writer
+				tag: 'test'
+				with: [writer string: '']]) = '<test />'.
 ]
 
 { #category : #tests }
