@@ -273,13 +273,21 @@ XMLWriter >> enablePrettyPrinting [
 
 { #category : #writing }
 XMLWriter >> endTag [
-	"use the #tag* messages instead if possible"
+	"Returns a new XMLUnsafeEndTagWriter for writing an end tag to close an element
+	started by a #startTag* message.
+
+	Use the #tag* messages instead if possible."
+
 	^ self pushNewMarkupWriter: XMLUnsafeEndTagWriter
 ]
 
 { #category : #writing }
 XMLWriter >> endTag: aName [
-	"use the #tag* messages instead if possible"
+	"Returns a new XMLUnsafeEndTagWriter for writing an end tag with the specified
+	name to close an element started by a #startTag* message.
+
+	Use the #tag* messages instead if possible."
+
 	^ self endTag name: aName
 ]
 
@@ -617,9 +625,13 @@ XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
 
 { #category : #writing }
 XMLWriter >> raw: aString [
-	self
-		newStringMarkup;
-		nextPutAll: aString
+	"writes unescaped string content"
+
+	aString size > 0
+		ifTrue: [
+			self
+				newStringMarkup;
+				nextPutAll: aString]
 ]
 
 { #category : #private }
@@ -630,19 +642,32 @@ XMLWriter >> space [
 
 { #category : #writing }
 XMLWriter >> startTag [
-	"use the #tag* messages instead if possible"
+	"Returns a new XMLUnsafeStartTagWriter for writing a start tag that does
+	not support embedding or automatic end tag generation.
+
+	Use the #tag* messages instead if possible."
+
 	^ self pushNewMarkupWriter: XMLUnsafeStartTagWriter
 ]
 
 { #category : #writing }
 XMLWriter >> startTag: aName [
-	"use the #tag* messages instead if possible"
+	"Returns a new XMLUnsafeStartTagWriter for writing a start tag with the
+	specified name that does not support embedding or automatic end tag generation.
+
+	Use the #tag* messages instead if possible."
+
 	^ self startTag name: aName
 ]
 
 { #category : #writing }
 XMLWriter >> startTag: aName attributes: aDictionaryOrArray [
-	"use the #tag* messages instead if possible"
+	"Returns a new XMLUnsafeStartTagWriter for writing a start tag with the
+	specified name and attributes that does not support embedding or automatic
+	end tag generation.
+	
+	Use the #tag* messages instead if possible."
+
 	^ (self startTag: aName)
 		attributes: aDictionaryOrArray
 ]
@@ -659,29 +684,45 @@ XMLWriter >> stream: aStream [
 
 { #category : #writing }
 XMLWriter >> string: aString [
-	self
-		newStringMarkup;
-		writeEscapedContent: aString
+	"writes XML-escaped string content"
+
+	aString size > 0
+		ifTrue: [
+			self
+				newStringMarkup;
+				writeEscapedContent: aString]
 ]
 
 { #category : #writing }
 XMLWriter >> tag [
+	"returns a new XMLTagWriter for writing an element that supports embedding
+	markup using #with: and automatic end tag generation"
+
 	^ self pushNewMarkupWriter: XMLTagWriter
 ]
 
 { #category : #writing }
 XMLWriter >> tag: aName [
+	"returns a new XMLTagWriter for writing an element with the specified name
+	that supports embedding markup using #with: and automatic end tag generation"
+
 	^ self tag name: aName
 ]
 
 { #category : #writing }
 XMLWriter >> tag: aName attributes: aDictionaryOrArray [
+	"returns a new XMLTagWriter for writing an element with the specified name and
+	attributes that supports embedding markup using #with: and automatic end tag
+	generation"
+
 	^ (self tag: aName)
 		attributes: aDictionaryOrArray
 ]
 
 { #category : #writing }
 XMLWriter >> tag: aName attributes: aDictionaryOrArray with: aStringOrCollectionOrBlock [
+	"writes an element with the specified name, attributes, and embedded markup"
+
 	^ (self tag: aName)
 		attributes: aDictionaryOrArray;
 		with: aStringOrCollectionOrBlock
@@ -689,6 +730,8 @@ XMLWriter >> tag: aName attributes: aDictionaryOrArray with: aStringOrCollection
 
 { #category : #writing }
 XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
+	"writes an element with the specified name and embedded markup"
+
 	^ (self tag: aName) with: aStringOrCollectionOrBlock
 ]
 
@@ -863,5 +906,10 @@ XMLWriter >> writeXMLNSDeclarations: aDictionary [
 
 { #category : #writing }
 XMLWriter >> xml [
+	^ self xmlDeclaration
+]
+
+{ #category : #writing }
+XMLWriter >> xmlDeclaration [
 	^ self pushNewMarkupWriter: XMLXMLDeclarationWriter
 ]
