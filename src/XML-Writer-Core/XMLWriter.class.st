@@ -211,7 +211,9 @@ XMLWriter >> asString [
 
 { #category : #testing }
 XMLWriter >> atBeginning [
-	"overridden in GS version to use Stream>>atBeginning"
+	"overridden in the GS version to use Stream>>atBeginning because
+	not all streams are 0-based on GS"
+
 	^ stream position = 0
 ]
 
