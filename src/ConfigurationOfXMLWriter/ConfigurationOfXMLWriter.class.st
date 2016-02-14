@@ -1343,7 +1343,7 @@ ConfigurationOfXMLWriter >> version266: spec [
 
         spec for: #common do: [
                 spec blessing: #release.
-			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.43'.
+			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.44'.
 			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.24'.
                 ].
 ]
