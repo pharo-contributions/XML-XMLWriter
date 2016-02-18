@@ -10,9 +10,10 @@ Class {
 
 { #category : #private }
 XMLWriterTest >> prettyPrintedLines: anArrayOfLineArrays [
-	| lineNumber |
 	"takes an array of arrays where the first element of each is the indent level
 	and the rest are the lines with that indent level"
+
+	| lineNumber |
 
 	lineNumber := 1.
 	^ String streamContents: [:stream |
@@ -85,11 +86,16 @@ XMLWriterTest >> testAsString [
 
 { #category : #tests }
 XMLWriterTest >> testAtBeginning [
-	"on GS writeStream gives an ANSI 0-based position stream,
-	on: doesn't, so both are tested"
+	"on GS #writeStream gives an ANSI 0-based position stream,
+	but WriteStream on: doesn't, so both are tested, and we
+	test to make sure anything written before creating the
+	writer is ignored by atBeginning"
+
 	(Array
 		with: String new writeStream
-		with: (WriteStream on: String new))
+		with: (WriteStream on: String new)
+		with: (String withAll: 'test') writeStream
+		with: (WriteStream on: (String withAll: 'test')))
 		do: [:stream | | writer |
 			writer := XMLWriter on: stream.
 			self assert: writer atBeginning.
@@ -582,7 +588,7 @@ XMLWriterTest >> testFormattingUnsafeTagWriters [
 
 { #category : #tests }
 XMLWriterTest >> testLineBreak [
-	| writer  |
+	| writer |
 
 	(writer := XMLWriter new)
 		enablePrettyPrinting;
@@ -686,7 +692,7 @@ XMLWriterTest >> testParentMarkupWriter [
 
 { #category : #tests }
 XMLWriterTest >> testPrettyPrintingDTDs [
-	| writer  |
+	| writer |
 
 	(writer := XMLWriter new)
 		enablePrettyPrinting;
@@ -735,11 +741,10 @@ XMLWriterTest >> testPrettyPrintingDTDs [
 
 { #category : #tests }
 XMLWriterTest >> testPrettyPrintingElements [
-	| writer  |
+	| writer |
 
 	(writer := XMLWriter new)
 		enablePrettyPrinting;
-		xml;
 		comment: 'an example'.
 	writer tag
 		name: 'example:user';
@@ -776,8 +781,7 @@ XMLWriterTest >> testPrettyPrintingElements [
 	self assert:
 		writer contents =
 			(self prettyPrintedLines: #(
-				#(0 '<?xml version="1.0"?>'
-					'<!--an example-->'
+				#(0 '<!--an example-->'
 					'<example:user xmlns:example="urn://example">')
 				#(1 '<username>')
 				#(2 '<!--id-->jsmith</username>')
@@ -991,7 +995,7 @@ XMLWriterTest >> testUnsafeTagWritersXMLNSDeclarations [
 
 { #category : #tests }
 XMLWriterTest >> testXMLDeclarations [
-	| writer  |
+	| writer |
 
 	(writer := XMLWriter new)
 		xml.
