@@ -45,6 +45,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'stream',
+		'streamStartPosition',
 		'markupWriterStack',
 		'formatter',
 		'lineBreak',
@@ -211,10 +212,12 @@ XMLWriter >> asString [
 
 { #category : #testing }
 XMLWriter >> atBeginning [
-	"overridden in the GS version to use Stream>>atBeginning because
-	not all streams are 0-based on GS"
+	"On GS stream positions can be 1 or 0 based depending on the stream, so
+	saving the initial position and testing against it works for both, and
+	it also makes this method work correctly if the stream was written to
+	before the XMLWriter was created"
 
-	^ stream position = 0
+	^ stream position = streamStartPosition
 ]
 
 { #category : #writing }
@@ -549,6 +552,7 @@ XMLWriter >> omitsRedundantXMLNSDeclarations: aBoolean [
 { #category : #initialization }
 XMLWriter >> on: aStream [
 	stream := aStream.
+	streamStartPosition := aStream position.
 	markupWriterStack := OrderedCollection new.
 	lineBreak := self class defaultLineBreak.
 	contentEscapes := ContentEscapes.

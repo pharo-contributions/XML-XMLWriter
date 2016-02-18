@@ -69,6 +69,11 @@ XMLMarkupWriter >> isDoctypeWriter [
 ]
 
 { #category : #testing }
+XMLMarkupWriter >> isEmbedded [
+	^ self parentMarkupWriter notNil
+]
+
+{ #category : #testing }
 XMLMarkupWriter >> isEmbeddedWithStringMarkup [
 	| parent |
 

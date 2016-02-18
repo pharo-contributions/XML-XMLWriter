@@ -73,8 +73,3 @@ XMLPrettyPrintingWriterFormatter >> formatBeforeStartTag: aTagWriter [
 	aTagWriter isEmbeddedWithStringMarkup
 		ifFalse: [self writeLineBreak]
 ]
-
-{ #category : #formatting }
-XMLPrettyPrintingWriterFormatter >> formatBeforeXMLDeclaration: anXMLDeclarationWriter [
-	self writeLineBreak
-]
