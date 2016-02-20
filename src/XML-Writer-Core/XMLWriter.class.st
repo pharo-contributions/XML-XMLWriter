@@ -87,7 +87,7 @@ XMLWriter class >> initialize [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentEscapes [
-	(ContentEscapes := Array new: 256)
+	(ContentEscapes := Array new: 255)
 		at: $& asciiValue put: '&amp;';
 		at: $< asciiValue put: '&lt;';
 		at: $> asciiValue put: '&gt;'; "required to escape ]]> in PCDATA"
@@ -97,16 +97,16 @@ XMLWriter class >> initializeContentEscapes [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentNonEntityEscapes [
+	"like ContentEscapes, but allows entity references"
 	(ContentNonEntityEscapes := ContentEscapes copy)
-		at: $& asciiValue
-		put: nil
+		at: $& asciiValue put: nil
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentStringEscapes [
-	(ContentStringEscapes := Array new: 256)
+	(ContentStringEscapes := Array new: 255)
 		at: $& asciiValue put: '&amp;';
-		at: $< asciiValue put: '&lt;';
+		at: $< asciiValue put: '&lt;'; "< is not allowed in attr values, but > is"
 		at: $" asciiValue put: '&quot;';
 		at: Character cr asciiValue put: #LineBreak;
 		at: Character lf asciiValue put: #LineBreak
@@ -114,14 +114,14 @@ XMLWriter class >> initializeContentStringEscapes [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentStringNonEntityEscapes [
+	"like ContentStringEscapes, but allows entity references"
 	(ContentStringNonEntityEscapes := ContentStringEscapes copy)
-		at: $& asciiValue
-		put: nil
+		at: $& asciiValue put: nil
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeEntityValueEscapes [
-	(EntityValueEscapes := Array new: 256)
+	(EntityValueEscapes := Array new: 255)
 		at: $" asciiValue put: '&#34;';
 		at: $% asciiValue put: '&#37;';
 		at: Character cr asciiValue put: #LineBreak;
