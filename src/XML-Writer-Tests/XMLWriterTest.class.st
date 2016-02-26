@@ -819,20 +819,25 @@ XMLWriterTest >> testRedundantWrites [
 			writer
 				tag: 'report'
 				with: [
-					writer
-						tag: 'name'
-						with: 'TestName - Report'.
+					(writer tag: 'name')
+						with: 'TestName - Report';
+						write.
 					writer write.
 					writer writeWith: [:writer2 |
-						writer2
-							tag: 'finality'
-							with: 'succeed'.
+						(writer2 tag: 'finality')
+							with: [
+								writer2 comment
+									string: 'status';
+									write;
+									write.
+								writer2 string: 'succeed'];
+							write.
 						writer2 write].
 					writer write].
 				writer write]) =
 			('<report>',
 			'<name>TestName - Report</name>',
-			'<finality>succeed</finality>',
+			'<finality><!--status-->succeed</finality>',
 			'</report>')
 ]
 
