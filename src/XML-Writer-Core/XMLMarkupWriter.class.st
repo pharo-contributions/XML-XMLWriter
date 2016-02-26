@@ -6,7 +6,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'writer',
-		'isWriting'
+		'hasStartedWriting'
 	],
 	#category : #'XML-Writer-Core'
 }
@@ -36,7 +36,6 @@ XMLMarkupWriter >> finishWriting [
 	self hasEmbeddedMarkupWriters
 		ifTrue: [self writer writeUnwrittenMarkupWritersEmbeddedIn: self].
 	self writeEpilogue.
-	isWriting := false.
 
 	self writer popActiveMarkupWriter.
 ]
@@ -56,11 +55,16 @@ XMLMarkupWriter >> hasEmbeddedStringMarkup [
 	^ false
 ]
 
+{ #category : #testing }
+XMLMarkupWriter >> hasStartedWriting [
+	^ hasStartedWriting
+]
+
 { #category : #initialization }
 XMLMarkupWriter >> initialize [
 	super initialize.
 
-	isWriting := false.
+	hasStartedWriting := false.
 ]
 
 { #category : #testing }
@@ -89,11 +93,6 @@ XMLMarkupWriter >> isTagWriter [
 { #category : #testing }
 XMLMarkupWriter >> isUnsafeTagWriter [
 	^ false
-]
-
-{ #category : #testing }
-XMLMarkupWriter >> isWriting [
-	^ isWriting
 ]
 
 { #category : #private }
@@ -134,13 +133,13 @@ XMLMarkupWriter >> printOn: aStream [
 
 { #category : #writing }
 XMLMarkupWriter >> startWriting [
-	isWriting := true.
+	hasStartedWriting := true.
 	self writePrologue.
 ]
 
 { #category : #writing }
 XMLMarkupWriter >> write [
-	self isWriting
+	self hasStartedWriting
 		ifFalse: [
 			self
 				startWriting;

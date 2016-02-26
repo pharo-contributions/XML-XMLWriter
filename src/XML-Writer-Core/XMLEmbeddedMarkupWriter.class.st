@@ -36,7 +36,7 @@ XMLEmbeddedMarkupWriter >> initialize [
 
 { #category : #private }
 XMLEmbeddedMarkupWriter >> newMarkupWriterBeingPushed [
-	self isWriting
+	self hasStartedWriting
 		ifTrue: [
 			self hasEmbeddedMarkup
 				ifFalse: [self writeEmbeddedMarkupPrologue].
@@ -46,7 +46,7 @@ XMLEmbeddedMarkupWriter >> newMarkupWriterBeingPushed [
 
 { #category : #private }
 XMLEmbeddedMarkupWriter >> newStringMarkupBeingWritten [
-	self isWriting
+	self hasStartedWriting
 		ifTrue: [
 			self hasEmbeddedMarkup
 				ifFalse: [self writeEmbeddedMarkupPrologue].
@@ -56,11 +56,12 @@ XMLEmbeddedMarkupWriter >> newStringMarkupBeingWritten [
 
 { #category : #writing }
 XMLEmbeddedMarkupWriter >> with: aStringOrCollectionOrBlock [
-	self isWriting ifFalse: [
-		self
-			startWriting;
-			writeBody: aStringOrCollectionOrBlock;
-			finishWriting]
+	self hasStartedWriting
+		ifFalse: [
+			self
+				startWriting;
+				writeBody: aStringOrCollectionOrBlock;
+				finishWriting]
 ]
 
 { #category : #private }

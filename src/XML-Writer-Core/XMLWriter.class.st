@@ -744,7 +744,7 @@ XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
 { #category : #writing }
 XMLWriter >> write [
 	self activeMarkupWriterDo: [:each |
-		each isWriting
+		each hasStartedWriting
 			ifFalse: [each write]]
 ]
 
@@ -858,7 +858,7 @@ XMLWriter >> writeUnwrittenMarkupWritersEmbeddedIn: aMarkupWriter [
 	self activeMarkupWriterDo: [:each |
 		each == aMarkupWriter
 			ifTrue: [^ self].
-		each isWriting
+		each hasStartedWriting
 			ifFalse: [each write]]
 ]
 
