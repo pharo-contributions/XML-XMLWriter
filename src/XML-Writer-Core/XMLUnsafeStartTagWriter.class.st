@@ -61,12 +61,12 @@ XMLUnsafeStartTagWriter >> includesXMLNS: aPrefix [
 	^ self xmlnsDeclarations includesKey: aPrefix
 ]
 
-{ #category : #initialization }
+{ #category : #private }
 XMLUnsafeStartTagWriter >> setAttributes: aDictionary [
 	attributes := aDictionary
 ]
 
-{ #category : #initialization }
+{ #category : #private }
 XMLUnsafeStartTagWriter >> setXMLNSDeclarations: aDictionary [ 
 	xmlnsDeclarations := aDictionary
 ]

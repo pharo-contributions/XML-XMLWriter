@@ -1,5 +1,5 @@
 "
-A writer for entity references.
+This class writes general and parameter entity references.
 "
 Class {
 	#name : #XMLEntityReferenceWriter,

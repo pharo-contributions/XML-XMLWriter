@@ -1,5 +1,5 @@
 "
-This class generates XML tags. You can specifiy the attributes of the start tag using the #attribute* messages, and you can add xmlns: namespace declarations using the #xmlns* messages.
+This class writes XML tags. You can specifiy the attributes of the start tag using the #attribute* messages, and you can add xmlns: namespace declarations using the #xmlns* messages.
 
 Empty elements will generate self-closed tags like ""<empty/>"" unless isCanonical is enabled or outputsSelfClosingTags is disabled.
 
@@ -81,12 +81,12 @@ XMLTagWriter >> name: aName [
 	name := aName
 ]
 
-{ #category : #initialization }
+{ #category : #private }
 XMLTagWriter >> setAttributes: aDictionary [
 	attributes := aDictionary
 ]
 
-{ #category : #initialization }
+{ #category : #private }
 XMLTagWriter >> setXMLNSDeclarations: aDictionary [ 
 	xmlnsDeclarations := aDictionary
 ]

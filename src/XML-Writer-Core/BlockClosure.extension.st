@@ -1,6 +1,6 @@
 Extension { #name : #BlockClosure }
 
 { #category : #'*XML-Writer-Core' }
-BlockClosure >> embedInMarkupWriter: aMarkupWriter [
+BlockClosure >> embedInXMLMarkupWriter: aMarkupWriter [
 	self cull: aMarkupWriter writer
 ]

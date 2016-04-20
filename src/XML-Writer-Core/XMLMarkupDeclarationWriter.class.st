@@ -1,5 +1,5 @@
 "
-This is an abstract class for DTD declaration writers.
+This is an abstract class for DTD markup declaration writers.
 "
 Class {
 	#name : #XMLMarkupDeclarationWriter,

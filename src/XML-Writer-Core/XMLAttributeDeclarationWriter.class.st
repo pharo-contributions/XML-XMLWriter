@@ -1,5 +1,5 @@
 "
-Writes ATTLIST declarations for attributes.
+This class writes attribute <!ATTLIST ...> declarations for DTD internal subsets, but not if canonical XML is enabled.
 "
 Class {
 	#name : #XMLAttributeDeclarationWriter,

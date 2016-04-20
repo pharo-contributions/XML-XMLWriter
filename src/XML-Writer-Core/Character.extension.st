@@ -1,6 +1,6 @@
 Extension { #name : #Character }
 
 { #category : #'*XML-Writer-Core' }
-Character >> embedInMarkupWriter: aMarkupWriter [
-	self asString embedInMarkupWriter: aMarkupWriter
+Character >> embedInXMLMarkupWriter: aMarkupWriter [
+	self asString embedInXMLMarkupWriter: aMarkupWriter
 ]

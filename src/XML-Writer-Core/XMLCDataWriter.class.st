@@ -1,5 +1,5 @@
 "
-A markup writer for <![CDATA[...]]> sections. Will be output as regular escpaed strings instead if isCanonical is enbaled.
+This class writes <![CDATA[...]]> sections. If canonical XML is enabled, it writes its contents as a regular XML-escaped string instead.
 "
 Class {
 	#name : #XMLCDataWriter,

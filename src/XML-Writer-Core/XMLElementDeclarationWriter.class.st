@@ -1,6 +1,5 @@
 "
-Writes ELEMENT declarations. 
-
+This class writes <!ELEMENT ...> declarations for DTD internal subsets, but not if canonical XML is enabled.
 "
 Class {
 	#name : #XMLElementDeclarationWriter,

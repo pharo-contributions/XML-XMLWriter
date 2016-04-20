@@ -71,7 +71,7 @@ XMLEmbeddedMarkupWriter >> writeBody [
 
 { #category : #private }
 XMLEmbeddedMarkupWriter >> writeBody: aStringOrCollectionOrBlock [
-	aStringOrCollectionOrBlock embedInMarkupWriter: self
+	aStringOrCollectionOrBlock embedInXMLMarkupWriter: self
 ]
 
 { #category : #private }

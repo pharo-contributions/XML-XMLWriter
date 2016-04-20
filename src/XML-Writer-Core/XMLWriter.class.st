@@ -61,15 +61,21 @@ Class {
 		'ContentNonEntityEscapes',
 		'ContentStringEscapes',
 		'ContentStringNonEntityEscapes',
+		'DefaultLineBreak',
 		'EntityValueEscapes',
 		'SpaceCharacter'
 	],
 	#category : #'XML-Writer-Core'
 }
 
-{ #category : #private }
+{ #category : #accessing }
 XMLWriter class >> defaultLineBreak [
-	^ String cr
+	^ DefaultLineBreak
+]
+
+{ #category : #accessing }
+XMLWriter class >> defaultLineBreak: aCharacterOrString [
+	DefaultLineBreak := aCharacterOrString asString
 ]
 
 { #category : #'class initialization' }
@@ -77,6 +83,7 @@ XMLWriter class >> initialize [
 	"self initialize"
 
 	self
+		initializeDefaultLineBreak;
 		initializeContentEscapes;
 		initializeContentNonEntityEscapes;
 		initializeContentStringEscapes;
@@ -117,6 +124,11 @@ XMLWriter class >> initializeContentStringNonEntityEscapes [
 	"like ContentStringEscapes, but allows entity references"
 	(ContentStringNonEntityEscapes := ContentStringEscapes copy)
 		at: $& asciiValue put: nil
+]
+
+{ #category : #'class initialization' }
+XMLWriter class >> initializeDefaultLineBreak [
+	self defaultLineBreak: Character cr
 ]
 
 { #category : #'class initialization' }
@@ -175,22 +187,25 @@ XMLWriter >> activeDoctypeWriter [
 
 { #category : #accessing }
 XMLWriter >> activeMarkupWriter [
-	| stackSize |
+	| markupWriterStackSize |
 
-	"for speed"
-	^ (stackSize := markupWriterStack size) > 0
-		ifTrue: [markupWriterStack at: stackSize]
+	"optimized to avoid at:ifAbsent:/ifNotEmpty: closure"
+	^ (markupWriterStackSize := markupWriterStack size) > 0
+		ifTrue: [markupWriterStack at: markupWriterStackSize]
 		ifFalse: [nil]
 ]
 
 { #category : #private }
 XMLWriter >> activeMarkupWriterDo: aBlock [
-	"evaluate aBlock for the active (top) markup writer until it
-	is nil or is the same (still active) writer after evaluating"
-	| activeMarkupWriter previousActiveMarkupWriter |
+	"evaluate aBlock for the active (top) markup writer until there isn't
+	one or it's the same (still active) writer after evaluating aBlock"
+	| markupWriterStackSize activeMarkupWriter previousActiveMarkupWriter |
 
-	[(activeMarkupWriter := self activeMarkupWriter) isNil
-		or: [activeMarkupWriter == previousActiveMarkupWriter]]
+	"inlined from activeMarkupWriter for speed"
+	[(markupWriterStackSize := markupWriterStack size) = 0
+		or: [
+			(activeMarkupWriter := markupWriterStack at: markupWriterStackSize) ==
+				previousActiveMarkupWriter]]
 		whileFalse: [
 			aBlock value: activeMarkupWriter.
 			previousActiveMarkupWriter := activeMarkupWriter]
@@ -206,16 +221,17 @@ XMLWriter >> activeTagWriter [
 
 { #category : #converting }
 XMLWriter >> asString [
-	"for GS compatibility"
-	^ self printString
+	"returns the full, untruncated output, unlike #printString, which may
+	truncate"
+
+	^ self contents
 ]
 
 { #category : #testing }
 XMLWriter >> atBeginning [
-	"On GS stream positions can be 1 or 0 based depending on the stream, so
-	saving the initial position and testing against it works for both, and
-	it also makes this method work correctly if the stream was written to
-	before the XMLWriter was created"
+	"On GS some streams are 1-based, so saving the initial position and
+	testing against it works for all streams and also makes this method work
+	correctly if the stream was written to before the XMLWriter was created"
 
 	^ stream position = streamStartPosition
 ]
@@ -257,6 +273,9 @@ XMLWriter >> comment: aString [
 
 { #category : #accessing }
 XMLWriter >> contents [
+	"returns the full, untruncated output, unlike #printString, which may
+	truncate"
+
 	self write.
 	^ stream contents.
 ]
@@ -491,6 +510,9 @@ XMLWriter >> isCanonical [
 
 { #category : #accessing }
 XMLWriter >> isCanonical: aBoolean [
+	"Should the output be canonical XML (http://www.w3.org/TR/xml-c14n)?
+	(Not default)"
+
 	isCanonical := aBoolean
 ]
 
@@ -501,6 +523,8 @@ XMLWriter >> isEscaping [
 
 { #category : #accessing }
 XMLWriter >> isEscaping: aBoolean [
+	"can be used to disable escaping of special characters"
+
 	isEscaping := aBoolean
 ]
 
@@ -511,6 +535,10 @@ XMLWriter >> lineBreak [
 
 { #category : #accessing }
 XMLWriter >> lineBreak: aCharacterOrString [
+	"linebreak chars (CR/LF) in attribute/entity values and in args to
+	the #string: and #with: messages are replaced with whatever char/string
+	this is set to"
+
 	lineBreak := aCharacterOrString asString
 ]
 
@@ -554,7 +582,7 @@ XMLWriter >> on: aStream [
 	stream := aStream.
 	streamStartPosition := aStream position.
 	markupWriterStack := OrderedCollection new.
-	lineBreak := self class defaultLineBreak.
+	lineBreak := DefaultLineBreak.
 	contentEscapes := ContentEscapes.
 	contentStringEscapes := ContentStringEscapes.
 	isEscaping := true.
@@ -570,6 +598,9 @@ XMLWriter >> outputsSelfClosingTags [
 
 { #category : #accessing }
 XMLWriter >> outputsSelfClosingTags: aBoolean [
+	"can be used to disable outputting empty elements as '<empty/>'
+	instead of '<empty></empty>'"
+
 	outputsSelfClosingTags := aBoolean
 ]
 
@@ -601,11 +632,14 @@ XMLWriter >> parentMarkupWriterOf: aMarkupWriter [
 
 { #category : #writing }
 XMLWriter >> pcdata: aString [
-	self string: aString
+	self deprecated: 'use #string: instead'.
+	self string: aString.
 ]
 
 { #category : #writing }
 XMLWriter >> pi [
+	"returns a new processing instruction writer for writing"
+
 	^ self pushNewMarkupWriter: XMLPIWriter
 ]
 
@@ -621,17 +655,14 @@ XMLWriter >> printOn: aStream [
 
 { #category : #private }
 XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
-	| newMarkupWriter |
-
-	(newMarkupWriter := aMarkupWriterClass new) writer: self.
 	self activeMarkupWriterDo: [:each | each newMarkupWriterBeingPushed].
-
-	^ self markupWriterStack addLast: newMarkupWriter.
+	^ self markupWriterStack addLast: (aMarkupWriterClass writer: self).
 ]
 
 { #category : #writing }
 XMLWriter >> raw: aString [
-	"writes unescaped string content"
+	"writes raw string content without doing any escaping of special
+	characters, unlike #string:"
 
 	aString size > 0
 		ifTrue: [
@@ -690,7 +721,7 @@ XMLWriter >> stream: aStream [
 
 { #category : #writing }
 XMLWriter >> string: aString [
-	"writes XML-escaped string content"
+	"writes string content while '&'-escaping any special characters"
 
 	aString size > 0
 		ifTrue: [
@@ -743,6 +774,9 @@ XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
 
 { #category : #writing }
 XMLWriter >> write [
+	"writes any unwritten markup, including any markup writer that hasn't
+	been written yet"
+
 	self activeMarkupWriterDo: [:each |
 		each hasStartedWriting
 			ifFalse: [each write]]
@@ -864,6 +898,9 @@ XMLWriter >> writeUnwrittenMarkupWritersEmbeddedIn: aMarkupWriter [
 
 { #category : #writing }
 XMLWriter >> writeWith: aBlock [
+	"evaluates aBlock with the receiver as an optional argument and
+	automatically sends #write after"
+
 	aBlock cull: self.
 	self write.
 ]
@@ -912,6 +949,8 @@ XMLWriter >> writeXMLNSDeclarations: aDictionary [
 
 { #category : #writing }
 XMLWriter >> xml [
+	"an abbreviation"
+
 	^ self xmlDeclaration
 ]
 
