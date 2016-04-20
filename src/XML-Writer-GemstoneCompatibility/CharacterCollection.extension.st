@@ -1,6 +1,6 @@
 Extension { #name : #CharacterCollection }
 
 { #category : #'*XML-Writer-GemstoneCompatibility' }
-CharacterCollection >> embedInMarkupWriter: aMarkupWriter [
+CharacterCollection >> embedInXMLMarkupWriter: aMarkupWriter [
 	aMarkupWriter writer string: self
 ]
