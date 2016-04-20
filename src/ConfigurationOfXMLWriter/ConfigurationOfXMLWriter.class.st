@@ -633,11 +633,22 @@ ConfigurationOfXMLWriter >> baseline267: spec [
 				with: 'XML-Writer-GemstoneCompatibility-monty.3'. ].
 ]
 
+{ #category : #baselines }
+ConfigurationOfXMLWriter >> baseline270: spec [ 
+		<version: '2.7.0-baseline' imports: #('2.5.0-baseline')>
+
+		spec for: #gemstone do: [
+			spec blessing: #baseline.
+			spec
+				package: 'XML-Writer-GemstoneCompatibility'
+				with: 'XML-Writer-GemstoneCompatibility-monty.4'. ].
+]
+
 { #category : #symbolic }
 ConfigurationOfXMLWriter >> development: spec [
 	<symbolicVersion: #'development'>
 
-	spec for: #'common' version: '2.6.7-baseline'.
+	spec for: #'common' version: '2.7.0-baseline'.
 
 ]
 
@@ -658,7 +669,7 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 
-	spec for: #'common' version: '2.6.9'.
+	spec for: #'common' version: '2.7.0'.
 
 
 ]
@@ -1368,6 +1379,17 @@ ConfigurationOfXMLWriter >> version269: spec [
         spec for: #common do: [
                 spec blessing: #release.
 			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.47'.
+			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.27'.
+                ].
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version270: spec [ 
+        <version: '2.7.0' imports: #('2.7.0-baseline')>
+
+        spec for: #common do: [
+                spec blessing: #release.
+			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.48'.
 			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.27'.
                 ].
 ]
