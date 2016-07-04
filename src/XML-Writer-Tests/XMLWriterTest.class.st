@@ -362,6 +362,123 @@ XMLWriterTest >> testEmbedInMarkupWriter [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testEnablePlatformSpecificLineBreak [
+	| writer |
+
+	writer := XMLWriter new.
+	self
+		assert: writer enablePlatformSpecificLineBreak == writer;
+		assert: writer lineBreak = XMLWriter platformSpecificLineBreak.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testEnablePrettyPrinting [
+	| writer |
+
+	(writer := XMLWriter new)
+		enablePrettyPrinting;
+		comment: 'an example'.
+	writer tag
+		name: 'example:user';
+		xmlnsAt: 'example' put: 'urn://example';
+		with: [
+			writer
+				tag: 'username' with: [
+					writer
+						comment: 'id';
+						string: 'jsmith'];
+				tag: 'real-name' with: [
+					writer tag: 'last-name' with: 'Smith'.
+					writer string: ', '.
+					writer pi
+						target: 'type';
+						data: 'string'.
+					writer
+						comment: 'first name';
+						string: 'John'];
+				tag: 'age' with: [
+					writer pi
+						target: 'type';
+						data: 'integer'.
+					writer comment: 'not supplied'];
+				tag: 'id' with: [
+					writer
+						string: '101';
+						comment: ''];
+				tag: 'contact' with: [
+					writer
+						tag: 'email';
+						string: 'alternate']].
+
+	self assert:
+		writer contents =
+			(self prettyPrintedLines: #(
+				#(0 '<!--an example-->'
+					'<example:user xmlns:example="urn://example">')
+				#(1 '<username>')
+				#(2 '<!--id-->jsmith</username>')
+				#(1 '<real-name>')
+				#(2 '<last-name>Smith</last-name>, <?type string?><!--first name-->John</real-name>')
+				#(1 '<age>')
+				#(2 '<?type integer?>'
+					'<!--not supplied-->')
+				#(1 '</age>'
+					'<id>101<!----></id>'
+					'<contact>')
+				#(2 '<email />alternate</contact>')
+				#(0 '</example:user>'))).
+]
+
+{ #category : #tests }
+XMLWriterTest >> testEnablePrettyPrintingDTD [
+	| writer |
+
+	(writer := XMLWriter new)
+		enablePrettyPrinting;
+		xml.
+	writer doctype
+		root: 'pretty';
+		with: [
+			writer comment: 'element'.
+			writer elementDeclaration
+				name: 'pretty';
+				contentModel: 'EMPTY'.
+			writer comment: 'entity'.
+			writer entityDeclaration
+				isParameter: true;
+				name: 'comment';
+				replacement: '<!--attribute-->'.
+			writer % 'comment'.
+			writer comment: 'attribute'.
+			writer attributeDeclaration
+				element: 'pretty';
+				attribute: 'name';
+				type: 'CDATA';
+				defaultPragma: '#REQUIRED'.
+			writer comment: 'notation'.
+			writer notationDeclaration
+				name: 'external';
+				systemID: 'external.txt'].
+
+	self assert:
+		writer contents =
+			(self prettyPrintedLines: #(
+				#(0 '<?xml version="1.0"?>'
+					'<!DOCTYPE pretty [')
+				#(1 '<!--element-->'
+					'<!ELEMENT pretty EMPTY>'
+					'<!--entity-->'
+					'<!ENTITY % comment "<!--attribute-->">'
+					'%comment;'
+					'<!--attribute-->'
+					'<!ATTLIST pretty name CDATA #REQUIRED>'
+					'<!--notation-->'
+					'<!NOTATION external SYSTEM "external.txt">')
+				#(0 ']>'
+					''))).
+]
+
+{ #category : #tests }
 XMLWriterTest >> testEntityReference [
 	| writer |
 
@@ -688,113 +805,6 @@ XMLWriterTest >> testParentMarkupWriter [
 			assert: writer parentMarkupWriter == tagWriter;
 			assert: newTagWriter parentMarkupWriter == tagWriter;
 			assert: (writer parentMarkupWriterOf: newTagWriter) == tagWriter].
-]
-
-{ #category : #tests }
-XMLWriterTest >> testPrettyPrintingDTDs [
-	| writer |
-
-	(writer := XMLWriter new)
-		enablePrettyPrinting;
-		xml.
-	writer doctype
-		root: 'pretty';
-		with: [
-			writer comment: 'element'.
-			writer elementDeclaration
-				name: 'pretty';
-				contentModel: 'EMPTY'.
-			writer comment: 'entity'.
-			writer entityDeclaration
-				isParameter: true;
-				name: 'comment';
-				replacement: '<!--attribute-->'.
-			writer % 'comment'.
-			writer comment: 'attribute'.
-			writer attributeDeclaration
-				element: 'pretty';
-				attribute: 'name';
-				type: 'CDATA';
-				defaultPragma: '#REQUIRED'.
-			writer comment: 'notation'.
-			writer notationDeclaration
-				name: 'external';
-				systemID: 'external.txt'].
-
-	self assert:
-		writer contents =
-			(self prettyPrintedLines: #(
-				#(0 '<?xml version="1.0"?>'
-					'<!DOCTYPE pretty [')
-				#(1 '<!--element-->'
-					'<!ELEMENT pretty EMPTY>'
-					'<!--entity-->'
-					'<!ENTITY % comment "<!--attribute-->">'
-					'%comment;'
-					'<!--attribute-->'
-					'<!ATTLIST pretty name CDATA #REQUIRED>'
-					'<!--notation-->'
-					'<!NOTATION external SYSTEM "external.txt">')
-				#(0 ']>'
-					''))).
-]
-
-{ #category : #tests }
-XMLWriterTest >> testPrettyPrintingElements [
-	| writer |
-
-	(writer := XMLWriter new)
-		enablePrettyPrinting;
-		comment: 'an example'.
-	writer tag
-		name: 'example:user';
-		xmlnsAt: 'example' put: 'urn://example';
-		with: [
-			writer
-				tag: 'username' with: [
-					writer
-						comment: 'id';
-						string: 'jsmith'];
-				tag: 'real-name' with: [
-					writer tag: 'last-name' with: 'Smith'.
-					writer string: ', '.
-					writer pi
-						target: 'type';
-						data: 'string'.
-					writer
-						comment: 'first name';
-						string: 'John'];
-				tag: 'age' with: [
-					writer pi
-						target: 'type';
-						data: 'integer'.
-					writer comment: 'not supplied'];
-				tag: 'id' with: [
-					writer
-						string: '101';
-						comment: ''];
-				tag: 'contact' with: [
-					writer
-						tag: 'email';
-						string: 'alternate']].
-
-	self assert:
-		writer contents =
-			(self prettyPrintedLines: #(
-				#(0 '<!--an example-->'
-					'<example:user xmlns:example="urn://example">')
-				#(1 '<username>')
-				#(2 '<!--id-->jsmith</username>')
-				#(1 '<real-name>')
-				#(2 '<last-name>Smith</last-name>, <?type string?><!--first name-->John</real-name>')
-				#(1 '<age>')
-				#(2 '<?type integer?>'
-					'<!--not supplied-->')
-				#(1 '</age>'
-					'<id>101<!----></id>'
-					'<contact>')
-				#(2 '<email />alternate</contact>')
-				#(0 '</example:user>'))).
 ]
 
 { #category : #tests }
