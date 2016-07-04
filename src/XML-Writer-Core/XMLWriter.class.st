@@ -63,6 +63,7 @@ Class {
 		'ContentStringNonEntityEscapes',
 		'DefaultLineBreak',
 		'EntityValueEscapes',
+		'PlatformSpecificLineBreak',
 		'SpaceCharacter'
 	],
 	#category : #'XML-Writer-Core'
@@ -89,7 +90,8 @@ XMLWriter class >> initialize [
 		initializeContentStringEscapes;
 		initializeContentStringNonEntityEscapes;
 		initializeEntityValueEscapes;
-		initializeSpaceCharacter
+		initializeSpaceCharacter;
+		initializePlatformSpecificLineBreak
 ]
 
 { #category : #'class initialization' }
@@ -141,6 +143,14 @@ XMLWriter class >> initializeEntityValueEscapes [
 ]
 
 { #category : #'class initialization' }
+XMLWriter class >> initializePlatformSpecificLineBreak [
+	"'Smalltalk platformName' is used for GS and Squeak portability"
+	(Smalltalk platformName asLowercase beginsWith: 'win')
+		ifTrue: [self platformSpecificLineBreak: String crlf]
+		ifFalse: [self platformSpecificLineBreak: Character lf]
+]
+
+{ #category : #'class initialization' }
 XMLWriter class >> initializeSpaceCharacter [
 	SpaceCharacter := Character space
 ]
@@ -158,6 +168,16 @@ XMLWriter class >> on: aStream [
 { #category : #'instance creation' }
 XMLWriter class >> on: aStream formatter: aFormatter [
 	^ (self on: aStream) formatter: aFormatter
+]
+
+{ #category : #accessing }
+XMLWriter class >> platformSpecificLineBreak [
+	^ PlatformSpecificLineBreak
+]
+
+{ #category : #accessing }
+XMLWriter class >> platformSpecificLineBreak: aCharacterOrString [
+	PlatformSpecificLineBreak := aCharacterOrString asString
 ]
 
 { #category : #writing }
@@ -229,9 +249,9 @@ XMLWriter >> asString [
 
 { #category : #testing }
 XMLWriter >> atBeginning [
-	"On GS some streams are 1-based, so saving the initial position and
-	testing against it works for all streams and also makes this method work
-	correctly if the stream was written to before the XMLWriter was created"
+	"On GS streams can be 0-based or 1-based, so saving the initial position
+	to test the current position works for both types and also handles streams
+	that were already written to when the XMLWriter was created"
 
 	^ stream position = streamStartPosition
 ]
@@ -291,7 +311,16 @@ XMLWriter >> elementDeclaration [
 ]
 
 { #category : #writing }
+XMLWriter >> enablePlatformSpecificLineBreak [
+	"use the correct line break (LF or CRLF) for this platform when writing"
+
+	self lineBreak: self class platformSpecificLineBreak
+]
+
+{ #category : #writing }
 XMLWriter >> enablePrettyPrinting [
+	"enables 'pretty printing' whitespace formatting to make nicer output"
+
 	self formatter: (XMLPrettyPrintingWriterFormatter writer: self)
 ]
 
@@ -327,6 +356,8 @@ XMLWriter >> entityRef [
 
 { #category : #writing }
 XMLWriter >> entityRef: aName [
+	"output a general entity reference like &name;"
+
 	self entityRef
 		name: aName;
 		write
@@ -523,7 +554,9 @@ XMLWriter >> isEscaping [
 
 { #category : #accessing }
 XMLWriter >> isEscaping: aBoolean [
-	"can be used to disable escaping of special characters"
+	"can be used to disable escaping of special characters and the
+	replacement of CRs/LFs in attribute/entity values and strings
+	with whatever #lineBreak is set to"
 
 	isEscaping := aBoolean
 ]
@@ -611,6 +644,8 @@ XMLWriter >> paramEntityRef [
 
 { #category : #writing }
 XMLWriter >> paramEntityRef: aName [
+	"output a parameter entity reference like %name;"
+
 	self paramEntityRef
 		name: aName;
 		write
