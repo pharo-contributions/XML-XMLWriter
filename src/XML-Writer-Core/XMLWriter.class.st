@@ -144,19 +144,10 @@ XMLWriter class >> initializeEntityValueEscapes [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializePlatformSpecificLineBreak [
-	| platformName |
-
-	"Newer Pharos don't support 'Smalltalk platformName' like Squeak and GS do,
-	but Squeak and GS don't have Pharo's OSPlatform hierarchy (and OSPlatform
-	did not always support #lineEnding so it is avoided, but it always returns
-	LF besides when platformName returns 'Win32' like the code below anyway)."
-	platformName := 'unix' "OSPlatform current platformName".
-	(Smalltalk includesKey: #OSPlatform)
-		ifTrue: [platformName := (Smalltalk at: #OSPlatform) current platformName]
-		ifFalse: [
-			(Smalltalk respondsTo: #platformName)
-				ifTrue: [platformName := Smalltalk platformName]].
-	(platformName asLowercase beginsWith: 'win')
+	"'Smalltalk os platformName' is used for compatibility with GS and Squeak
+	which don't have the OSPlatform classes, and also instead of the shorter
+	'Smalltalk platformName' which doesn't work in all Pharos"
+	(Smalltalk os platformName asLowercase beginsWith: 'win')
 		ifTrue: [self platformSpecificLineBreak: String crlf]
 		ifFalse: [self platformSpecificLineBreak: String lf].
 ]
