@@ -96,36 +96,56 @@ XMLWriter class >> initialize [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentEscapes [
-	(ContentEscapes := Array new: 255)
-		at: $& asciiValue put: '&amp;';
-		at: $< asciiValue put: '&lt;';
-		at: $> asciiValue put: '&gt;'; "required to escape ]]> in PCDATA"
-		at: Character cr asciiValue put: #LineBreak;
-		at: Character lf asciiValue put: #LineBreak
+	"use an array instead of a dictionary for speed, and
+	assign after with #yourself to avoid possible race
+	conditions when reinitializing the class"
+	ContentEscapes :=
+		(Array new: 255)
+			at: $& asciiValue put: '&amp;';
+			at: $< asciiValue put: '&lt;';
+			at: $> asciiValue put: '&gt;'; "required to escape ]]> in PCDATA"
+			at: Character cr asciiValue put: #LineBreak;
+			at: Character lf asciiValue put: #LineBreak;
+			yourself
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentNonEntityEscapes [
-	"like ContentEscapes, but allows entity references"
-	(ContentNonEntityEscapes := ContentEscapes copy)
-		at: $& asciiValue put: nil
+	"Like ContentEscapes, but allows entity references.
+	Use an array instead of a dictionary for speed, and assign
+	after with #yourself to avoid possible race conditions
+	when reinitializing the class."
+	ContentNonEntityEscapes :=
+		ContentEscapes copy
+			at: $& asciiValue put: nil;
+			yourself
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentStringEscapes [
-	(ContentStringEscapes := Array new: 255)
-		at: $& asciiValue put: '&amp;';
-		at: $< asciiValue put: '&lt;'; "< is not allowed in attr values, but > is"
-		at: $" asciiValue put: '&quot;';
-		at: Character cr asciiValue put: #LineBreak;
-		at: Character lf asciiValue put: #LineBreak
+	"use an array instead of a dictionary for speed, and
+	assign after with #yourself to avoid possible race
+	conditions when reinitializing the class"
+	ContentStringEscapes :=
+		(Array new: 255)
+			at: $& asciiValue put: '&amp;';
+			at: $< asciiValue put: '&lt;'; "< is not allowed in attr values, but > is"
+			at: $" asciiValue put: '&quot;';
+			at: Character cr asciiValue put: #LineBreak;
+			at: Character lf asciiValue put: #LineBreak;
+			yourself
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentStringNonEntityEscapes [
-	"like ContentStringEscapes, but allows entity references"
-	(ContentStringNonEntityEscapes := ContentStringEscapes copy)
-		at: $& asciiValue put: nil
+	"Like ContentStringEscapes, but allows entity references.
+	Use an array instead of a dictionary for speed, and assign
+	after with #yourself to avoid possible race conditions
+	when reinitializing the class."
+	ContentStringNonEntityEscapes :=
+		ContentStringEscapes copy
+			at: $& asciiValue put: nil;
+			yourself
 ]
 
 { #category : #'class initialization' }
@@ -135,11 +155,16 @@ XMLWriter class >> initializeDefaultLineBreak [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeEntityValueEscapes [
-	(EntityValueEscapes := Array new: 255)
-		at: $" asciiValue put: '&#34;';
-		at: $% asciiValue put: '&#37;';
-		at: Character cr asciiValue put: #LineBreak;
-		at: Character lf asciiValue put: #LineBreak
+	"use an array instead of a dictionary for speed, and
+	assign after with #yourself to avoid possible race
+	conditions when reinitializing the class"
+	EntityValueEscapes :=
+		(Array new: 255)
+			at: $" asciiValue put: '&#34;';
+			at: $% asciiValue put: '&#37;';
+			at: Character cr asciiValue put: #LineBreak;
+			at: Character lf asciiValue put: #LineBreak;
+			yourself
 ]
 
 { #category : #'class initialization' }
