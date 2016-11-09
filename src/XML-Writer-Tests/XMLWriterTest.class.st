@@ -9,25 +9,58 @@ Class {
 }
 
 { #category : #private }
+XMLWriterTest class >> onCanonicalLineBreakJoin: aLineCollection [
+	^ self
+		onLineBreak: XMLWriter canonicalLineBreak
+		join: aLineCollection
+]
+
+{ #category : #private }
+XMLWriterTest class >> onLineBreak: aCharacterOrString join: aLineCollection [
+	| printedFirstLine |
+
+	"avoid join: for portability"
+	printedFirstLine := false.
+	^ String streamContents: [:stream |
+		aLineCollection do: [:each |
+			printedFirstLine
+				ifTrue: [stream nextPutAll: aCharacterOrString asString]
+				ifFalse: [printedFirstLine := true].
+			stream nextPutAll: each]]
+]
+
+{ #category : #private }
+XMLWriterTest >> onCanonicalLineBreakJoin: aLineCollection [
+	^ self class onCanonicalLineBreakJoin: aLineCollection
+]
+
+{ #category : #private }
+XMLWriterTest >> onLineBreak: aCharacterOrString join: aLineCollection [
+	^ self class
+		onLineBreak: aCharacterOrString
+		join: aLineCollection
+]
+
+{ #category : #private }
 XMLWriterTest >> prettyPrintedLines: anArrayOfLineArrays [
 	"takes an array of arrays where the first element of each is the indent level
 	and the rest are the lines with that indent level"
 
-	| lineNumber |
+	| printedFirstLine |
 
-	lineNumber := 1.
+	printedFirstLine := false.
 	^ String streamContents: [:stream |
 		anArrayOfLineArrays do: [:each | | indentLevel |
 			indentLevel := XMLPrettyPrintingWriterFormatter defaultIndentLevel + each first.
 			2 to: each size do: [:lineIndex |
-				lineNumber > 1
+				printedFirstLine
 					ifTrue: [
 						stream nextPutAll: XMLWriter defaultLineBreak.
 						indentLevel timesRepeat: [
 							stream nextPutAll:
-								XMLPrettyPrintingWriterFormatter defaultIndentString]].
-				stream nextPutAll: (each at: lineIndex).
-				lineNumber := lineNumber + 1]]]
+								XMLPrettyPrintingWriterFormatter defaultIndentString]]
+					ifFalse: [printedFirstLine := true].
+				stream nextPutAll: (each at: lineIndex)]]]
 ]
 
 { #category : #tests }
@@ -35,16 +68,16 @@ XMLWriterTest >> testActiveDoctypeWriter [
 	| writer doctypeWriter |
 
 	writer := XMLWriter new.
-	self assert: writer activeDoctypeWriter isNil.
+	self assert: writer activeDoctypeDeclarationWriter isNil.
 
 	doctypeWriter := writer doctype.
-	self assert: writer activeDoctypeWriter == doctypeWriter.
+	self assert: writer activeDoctypeDeclarationWriter == doctypeWriter.
 
 	doctypeWriter with: [
 		writer comment: 'test'.
-		self assert: writer activeDoctypeWriter == doctypeWriter].
+		self assert: writer activeDoctypeDeclarationWriter == doctypeWriter].
 
-	self assert: writer activeDoctypeWriter isNil.
+	self assert: writer activeDoctypeDeclarationWriter isNil.
 ]
 
 { #category : #tests }
@@ -62,9 +95,13 @@ XMLWriterTest >> testActiveTagWriter [
 	tagWriter with: [| newTagWriter |
 		self assert: writer activeTagWriter == tagWriter.
 
-		newTagWriter := writer tag: 'three'.
+		newTagWriter := writer startTag: 'three'.
 		self assert: writer activeTagWriter == newTagWriter.
+		newTagWriter write.
+		self assert: writer activeTagWriter == tagWriter.
 	
+		newTagWriter := writer endTag: 'three'.
+		self assert: writer activeTagWriter == newTagWriter.
 		newTagWriter write.
 		self assert: writer activeTagWriter == tagWriter].
 
@@ -154,12 +191,43 @@ XMLWriterTest >> testCDataSections [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testCanonicalComments [
+	| writer |
+
+	(writer := XMLWriter new)
+		isCanonical: true;
+		comment: 'one';
+		comment: 'two'.
+	writer
+		tag: 'three'
+		with: [
+			writer
+				comment: 'four';
+				comment: 'five';
+				tag: 'six';
+				comment: 'seven';
+				comment: 'eight'].
+	writer
+		comment: 'nine';
+		comment: 'ten'.
+
+	self assert:
+		writer contents =
+			(self onCanonicalLineBreakJoin:
+				#('<!--one-->'
+					'<!--two-->'
+					'<three><!--four--><!--five--><six></six><!--seven--><!--eight--></three>'
+					'<!--nine-->'
+					'<!--ten-->')).
+]
+
+{ #category : #tests }
 XMLWriterTest >> testCanonicalDTDs [
 	| writer |
 
 	(writer := XMLWriter new)
 		isCanonical: true;
-		comment: 'start of dtd'.
+		comment: 'before dtd'.
 	writer doctype
 		root: 'element';
 		systemID: 'doc.dtd';
@@ -182,13 +250,105 @@ XMLWriterTest >> testCanonicalDTDs [
 			writer pi
 				target: 'ignored';
 				data: 'ignored'].
-	writer comment: 'end of dtd'.
+	writer
+		comment: 'after dtd';
+		tag: 'empty'.
 
-	self assert: writer contents = '<!--start of dtd--><!--end of dtd-->'.
+	self assert:
+		writer contents =
+			(self onCanonicalLineBreakJoin:
+				#('<!--before dtd-->'
+					'<!--after dtd-->'
+					'<empty></empty>')).
 ]
 
 { #category : #tests }
-XMLWriterTest >> testCanonicalOmitsRedundantXMLNSDeclarations [
+XMLWriterTest >> testCanonicalEscaping [
+	| writer tag |
+
+	"Attributes are changed 'by replacing all ampersands (&) with
+	&amp;, all open angle brackets (<) with &lt;, all quotation mark
+	characters with &quot;...'
+
+	PCDATA is changed so 'all ampersands are replaced by &amp;,
+	all open angle brackets (<) are replaced by &lt;, all closing
+	angle brackets (>) are replaced by &gt;...'"
+	(writer := XMLWriter new)
+		isCanonical: true.
+	(tag := writer tag: 'canonical')
+		attributeAt: 'escaping'
+		put: '<>"''&'.
+	tag with: '<>"''&'.
+	self assert:
+		writer contents =
+			'<canonical escaping="&lt;>&quot;''&amp;">&lt;&gt;"''&amp;</canonical>'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testCanonicalEscapingWhitespace [
+	| whitespace writer tag |
+
+	"Attributes are changed by replacing 'the whitespace characters
+	#x9, #xA, and #xD, with character references...'
+
+	PCDATA is changed so 'all #xD characters are replaced by &#xD...'"
+	whitespace :=
+		String
+			with: 16r9 asCharacter "tab"
+			with: 16rA asCharacter "lf"
+			with: 16rD asCharacter "cr"
+			with: 16r20 asCharacter. "space"
+	(writer := XMLWriter new)
+		isCanonical: true.
+	(tag := writer tag: 'canonical')
+		attributeAt: 'whitespace'
+		put: whitespace.
+	tag with: whitespace.
+	self assert:
+		writer contents =
+			('<canonical whitespace="&#x9;&#xA;&#xD;{4}">{1}{2}&#xD;{4}</canonical>'
+				format: whitespace).
+]
+
+{ #category : #tests }
+XMLWriterTest >> testCanonicalPIs [
+	| writer |
+
+	(writer := XMLWriter new)
+		isCanonical: true.
+	writer pi
+		target: 'one';
+		data: 'one'.
+	writer pi target: 'two'.
+	writer
+		tag: 'three'
+		with: [
+			writer pi
+				target: 'four';
+				data: 'four'.
+			writer pi target: 'five'.
+			writer tag: 'six'.
+			writer pi target: 'seven'.
+			writer pi
+				target: 'eight';
+				data: 'eight'].
+	writer pi target: 'nine'.
+	writer pi
+		target: 'ten';
+		data: 'ten'.
+
+	self assert:
+		writer contents =
+			(self onCanonicalLineBreakJoin:
+				#('<?one one?>'
+					'<?two?>'
+					'<three><?four four?><?five?><six></six><?seven?><?eight eight?></three>'
+					'<?nine?>'
+					'<?ten ten?>')).
+]
+
+{ #category : #tests }
+XMLWriterTest >> testCanonicalRedundantXMLNSDeclarations [
 	| withBlock |
 
 	withBlock := [:writer |
@@ -213,16 +373,6 @@ XMLWriterTest >> testCanonicalOmitsRedundantXMLNSDeclarations [
 			'</three></two></one>').
 	self assert:
 		(XMLWriter new
-			omitsRedundantXMLNSDeclarations: false;
-			isCanonical: true;
-			writeWith: withBlock;
-			contents) =
-			('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
-			'<two xmlns="defaultNS" xmlns:prefix="prefixNS">',
-			'<three xmlns="newDefaultNS" xmlns:prefix="newPrefixNS">',
-			'</three></two></one>').
-	self assert:
-		(XMLWriter new
 			isCanonical: true;
 			writeWith: [:writer | (writer tag: 'empty') xmlns: ''];
 			contents) =
@@ -234,8 +384,7 @@ XMLWriterTest >> testCanonicalTags [
 	| writer |
 
 	(writer := XMLWriter new)
-		isCanonical: true;
-		comment: 'tags'.
+		isCanonical: true.
 	(writer tag: 'tags')
 		attributeAt: 'c' put: '3';
 		attributeAt: 'a' put: '1';
@@ -253,8 +402,7 @@ XMLWriterTest >> testCanonicalTags [
 
 	self assert:
 		writer contents =
-			('<!--tags-->',
-			'<tags xmlns="default" xmlns:a="ns1" xmlns:b="ns2" a="1" b="2" c="3">',
+			('<tags xmlns="default" xmlns:a="ns1" xmlns:b="ns2" a="1" b="2" c="3">',
 			'<cdata>&lt;escaped name="&amp;value;" /&gt;</cdata>',
 			'<empty></empty>',
 			'</tags>').
@@ -271,9 +419,17 @@ XMLWriterTest >> testCanonicalXMLDeclarationsAndPIs [
 	writer pi
 		target: 'pi';
 		data: 'preserved'.
-	writer comment: 'end of pi'.
+	writer
+		comment: 'end of pi';
+		tag: 'empty'.
 
-	self assert: writer contents = '<!--start of pi--><?pi preserved?><!--end of pi-->'.
+	self assert:
+		writer contents =
+			(self onCanonicalLineBreakJoin:
+				#('<!--start of pi-->'
+					'<?pi preserved?>'
+					'<!--end of pi-->'
+					'<empty></empty>')).
 ]
 
 { #category : #tests }
@@ -289,6 +445,27 @@ XMLWriterTest >> testClose [
 			((XMLWriter on: stream)
 				tag: 'one';
 				tag: 'two') close]) = '<one /><two />'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testContentEntityReferenceEscaping [
+	self assert:
+		(XMLWriter writeWith: [:writer |
+			(writer
+				escapesContentEntityReferences: false;
+				tag: 'one')
+				attributeAt: 'two' put: '<"&three;">';
+				with: '<"&four;">']) =
+			'<one two="&lt;&quot;&three;&quot;>">&lt;"&four;"&gt;</one>'.
+
+	self assert:
+		(XMLWriter writeWith: [:writer |
+			(writer
+				escapesContentEntityReferences: true;
+				tag: 'one')
+				attributeAt: 'two' put: '<"&three;">';
+				with: '<"&four;">']) =
+			'<one two="&lt;&quot;&amp;three;&quot;>">&lt;"&amp;four;"&gt;</one>'.
 ]
 
 { #category : #tests }
@@ -515,29 +692,31 @@ XMLWriterTest >> testEntityValueEscaping [
 
 { #category : #tests }
 XMLWriterTest >> testEscapesContentEntityReferences [
-	self assert:
-		(XMLWriter writeWith: [:writer |
-			(writer
-				escapesContentEntityReferences: false;
-				tag: 'one')
-				attributeAt: 'two' put: '<"&three;">';
-				with: '<"&four;">']) =
-			'<one two="&lt;&quot;&three;&quot;>">&lt;"&four;"&gt;</one>'.
+	| writer |
 
-	self assert:
-		(XMLWriter writeWith: [:writer |
-			(writer
-				escapesContentEntityReferences: true;
-				tag: 'one')
-				attributeAt: 'two' put: '<"&three;">';
-				with: '<"&four;">']) =
-			'<one two="&lt;&quot;&amp;three;&quot;>">&lt;"&amp;four;"&gt;</one>'.
+	writer := XMLWriter new.
+	self
+		assert: (writer escapesContentEntityReferences: true) == writer;
+		assert: writer escapesContentEntityReferences;
+		assert: writer isEscaping;
+		assert: writer contentEscapes = XMLWriter contentEscapes;
+		assert: writer contentStringEscapes = XMLWriter contentStringEscapes.
 
-	self assert: XMLWriter new escapesContentEntityReferences.
-	self deny:
-		(XMLWriter new
-			escapesContentEntityReferences: false;
-			escapesContentEntityReferences).
+	self
+		assert: (writer escapesContentEntityReferences: false) == writer;
+		deny: writer escapesContentEntityReferences;
+		assert: writer isEscaping;
+		assert: writer contentEscapes = XMLWriter contentNonEntityEscapes;
+		assert: writer contentStringEscapes = XMLWriter contentStringNonEntityEscapes.
+
+	writer isEscaping: false.
+	self
+		deny: writer escapesContentEntityReferences;
+		assert: (writer escapesContentEntityReferences: true) == writer;
+		assert: writer escapesContentEntityReferences;
+		assert: writer isEscaping;
+		assert: writer contentEscapes = XMLWriter contentEscapes;
+		assert: writer contentStringEscapes = XMLWriter contentStringEscapes.
 ]
 
 { #category : #tests }
@@ -548,10 +727,14 @@ XMLWriterTest >> testFormatter [
 	self assert: writer formatter isNil.
 
 	formatter := XMLPrettyPrintingWriterFormatter new.
-	writer formatter: formatter.
 	self
+		assert: (writer formatter: formatter) == writer;
 		assert: writer formatter == formatter;
 		assert: formatter writer == writer.
+
+	self
+		assert: (writer formatter: nil) == writer;
+		assert: writer formatter isNil.
 ]
 
 { #category : #tests }
@@ -704,16 +887,110 @@ XMLWriterTest >> testFormattingUnsafeTagWriters [
 ]
 
 { #category : #tests }
-XMLWriterTest >> testLineBreak [
+XMLWriterTest >> testHadActiveTagWriter [
+	| writer tagWriter |
+
+	writer := XMLWriter new.
+	self deny: writer hadActiveTagWriter.
+
+	writer xml.
+	self deny: writer hadActiveTagWriter.
+
+	tagWriter := writer tag: 'one'.
+	self assert: writer hadActiveTagWriter.
+
+	tagWriter write.
+	self assert: writer hadActiveTagWriter.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testHasActiveTagWriter [
+	| writer tagWriter |
+
+	writer := XMLWriter new.
+	self deny: writer hasActiveTagWriter.
+
+	writer xml.
+	self deny: writer hasActiveTagWriter.
+
+	tagWriter := writer tag: 'one'.
+	self assert: writer hasActiveTagWriter.
+
+	tagWriter write.
+	self deny: writer hasActiveTagWriter.
+
+	tagWriter := writer startTag: 'two'.
+	self assert: writer hasActiveTagWriter.
+
+	tagWriter write.
+	self deny: writer hasActiveTagWriter.
+
+	tagWriter := writer endTag: 'two'.
+	self assert: writer hasActiveTagWriter.
+
+	tagWriter write.
+	self deny: writer hasActiveTagWriter.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testIsCanonical [
 	| writer |
 
 	(writer := XMLWriter new)
 		enablePrettyPrinting;
-		lineBreak: $N.
-	writer
-		xml;
-		tag: 'test'.
-	self assert: writer contents = '<?xml version="1.0"?>N<test />'
+		lineBreak: Character cr;
+		isEscaping: false;
+		escapesContentEntityReferences: false;
+		omitsRedundantXMLNSDeclarations: false.
+	self
+		assert: (writer isCanonical: false) == writer;
+		assert: (writer formatter isKindOf: XMLPrettyPrintingWriterFormatter);
+		assert: writer lineBreak = String cr;
+		deny: writer isEscaping;
+		deny: writer escapesContentEntityReferences;
+		deny: writer omitsRedundantXMLNSDeclarations.
+
+	self
+		assert: (writer isCanonical: true) == writer;
+		assert: (writer formatter isKindOf: XMLCanonicalWriterFormatter);
+		assert: writer lineBreak = XMLWriter canonicalLineBreak;
+		assert: writer contentEscapes = XMLWriter contentCanonicalEscapes;
+		assert: writer contentStringEscapes = XMLWriter contentStringCanonicalEscapes;
+		assert: writer isEscaping;
+		assert: writer escapesContentEntityReferences;
+		assert: writer omitsRedundantXMLNSDeclarations.
+
+	self
+		assert: (writer isCanonical: false) == writer;
+		assert: writer formatter isNil;
+		assert: writer lineBreak = XMLWriter defaultLineBreak;
+		assert: writer contentEscapes = XMLWriter contentEscapes;
+		assert: writer contentStringEscapes = XMLWriter contentStringEscapes;
+		assert: writer isEscaping;
+		assert: writer escapesContentEntityReferences;
+		assert: writer omitsRedundantXMLNSDeclarations.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testLineBreak [
+	(Array
+		with: String crlf
+		with: $N
+		with: '')
+		do: [:each | | writer |
+			(writer := XMLWriter new)
+				enablePrettyPrinting;
+				lineBreak: each.
+			writer
+				xml;
+				tag: 'test'.
+			self assert:
+				writer contents =
+					(self
+						onLineBreak: each
+						join:
+							#('<?xml version="1.0"?>'
+								'<test />'))]
 ]
 
 { #category : #tests }
