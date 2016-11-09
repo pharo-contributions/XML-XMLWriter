@@ -70,15 +70,17 @@ XMLAttributeDeclarationWriter >> type: aType [
 
 { #category : #private }
 XMLAttributeDeclarationWriter >> writeBody [
-	self omitIfCanonical: [
-		self writer
-			writeName: self attribute;
-			space;
-			writeName: self type.
+	self isCanonical
+		ifTrue: [^ self].
 
-		self
-			writeDefaultPragma;
-			writeDefaultValue]
+	self writer
+		writeName: self attribute;
+		space;
+		writeName: self type.
+
+	self
+		writeDefaultPragma;
+		writeDefaultValue.
 ]
 
 { #category : #private }

@@ -77,16 +77,18 @@ XMLEntityDeclarationWriter >> systemID: aSystemID [
 
 { #category : #private }
 XMLEntityDeclarationWriter >> writeBody [
-	self omitIfCanonical: [
-		self replacement
-			ifEmpty: [
-				self externalIDWriter writeOn: self writer.
-				(self isParameter not and: [self ndata notEmpty])
-					ifTrue: [
-						self writer
-							space;
-							nextPutAll: 'NDATA';
-							space;
-							writeName: self ndata]]
-			ifNotEmpty: [self writer writeEscapedEntityValueString: self replacement]]
+	self isCanonical
+		ifTrue: [^ self].
+
+	self replacement
+		ifEmpty: [
+			self externalIDWriter writeOn: self writer.
+			(self isParameter not and: [self ndata notEmpty])
+				ifTrue: [
+					self writer
+						space;
+						nextPutAll: 'NDATA';
+						space;
+						writeName: self ndata]]
+		ifNotEmpty: [self writer writeEscapedEntityValueString: self replacement].
 ]

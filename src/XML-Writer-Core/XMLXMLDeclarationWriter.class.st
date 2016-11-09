@@ -52,36 +52,42 @@ XMLXMLDeclarationWriter >> version: aVersionFloatOrString [
 
 { #category : #private }
 XMLXMLDeclarationWriter >> writeBody [
-	self omitIfCanonical: [
-		self writer
-			space;
-			writeName: 'version'
-			unescapedValue: (self version ifEmpty: ['1.0']).
-		self encoding
-			ifNotEmpty: [:encodingName |
-				self writer
-					space;
-					writeName: 'encoding'
-					unescapedValue: encodingName].
-		self standalone
-			ifTrue: [
-				self writer
-					space;
-					writeName: 'standalone' unescapedValue: 'yes']]
+	self isCanonical
+		ifTrue: [^ self].
+
+	self writer
+		space;
+		writeName: 'version'
+		unescapedValue: (self version ifEmpty: ['1.0']).
+
+	self encoding
+		ifNotEmpty: [:encodingName |
+			self writer
+				space;
+				writeName: 'encoding'
+				unescapedValue: encodingName].
+
+	self standalone
+		ifTrue: [
+			self writer
+				space;
+				writeName: 'standalone' unescapedValue: 'yes'].
 ]
 
 { #category : #private }
 XMLXMLDeclarationWriter >> writeEpilogue [
-	self omitIfCanonical: [
-		self writer
-			nextPutAll: '?>';
-			formatAfterXMLDeclaration: self]
+	self isCanonical
+		ifFalse: [
+			self writer
+				nextPutAll: '?>';
+				formatAfterXMLDeclaration: self]
 ]
 
 { #category : #private }
 XMLXMLDeclarationWriter >> writePrologue [
-	self omitIfCanonical: [
-		self writer
-			formatBeforeXMLDeclaration: self;
-			nextPutAll: '<?xml']
+	self isCanonical
+		ifFalse: [
+			self writer
+				formatBeforeXMLDeclaration: self;
+				nextPutAll: '<?xml']
 ]

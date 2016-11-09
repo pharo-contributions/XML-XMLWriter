@@ -17,7 +17,7 @@ XMLDoctypeDeclarationWriter >> externalIDWriter [
 ]
 
 { #category : #testing }
-XMLDoctypeDeclarationWriter >> isDoctypeWriter [
+XMLDoctypeDeclarationWriter >> isDoctypeDeclarationWriter [
 	^ true
 ]
 
@@ -60,42 +60,49 @@ XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeBody: aStringOrCollectionOrBlock [
-	self omitIfCanonical: [super writeBody: aStringOrCollectionOrBlock]
+	self isCanonical
+		ifFalse: [super writeBody: aStringOrCollectionOrBlock]
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeEmbeddedMarkupPrologue [
-	self omitIfCanonical: [
-		self writer
-			space;
-			nextPut: $[;
-			formatBeforeInternalSubset: self]
+	self isCanonical
+		ifFalse: [
+			self writer
+				space;
+				nextPut: $[;
+				formatBeforeInternalSubset: self]
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeEpilogue [
-	self omitIfCanonical: [
-		self hasEmbeddedMarkup
-			ifTrue: [
-				self writer
-					formatAfterInternalSubset: self;
-					nextPut: $]].
-		self writer
-			nextPut: $>;
-			formatAfterDoctypeDeclaration: self]
+	self isCanonical
+		ifTrue: [^ self].
+
+	self hasEmbeddedMarkup
+		ifTrue: [
+			self writer
+				formatAfterInternalSubset: self;
+				nextPut: $]].
+
+	self writer
+		nextPut: $>;
+		formatAfterDoctypeDeclaration: self.
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writePrologue [
-	self omitIfCanonical: [
-		self writer
-			formatBeforeDoctypeDeclaration: self;
-			nextPutAll: '<!DOCTYPE';
-			space;
-			writeName: self root.
+	self isCanonical
+		ifTrue: [^ self].
 
-		self externalIDWriter hasExternalID
-			ifTrue: [
-				self writer space.
-				self externalIDWriter writeOn: self writer]]
+	self writer
+		formatBeforeDoctypeDeclaration: self;
+		nextPutAll: '<!DOCTYPE';
+		space;
+		writeName: self root.
+
+	self externalIDWriter hasExternalID
+		ifTrue: [
+			self writer space.
+			self externalIDWriter writeOn: self writer].
 ]

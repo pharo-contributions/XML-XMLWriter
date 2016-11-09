@@ -68,7 +68,23 @@ XMLMarkupWriter >> initialize [
 ]
 
 { #category : #testing }
-XMLMarkupWriter >> isDoctypeWriter [
+XMLMarkupWriter >> isCanonical [
+	^ self writer isCanonical
+]
+
+{ #category : #testing }
+XMLMarkupWriter >> isCanonicalInDTD [
+	self isCanonical
+		ifFalse: [^ false].
+
+	self parentMarkupWriter
+		ifNotNil: [:parent | ^ parent isDoctypeDeclarationWriter].
+
+	^ false.
+]
+
+{ #category : #testing }
+XMLMarkupWriter >> isDoctypeDeclarationWriter [
 	^ false
 ]
 
@@ -103,22 +119,6 @@ XMLMarkupWriter >> newMarkupWriterBeingPushed [
 { #category : #private }
 XMLMarkupWriter >> newStringMarkupBeingWritten [
 	self write
-]
-
-{ #category : #private }
-XMLMarkupWriter >> omitIfCanonical: aBlock [
-	self writer isCanonical
-		ifFalse: [aBlock value]
-]
-
-{ #category : #private }
-XMLMarkupWriter >> omitIfCanonicalInDTD: aBlock [
-	| parent |
-
-	(self writer isCanonical
-		and: [(parent := self parentMarkupWriter) notNil
-			and: [parent isDoctypeWriter]])
-		ifFalse: [aBlock value]
 ]
 
 { #category : #accessing }

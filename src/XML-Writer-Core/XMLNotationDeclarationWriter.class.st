@@ -42,5 +42,6 @@ XMLNotationDeclarationWriter >> systemID: aSystemID [
 
 { #category : #private }
 XMLNotationDeclarationWriter >> writeBody [
-	self omitIfCanonical: [self externalIDWriter writeOn: self writer]
+	self isCanonical
+		ifFalse: [self externalIDWriter writeOn: self writer]
 ]

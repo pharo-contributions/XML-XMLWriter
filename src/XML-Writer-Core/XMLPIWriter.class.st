@@ -21,6 +21,11 @@ XMLPIWriter >> data: aString [
 	data := aString
 ]
 
+{ #category : #testing }
+XMLPIWriter >> hasData [
+	^ self data notEmpty
+]
+
 { #category : #accessing }
 XMLPIWriter >> target [
 	^ target ifNil: ['']
@@ -33,25 +38,29 @@ XMLPIWriter >> target: aString [
 
 { #category : #private }
 XMLPIWriter >> writeBody [
-	self omitIfCanonicalInDTD: [
-		self writer
-			space;
-			nextPutAll: self data]
+	(self hasData
+		and: [self isCanonicalInDTD not])
+		ifTrue: [
+			self writer
+				space;
+				nextPutAll: self data]
 ]
 
 { #category : #private }
 XMLPIWriter >> writeEpilogue [
-	self omitIfCanonicalInDTD: [
-		self writer
-			nextPutAll: '?>';
-			formatAfterPI: self]
+	self isCanonicalInDTD
+		ifFalse: [
+			self writer
+				nextPutAll: '?>';
+				formatAfterPI: self]
 ]
 
 { #category : #private }
 XMLPIWriter >> writePrologue [
-	self omitIfCanonicalInDTD: [
-		self writer
-			formatBeforePI: self;
-			nextPutAll: '<?';
-			writeName: self target]
+	self isCanonicalInDTD
+		ifFalse: [
+			self writer
+				formatBeforePI: self;
+				nextPutAll: '<?';
+				writeName: self target]
 ]

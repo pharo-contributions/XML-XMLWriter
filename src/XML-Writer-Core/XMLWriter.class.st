@@ -54,11 +54,15 @@ Class {
 		'isEscaping',
 		'isCanonical',
 		'outputsSelfClosingTags',
-		'omitsRedundantXMLNSDeclarations'
+		'omitsRedundantXMLNSDeclarations',
+		'hadActiveTagWriter'
 	],
 	#classVars : [
+		'CanonicalLineBreak',
+		'ContentCanonicalEscapes',
 		'ContentEscapes',
 		'ContentNonEntityEscapes',
+		'ContentStringCanonicalEscapes',
 		'ContentStringEscapes',
 		'ContentStringNonEntityEscapes',
 		'DefaultLineBreak',
@@ -68,6 +72,46 @@ Class {
 	],
 	#category : #'XML-Writer-Core'
 }
+
+{ #category : #accessing }
+XMLWriter class >> canonicalLineBreak [
+	^ CanonicalLineBreak
+]
+
+{ #category : #accessing }
+XMLWriter class >> canonicalLineBreak: aCharacterOrString [
+	CanonicalLineBreak := aCharacterOrString asString
+]
+
+{ #category : #private }
+XMLWriter class >> contentCanonicalEscapes [
+	^ ContentCanonicalEscapes
+]
+
+{ #category : #private }
+XMLWriter class >> contentEscapes [
+	^ ContentEscapes
+]
+
+{ #category : #private }
+XMLWriter class >> contentNonEntityEscapes [
+	^ ContentNonEntityEscapes
+]
+
+{ #category : #private }
+XMLWriter class >> contentStringCanonicalEscapes [
+	^ ContentStringCanonicalEscapes
+]
+
+{ #category : #private }
+XMLWriter class >> contentStringEscapes [
+	^ ContentStringEscapes
+]
+
+{ #category : #private }
+XMLWriter class >> contentStringNonEntityEscapes [
+	^ ContentStringNonEntityEscapes
+]
 
 { #category : #accessing }
 XMLWriter class >> defaultLineBreak [
@@ -85,13 +129,29 @@ XMLWriter class >> initialize [
 
 	self
 		initializeDefaultLineBreak;
+		initializeCanonicalLineBreak;
+		initializePlatformSpecificLineBreak;
 		initializeContentEscapes;
+		initializeContentCanonicalEscapes;
 		initializeContentNonEntityEscapes;
 		initializeContentStringEscapes;
+		initializeContentStringCanonicalEscapes;
 		initializeContentStringNonEntityEscapes;
 		initializeEntityValueEscapes;
-		initializeSpaceCharacter;
-		initializePlatformSpecificLineBreak
+		initializeSpaceCharacter.
+]
+
+{ #category : #'class initialization' }
+XMLWriter class >> initializeCanonicalLineBreak [
+	self canonicalLineBreak: Character lf
+]
+
+{ #category : #'class initialization' }
+XMLWriter class >> initializeContentCanonicalEscapes [
+	ContentCanonicalEscapes :=
+		ContentEscapes copy
+			at: 16rD put: '&#xD;'; "CR"
+			yourself
 ]
 
 { #category : #'class initialization' }
@@ -118,6 +178,16 @@ XMLWriter class >> initializeContentNonEntityEscapes [
 	ContentNonEntityEscapes :=
 		ContentEscapes copy
 			at: $& asciiValue put: nil;
+			yourself
+]
+
+{ #category : #'class initialization' }
+XMLWriter class >> initializeContentStringCanonicalEscapes [
+	ContentStringCanonicalEscapes :=
+		ContentStringEscapes copy
+			at: 16r9 put: '&#x9;'; "tab"
+			at: 16rA put: '&#xA;'; "lf"
+			at: 16rD put: '&#xD;'; "cr"
 			yourself
 ]
 
@@ -225,9 +295,9 @@ XMLWriter >> & anEntityReference [
 ]
 
 { #category : #accessing }
-XMLWriter >> activeDoctypeWriter [
+XMLWriter >> activeDoctypeDeclarationWriter [
 	self markupWriterStack reverseDo: [:each |
-		each isDoctypeWriter
+		each isDoctypeDeclarationWriter
 			ifTrue: [^ each]].
 	^ nil.
 ]
@@ -318,6 +388,26 @@ XMLWriter >> comment: aString [
 		write
 ]
 
+{ #category : #private }
+XMLWriter >> contentEscapes [
+	^ contentEscapes
+]
+
+{ #category : #private }
+XMLWriter >> contentEscapes: aContentEscapesTable [
+	contentEscapes := aContentEscapesTable
+]
+
+{ #category : #private }
+XMLWriter >> contentStringEscapes [
+	^ contentStringEscapes
+]
+
+{ #category : #private }
+XMLWriter >> contentStringEscapes: aContentStringEscapesTable [
+	contentStringEscapes := aContentStringEscapesTable
+]
+
 { #category : #accessing }
 XMLWriter >> contents [
 	"returns the full, untruncated output, unlike #printString, which may
@@ -329,6 +419,13 @@ XMLWriter >> contents [
 
 { #category : #writing }
 XMLWriter >> doctype [
+	"an abbreviation"
+
+	^ self doctypeDeclaration
+]
+
+{ #category : #writing }
+XMLWriter >> doctypeDeclaration [
 	^ self pushNewMarkupWriter: XMLDoctypeDeclarationWriter
 ]
 
@@ -392,19 +489,25 @@ XMLWriter >> entityRef: aName [
 
 { #category : #testing }
 XMLWriter >> escapesContentEntityReferences [
-	^ (contentEscapes at: $& asciiValue) notNil
-		and: [(contentStringEscapes at: $& asciiValue) notNil]
+	^ self isEscaping
+		and: [(contentEscapes at: $& asciiValue) notNil
+			and: [(contentStringEscapes at: $& asciiValue) notNil]]
 ]
 
 { #category : #accessing }
 XMLWriter >> escapesContentEntityReferences: aBoolean [
+	self escapesContentEntityReferences = aBoolean
+		ifTrue: [^ self].
 	aBoolean
 		ifTrue: [
-			contentEscapes := ContentEscapes.
-			contentStringEscapes := ContentStringEscapes]
+			self
+				isEscaping: true;
+				contentEscapes: ContentEscapes;
+				contentStringEscapes: ContentStringEscapes]
 		ifFalse: [
-			contentEscapes := ContentNonEntityEscapes.
-			contentStringEscapes := ContentStringNonEntityEscapes]
+			self
+				contentEscapes: ContentNonEntityEscapes;
+				contentStringEscapes: ContentStringNonEntityEscapes]
 ]
 
 { #category : #formatting }
@@ -558,7 +661,18 @@ XMLWriter >> formatter [
 
 { #category : #accessing }
 XMLWriter >> formatter: aFormatter [
-	(formatter := aFormatter) writer: self
+	(formatter := aFormatter)
+		ifNotNil: [formatter writer: self]
+]
+
+{ #category : #testing }
+XMLWriter >> hadActiveTagWriter [
+	^ hadActiveTagWriter
+]
+
+{ #category : #testing }
+XMLWriter >> hasActiveTagWriter [
+	^ self activeTagWriter notNil
 ]
 
 { #category : #testing }
@@ -571,7 +685,23 @@ XMLWriter >> isCanonical: aBoolean [
 	"Should the output be canonical XML (http://www.w3.org/TR/xml-c14n)?
 	(Not default)"
 
-	isCanonical := aBoolean
+	self isCanonical = aBoolean
+		ifTrue: [^ self].
+	(isCanonical := aBoolean)
+		ifTrue: [
+			self
+				formatter: XMLCanonicalWriterFormatter new;
+				lineBreak: self class canonicalLineBreak;
+				contentEscapes: ContentCanonicalEscapes;
+				contentStringEscapes: ContentStringCanonicalEscapes;
+				isEscaping: true;
+				omitsRedundantXMLNSDeclarations: true]
+		ifFalse: [
+			self
+				formatter: nil;
+				lineBreak: self class defaultLineBreak;
+				contentEscapes: ContentEscapes;
+				contentStringEscapes: ContentStringEscapes]
 ]
 
 { #category : #testing }
@@ -649,6 +779,7 @@ XMLWriter >> on: aStream [
 	isCanonical := false.
 	outputsSelfClosingTags := true.
 	omitsRedundantXMLNSDeclarations := true.
+	hadActiveTagWriter := false.
 ]
 
 { #category : #testing }
@@ -717,8 +848,16 @@ XMLWriter >> printOn: aStream [
 
 { #category : #private }
 XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
-	self activeMarkupWriterDo: [:each | each newMarkupWriterBeingPushed].
-	^ self markupWriterStack addLast: (aMarkupWriterClass writer: self).
+	| newMarkupWriter |
+
+	self activeMarkupWriterDo: [:each |
+		each newMarkupWriterBeingPushed].
+	newMarkupWriter :=
+		self markupWriterStack addLast:
+			(aMarkupWriterClass writer: self).
+	self hadActiveTagWriter
+		ifFalse: [hadActiveTagWriter := newMarkupWriter isTagWriter].
+	^ newMarkupWriter.
 ]
 
 { #category : #writing }
