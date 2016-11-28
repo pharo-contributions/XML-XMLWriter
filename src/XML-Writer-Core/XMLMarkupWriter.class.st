@@ -73,17 +73,6 @@ XMLMarkupWriter >> isCanonical [
 ]
 
 { #category : #testing }
-XMLMarkupWriter >> isCanonicalInDTD [
-	self isCanonical
-		ifFalse: [^ false].
-
-	self parentMarkupWriter
-		ifNotNil: [:parent | ^ parent isDoctypeDeclarationWriter].
-
-	^ false.
-]
-
-{ #category : #testing }
 XMLMarkupWriter >> isDoctypeDeclarationWriter [
 	^ false
 ]
@@ -99,6 +88,13 @@ XMLMarkupWriter >> isEmbeddedWithStringMarkup [
 
 	^ (parent := self parentMarkupWriter) notNil
 		and: [parent hasEmbeddedStringMarkup]
+]
+
+{ #category : #testing }
+XMLMarkupWriter >> isInDoctypeDeclaration [
+	^ self parentMarkupWriter
+		ifNil: [false]
+		ifNotNil: [:parent | parent isDoctypeDeclarationWriter]
 ]
 
 { #category : #testing }

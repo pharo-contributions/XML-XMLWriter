@@ -21,6 +21,16 @@ XMLDoctypeDeclarationWriter >> isDoctypeDeclarationWriter [
 	^ true
 ]
 
+{ #category : #testing }
+XMLDoctypeDeclarationWriter >> isExternalIDOmittable [
+	^ self externalIDWriter isOmittable
+]
+
+{ #category : #testing }
+XMLDoctypeDeclarationWriter >> isOmittable [
+	^ self isCanonical
+]
+
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> publicID [
 	^ self externalIDWriter publicID
@@ -60,13 +70,13 @@ XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeBody: aStringOrCollectionOrBlock [
-	self isCanonical
+	self isOmittable
 		ifFalse: [super writeBody: aStringOrCollectionOrBlock]
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeEmbeddedMarkupPrologue [
-	self isCanonical
+	self isOmittable
 		ifFalse: [
 			self writer
 				space;
@@ -76,7 +86,7 @@ XMLDoctypeDeclarationWriter >> writeEmbeddedMarkupPrologue [
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeEpilogue [
-	self isCanonical
+	self isOmittable
 		ifTrue: [^ self].
 
 	self hasEmbeddedMarkup
@@ -92,7 +102,7 @@ XMLDoctypeDeclarationWriter >> writeEpilogue [
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writePrologue [
-	self isCanonical
+	self isOmittable
 		ifTrue: [^ self].
 
 	self writer
@@ -101,8 +111,8 @@ XMLDoctypeDeclarationWriter >> writePrologue [
 		space;
 		writeName: self root.
 
-	self externalIDWriter hasExternalID
-		ifTrue: [
+	self isExternalIDOmittable
+		ifFalse: [
 			self writer space.
 			self externalIDWriter writeOn: self writer].
 ]

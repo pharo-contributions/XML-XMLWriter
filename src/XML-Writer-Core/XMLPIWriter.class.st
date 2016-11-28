@@ -26,6 +26,12 @@ XMLPIWriter >> hasData [
 	^ self data notEmpty
 ]
 
+{ #category : #testing }
+XMLPIWriter >> isOmittable [
+	^ self isCanonical
+		and: [self isInDoctypeDeclaration]
+]
+
 { #category : #accessing }
 XMLPIWriter >> target [
 	^ target ifNil: ['']
@@ -38,9 +44,9 @@ XMLPIWriter >> target: aString [
 
 { #category : #private }
 XMLPIWriter >> writeBody [
-	(self hasData
-		and: [self isCanonicalInDTD not])
-		ifTrue: [
+	(self isOmittable
+		or: [self hasData not])
+		ifFalse: [
 			self writer
 				space;
 				nextPutAll: self data]
@@ -48,7 +54,7 @@ XMLPIWriter >> writeBody [
 
 { #category : #private }
 XMLPIWriter >> writeEpilogue [
-	self isCanonicalInDTD
+	self isOmittable
 		ifFalse: [
 			self writer
 				nextPutAll: '?>';
@@ -57,7 +63,7 @@ XMLPIWriter >> writeEpilogue [
 
 { #category : #private }
 XMLPIWriter >> writePrologue [
-	self isCanonicalInDTD
+	self isOmittable
 		ifFalse: [
 			self writer
 				formatBeforePI: self;

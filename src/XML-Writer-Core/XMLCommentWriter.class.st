@@ -10,6 +10,12 @@ Class {
 	#category : #'XML-Writer-Core'
 }
 
+{ #category : #testing }
+XMLCommentWriter >> isOmittable [
+	^ self isCanonical
+		and: [self isInDoctypeDeclaration]
+]
+
 { #category : #accessing }
 XMLCommentWriter >> string [
 	^ string ifNil: [string := '']
@@ -22,13 +28,13 @@ XMLCommentWriter >> string: aString [
 
 { #category : #private }
 XMLCommentWriter >> writeBody [
-	self isCanonicalInDTD
+	self isOmittable
 		ifFalse: [self writer nextPutAll: self string]
 ]
 
 { #category : #private }
 XMLCommentWriter >> writeEpilogue [
-	self isCanonicalInDTD
+	self isOmittable
 		ifFalse: [
 			self writer
 				nextPutAll: '-->';
@@ -37,7 +43,7 @@ XMLCommentWriter >> writeEpilogue [
 
 { #category : #private }
 XMLCommentWriter >> writePrologue [
-	self isCanonicalInDTD
+	self isOmittable
 		ifFalse: [
 			self writer
 				formatBeforeComment: self;

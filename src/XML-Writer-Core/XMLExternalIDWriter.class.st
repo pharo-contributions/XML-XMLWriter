@@ -1,5 +1,5 @@
 "
-This class writes public and system IDs of external entities.
+This class writes the external IDs for doctype declarations and markup declarations, either as ""PUBLIC "" followed by the public and system ID literals separated by spaces or ""SYSTEM "" followed by the system ID literal.
 "
 Class {
 	#name : #XMLExternalIDWriter,
@@ -12,8 +12,19 @@ Class {
 }
 
 { #category : #testing }
-XMLExternalIDWriter >> hasExternalID [
-	^ self publicID notEmpty or: [self systemID notEmpty]
+XMLExternalIDWriter >> hasPublicID [
+	^ self publicID notEmpty
+]
+
+{ #category : #testing }
+XMLExternalIDWriter >> hasSystemID [
+	^ self systemID notEmpty
+]
+
+{ #category : #testing }
+XMLExternalIDWriter >> isOmittable [
+	^ self hasPublicID not
+		and: [self hasSystemID not]
 ]
 
 { #category : #accessing }
@@ -38,18 +49,27 @@ XMLExternalIDWriter >> systemID: aSystemID [
 
 { #category : #writing }
 XMLExternalIDWriter >> writeOn: aWriter [
-	self publicID
-		ifEmpty: [
-			self systemID
-				ifNotEmpty: [aWriter nextPutAll: 'SYSTEM']]
-		ifNotEmpty: [:id |
-			aWriter
-				nextPutAll: 'PUBLIC';
-				space;
-				writeUnescapedString: id].
+	self hasPublicID
+		ifTrue: [self writePublicExternalIDOn: aWriter]
+		ifFalse: [
+			self hasSystemID
+				ifTrue: [self writeSystemExternalIDOn: aWriter]]
+]
 
-	self systemID ifNotEmpty: [:id |
-		aWriter
-			space;
-			writeUnescapedString: id].
+{ #category : #writing }
+XMLExternalIDWriter >> writePublicExternalIDOn: aWriter [
+	aWriter
+		nextPutAll: 'PUBLIC';
+		space;
+		writeUnescapedString: self publicID;
+		space;
+		writeUnescapedString: self systemID
+]
+
+{ #category : #writing }
+XMLExternalIDWriter >> writeSystemExternalIDOn: aWriter [
+	aWriter
+		nextPutAll: 'SYSTEM';
+		space;
+		writeUnescapedString: self systemID
 ]

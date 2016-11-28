@@ -70,7 +70,7 @@ XMLAttributeDeclarationWriter >> type: aType [
 
 { #category : #private }
 XMLAttributeDeclarationWriter >> writeBody [
-	self isCanonical
+	self isOmittable
 		ifTrue: [^ self].
 
 	self writer

@@ -15,6 +15,11 @@ XMLMarkupDeclarationWriter >> declarationType [
 	self subclassResponsibility
 ]
 
+{ #category : #testing }
+XMLMarkupDeclarationWriter >> isOmittable [
+	^ self isCanonical
+]
+
 { #category : #accessing }
 XMLMarkupDeclarationWriter >> name [
 	^ name ifNil: ['']
@@ -27,7 +32,7 @@ XMLMarkupDeclarationWriter >> name: aName [
 
 { #category : #private }
 XMLMarkupDeclarationWriter >> writeEpilogue [
-	self isCanonical
+	self isOmittable
 		ifFalse: [
 			self writer
 				nextPut: $>;
@@ -36,7 +41,7 @@ XMLMarkupDeclarationWriter >> writeEpilogue [
 
 { #category : #private }
 XMLMarkupDeclarationWriter >> writePrologue [
-	self isCanonical
+	self isOmittable
 		ifFalse: [
 			self writer
 				formatBeforeDeclaration: self;

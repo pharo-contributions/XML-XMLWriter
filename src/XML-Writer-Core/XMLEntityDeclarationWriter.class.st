@@ -35,6 +35,11 @@ XMLEntityDeclarationWriter >> isParameter: aBoolean [
 	isParameter := aBoolean
 ]
 
+{ #category : #testing }
+XMLEntityDeclarationWriter >> isUnparsed [
+	^ self ndata notEmpty
+]
+
 { #category : #accessing }
 XMLEntityDeclarationWriter >> ndata [
 	^ ndata ifNil: [ndata := '']
@@ -77,18 +82,20 @@ XMLEntityDeclarationWriter >> systemID: aSystemID [
 
 { #category : #private }
 XMLEntityDeclarationWriter >> writeBody [
-	self isCanonical
+	self isOmittable
 		ifTrue: [^ self].
 
-	self replacement
-		ifEmpty: [
+	self externalIDWriter isOmittable
+		ifTrue: [
+			self writer writeEscapedEntityValueString:
+				self replacement]
+		ifFalse: [
 			self externalIDWriter writeOn: self writer.
-			(self isParameter not and: [self ndata notEmpty])
+			self isUnparsed
 				ifTrue: [
 					self writer
 						space;
 						nextPutAll: 'NDATA';
 						space;
-						writeName: self ndata]]
-		ifNotEmpty: [self writer writeEscapedEntityValueString: self replacement].
+						writeName: self ndata]].
 ]

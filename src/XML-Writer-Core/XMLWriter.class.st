@@ -296,7 +296,7 @@ XMLWriter >> & anEntityReference [
 
 { #category : #accessing }
 XMLWriter >> activeDoctypeDeclarationWriter [
-	self markupWriterStack reverseDo: [:each |
+	self markupWritersDo: [:each |
 		each isDoctypeDeclarationWriter
 			ifTrue: [^ each]].
 	^ nil.
@@ -313,9 +313,10 @@ XMLWriter >> activeMarkupWriter [
 ]
 
 { #category : #private }
-XMLWriter >> activeMarkupWriterDo: aBlock [
+XMLWriter >> activeMarkupWriterWhileChangingDo: aBlock [
 	"evaluate aBlock for the active (top) markup writer until there isn't
 	one or it's the same (still active) writer after evaluating aBlock"
+
 	| markupWriterStackSize activeMarkupWriter previousActiveMarkupWriter |
 
 	"inlined from activeMarkupWriter for speed"
@@ -330,10 +331,16 @@ XMLWriter >> activeMarkupWriterDo: aBlock [
 
 { #category : #accessing }
 XMLWriter >> activeTagWriter [
-	self markupWriterStack reverseDo: [:each |
+	self markupWritersDo: [:each |
 		each isTagWriter
 			ifTrue: [^ each]].
 	^ nil.
+]
+
+{ #category : #enumerating }
+XMLWriter >> ancestorMarkupWritersDo: aBlock [
+	self markupWriterStack size - 1 to: 1 by: -1 do: [:i |
+		aBlock value: (self markupWriterStack at: i)]
 ]
 
 { #category : #converting }
@@ -718,6 +725,19 @@ XMLWriter >> isEscaping: aBoolean [
 	isEscaping := aBoolean
 ]
 
+{ #category : #private }
+XMLWriter >> isRedundantXMLNSPrefix: aPrefix uri: aURI [
+	self ancestorMarkupWritersDo: [:each |
+		(each isTagWriter
+			and: [each hasXMLNSDeclarations])
+			ifTrue: [
+				each xmlnsDeclarations
+					at: aPrefix
+					ifPresent: [:uri | ^ uri = aURI]]].
+	^ aPrefix size = 0
+		and: [aURI size = 0].
+]
+
 { #category : #accessing }
 XMLWriter >> lineBreak [
 	^ lineBreak
@@ -737,9 +757,14 @@ XMLWriter >> markupWriterStack [
 	^ markupWriterStack
 ]
 
+{ #category : #enumerating }
+XMLWriter >> markupWritersDo: aBlock [
+	self markupWriterStack reverseDo: aBlock
+]
+
 { #category : #private }
 XMLWriter >> newStringMarkup [
-	self activeMarkupWriterDo: [:each | each newStringMarkupBeingWritten]
+	self activeMarkupWriterWhileChangingDo: [:each | each newStringMarkupBeingWritten]
 ]
 
 { #category : #private }
@@ -850,7 +875,7 @@ XMLWriter >> printOn: aStream [
 XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
 	| newMarkupWriter |
 
-	self activeMarkupWriterDo: [:each |
+	self activeMarkupWriterWhileChangingDo: [:each |
 		each newMarkupWriterBeingPushed].
 	newMarkupWriter :=
 		self markupWriterStack addLast:
@@ -870,6 +895,29 @@ XMLWriter >> raw: aString [
 			self
 				newStringMarkup;
 				nextPutAll: aString]
+]
+
+{ #category : #private }
+XMLWriter >> resolveAttributePrefix: aPrefix [
+	^ self
+		resolveAttributePrefix: aPrefix
+		ifUnresolvable: [''].
+]
+
+{ #category : #private }
+XMLWriter >> resolveAttributePrefix: aPrefix ifUnresolvable: aBlock [
+	aPrefix size > 0
+		ifTrue: [
+			aPrefix = 'xml'
+				ifTrue: [^ 'http://www.w3.org/XML/1998/namespace'].
+			self markupWritersDo: [:each |
+				each isTagWriter
+					and: [each hasXMLNSDeclarations
+						and: [
+							each xmlnsDeclarations
+								at: aPrefix
+								ifPresent: [:uri | ^ uri]]]]].
+	^ aBlock value.
 ]
 
 { #category : #private }
@@ -978,7 +1026,7 @@ XMLWriter >> write [
 	"writes any unwritten markup, including any markup writer that hasn't
 	been written yet"
 
-	self activeMarkupWriterDo: [:each |
+	self activeMarkupWriterWhileChangingDo: [:each |
 		each hasStartedWriting
 			ifFalse: [each write]]
 ]
@@ -1016,7 +1064,7 @@ XMLWriter >> writeAttributes: anAttributeCollection [
 	anAttributeCollection
 		ifNotNil: [
 			self isCanonical
-				ifTrue: [anAttributeCollection writeSortedAttributesOn: self]
+				ifTrue: [anAttributeCollection writeCanonicalAttributesOn: self]
 				ifFalse: [anAttributeCollection writeAttributesOn: self]]
 ]
 
@@ -1090,7 +1138,7 @@ XMLWriter >> writeUnescapedString: aString [
 
 { #category : #private }
 XMLWriter >> writeUnwrittenMarkupWritersEmbeddedIn: aMarkupWriter [
-	self activeMarkupWriterDo: [:each |
+	self activeMarkupWriterWhileChangingDo: [:each |
 		each == aMarkupWriter
 			ifTrue: [^ self].
 		each hasStartedWriting
@@ -1108,44 +1156,37 @@ XMLWriter >> writeWith: aBlock [
 
 { #category : #private }
 XMLWriter >> writeXMLNS: aPrefix uri: aURI [
-	self
-		space;
-		writeName:
-			(aPrefix isEmpty
-				ifTrue: ['xmlns']
-				ifFalse: ['xmlns:', aPrefix])
-		escapedContentValue: aURI
+	(self omitsRedundantXMLNSDeclarations
+		and: [
+			self
+				isRedundantXMLNSPrefix: aPrefix
+				uri: aURI])
+		ifFalse: [
+			self
+				space;
+				writeName:
+					(aPrefix isEmpty
+						ifTrue: ['xmlns']
+						ifFalse: ['xmlns:', aPrefix])
+				escapedContentValue: aURI]
 ]
 
 { #category : #private }
 XMLWriter >> writeXMLNSDeclarations: aDictionary [
-	| checkForDuplicates parentMarkupWriter |
-
 	aDictionary
 		ifNil: [^ self].
-	checkForDuplicates := 
-		self omitsRedundantXMLNSDeclarations
-			and: [(parentMarkupWriter := self parentMarkupWriter) notNil
-				and: [parentMarkupWriter isTagWriter]].
+
 	self isCanonical
 		ifTrue: [
-			(aDictionary keys reject: [:prefix |
-				(checkForDuplicates
-					and: [parentMarkupWriter xmlnsAt: prefix]) = (aDictionary at: prefix)])
-				sort;
-				do: [:prefix |
-					self
-						writeXMLNS: prefix
-						uri: (aDictionary at: prefix)]]
+			aDictionary keys sort do: [:prefix |
+				self
+					writeXMLNS: prefix
+					uri: (aDictionary at: prefix)]]
 		ifFalse: [
-			aDictionary keysDo: [:prefix | | uri |
-				uri := aDictionary at: prefix.
-				(checkForDuplicates
-					and: [(parentMarkupWriter xmlnsAt: prefix) = uri])
-					ifFalse: [
-						self
-							writeXMLNS: prefix
-							uri: uri]]].
+			aDictionary keysDo: [:prefix |
+				self
+					writeXMLNS: prefix
+					uri: (aDictionary at: prefix)]].
 ]
 
 { #category : #writing }
