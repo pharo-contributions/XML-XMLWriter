@@ -14,20 +14,18 @@ OrderPreservingStringDictionary >> writeCanonicalAttributesOn: aWriter [
 
 	sortedAttributeNames :=
 		self keys sort: [:a :b |
-			| aLocalName bLocalName aNamespaceURI bNamespaceURI |
+			| prefixOfA prefixOfB namespaceURIOfA namespaceURIOfB |
 			"the namespace URI is the primary key and
 			the local name is the secondary key"
-			aLocalName := a xmlLocalNameAfterPrefix.
-			bLocalName := b xmlLocalNameAfterPrefix.
-			aNamespaceURI :=
-				aWriter resolveAttributePrefix:
-					(a xmlPrefixBeforeLocalName: aLocalName).
-			bNamespaceURI :=
-				aWriter resolveAttributePrefix:
-					(b xmlPrefixBeforeLocalName: bLocalName).
-			aNamespaceURI < bNamespaceURI
-				or: [aNamespaceURI = bNamespaceURI
-					and: [aLocalName <= bLocalName]]].
+			prefixOfA := a xmlPrefixBeforeLocalName.
+			prefixOfB := b xmlPrefixBeforeLocalName.
+			namespaceURIOfA := aWriter resolveAttributePrefix: prefixOfA.
+			namespaceURIOfB := aWriter resolveAttributePrefix: prefixOfB.
+			namespaceURIOfA < namespaceURIOfB
+				or: [namespaceURIOfA = namespaceURIOfB
+					and: [
+						(a xmlLocalNameAfterPrefix: prefixOfA)
+							<= (b xmlLocalNameAfterPrefix: prefixOfB)]]].
 
 	"use to:do: for fast writing"
 	1 to: sortedAttributeNames size do: [:i | | attributeName |
