@@ -669,7 +669,7 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 
-	spec for: #'common' version: '2.7.3'.
+	spec for: #'common' version: '2.7.4'.
 
 
 ]
@@ -1424,5 +1424,16 @@ ConfigurationOfXMLWriter >> version273: spec [
                 spec blessing: #release.
 			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.53'.
 			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.29'.
+                ].
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version274: spec [ 
+        <version: '2.7.4' imports: #('2.7.0-baseline')>
+
+        spec for: #common do: [
+                spec blessing: #release.
+			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.54'.
+			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.30'.
                 ].
 ]
