@@ -311,6 +311,41 @@ XMLWriterTest >> testCanonicalEscapingWhitespace [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testCanonicalNonRedundantXMLNSDeclarations [
+	| withBlock |
+
+	withBlock := [:writer |
+		(writer tag: 'one')
+			xmlns: 'defaultNS';
+			xmlnsAt: 'prefix' put: 'prefixNS';
+			with: [
+				(writer tag: 'two')
+					xmlns: 'newDefaultNS';
+					xmlnsAt: 'prefix' put: 'newPrefixNS';
+					with: [
+						"skip one tag"
+						writer
+							tag: 'three'
+							with: [
+								"then add more non-reundant xmlns declarations"
+								(writer tag: 'four')
+									xmlns: '';
+									xmlnsAt: 'prefix' put: 'prefixNS']]]].
+	self assert:
+		(XMLWriter new
+			isCanonical: true;
+			writeWith: withBlock;
+			contents) =
+				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
+				'<two xmlns="newDefaultNS" xmlns:prefix="newPrefixNS">',
+				'<three>',
+				'<four xmlns="" xmlns:prefix="prefixNS"></four>',
+				'</three>',
+				'</two>',
+				'</one>').
+]
+
+{ #category : #tests }
 XMLWriterTest >> testCanonicalPIs [
 	| writer |
 
@@ -360,23 +395,28 @@ XMLWriterTest >> testCanonicalRedundantXMLNSDeclarations [
 					xmlns: 'defaultNS';
 					xmlnsAt: 'prefix' put: 'prefixNS';
 					with: [
-						(writer tag: 'three')
-							xmlns: 'newDefaultNS';
-							xmlnsAt: 'prefix' put: 'newPrefixNS']]].
+						"skip one tag"
+						writer
+							tag: 'three'
+							with: [
+								"then add more reundant xmlns declarations"
+								(writer tag: 'four')
+									xmlns: 'defaultNS';
+									xmlnsAt: 'prefix' put: 'prefixNS']]]].
 	self assert:
 		(XMLWriter new
 			isCanonical: true;
 			writeWith: withBlock;
 			contents) =
-			('<one xmlns="defaultNS" xmlns:prefix="prefixNS"><two>',
-			'<three xmlns="newDefaultNS" xmlns:prefix="newPrefixNS">',
-			'</three></two></one>').
+				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
+				'<two><three><four></four></three></two>',
+				'</one>').
+
 	self assert:
 		(XMLWriter new
 			isCanonical: true;
 			writeWith: [:writer | (writer tag: 'empty') xmlns: ''];
-			contents) =
-			'<empty xmlns=""></empty>'.
+			contents) = '<empty></empty>'.
 ]
 
 { #category : #tests }
@@ -386,15 +426,18 @@ XMLWriterTest >> testCanonicalTags [
 	(writer := XMLWriter new)
 		isCanonical: true.
 	(writer tag: 'tags')
-		attributeAt: 'c' put: '3';
+		attributeAt: 'b:d' put: '5';
+		attributeAt: 'b:c' put: '4';
 		attributeAt: 'a' put: '1';
-		attributeAt: 'b' put: '2';
+		attributeAt: 'a:b' put: '3';
+		attributeAt: 'xml:d' put: '2';
 		xmlnsAt: 'b' put: 'ns2';
 		xmlnsAt: 'a' put: 'ns1';
 		xmlns: 'default';
 		with: [
-			writer
-				tag: 'cdata'
+			(writer tag: 'cdata')
+				attributeAt: 'a:a' put: '2';
+				attributeAt: 'undeclared:a' put: '1';
 				with: [writer cdata: '<escaped name="&value;" />'].
 			writer
 				tag: 'empty'
@@ -402,8 +445,8 @@ XMLWriterTest >> testCanonicalTags [
 
 	self assert:
 		writer contents =
-			('<tags xmlns="default" xmlns:a="ns1" xmlns:b="ns2" a="1" b="2" c="3">',
-			'<cdata>&lt;escaped name="&amp;value;" /&gt;</cdata>',
+			('<tags xmlns="default" xmlns:a="ns1" xmlns:b="ns2" a="1" xml:d="2" a:b="3" b:c="4" b:d="5">',
+			'<cdata undeclared:a="1" a:a="2">&lt;escaped name="&amp;value;" /&gt;</cdata>',
 			'<empty></empty>',
 			'</tags>').
 ]
@@ -653,6 +696,45 @@ XMLWriterTest >> testEnablePrettyPrintingDTD [
 					'<!NOTATION external SYSTEM "external.txt">')
 				#(0 ']>'
 					''))).
+]
+
+{ #category : #tests }
+XMLWriterTest >> testEntityDeclaration [
+	| writer |
+
+	(writer := XMLWriter new)
+		doctypeDeclaration
+			root: 'test';
+			with: [
+				writer entityDeclaration
+					name: 'internal';
+					replacement: 'replacement'.
+				writer entityDeclaration name: 'emptyInternal'.
+				writer entityDeclaration
+					name: 'publicExternal';
+					publicID: 'publicID';
+					systemID: 'systemID'.
+				writer entityDeclaration
+					name: 'publicExternal';
+					publicID: 'publicID'.
+				writer entityDeclaration
+					name: 'systemExternal';
+					systemID: 'systemID'.
+				writer entityDeclaration
+					name: 'unparsed';
+					systemID: 'systemID';
+					ndata: 'notation'].
+
+	self assert:
+		writer contents =
+			('<!DOCTYPE test [',
+				'<!ENTITY internal "replacement">',
+				'<!ENTITY emptyInternal "">',
+				'<!ENTITY publicExternal PUBLIC "publicID" "systemID">',
+				'<!ENTITY publicExternal PUBLIC "publicID" "">',
+				'<!ENTITY systemExternal SYSTEM "systemID">',
+				'<!ENTITY unparsed SYSTEM "systemID" NDATA notation>',
+				']>').
 ]
 
 { #category : #tests }
@@ -994,6 +1076,40 @@ XMLWriterTest >> testLineBreak [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testNonRedundantXMLNSDeclarations [
+	| withBlock |
+
+	withBlock := [:writer |
+		(writer tag: 'one')
+			xmlns: 'defaultNS';
+			xmlnsAt: 'prefix' put: 'prefixNS';
+			with: [
+				(writer tag: 'two')
+					xmlns: 'newDefaultNS';
+					xmlnsAt: 'prefix' put: 'newPrefixNS';
+					with: [
+						"skip one tag"
+						writer
+							tag: 'three'
+							with: [
+								"then add more non-reundant xmlns declarations"
+								(writer tag: 'four')
+									xmlns: '';
+									xmlnsAt: 'prefix' put: 'prefixNS']]]].
+	self assert:
+		(XMLWriter new
+			writeWith: withBlock;
+			contents) =
+				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
+				'<two xmlns="newDefaultNS" xmlns:prefix="newPrefixNS">',
+				'<three>',
+				'<four xmlns="" xmlns:prefix="prefixNS" />',
+				'</three>',
+				'</two>',
+				'</one>').
+]
+
+{ #category : #tests }
 XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 	| withBlock |
 
@@ -1006,14 +1122,21 @@ XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 					xmlns: 'defaultNS';
 					xmlnsAt: 'prefix' put: 'prefixNS';
 					with: [
-						(writer tag: 'three')
-							xmlns: 'newDefaultNS';
-							xmlnsAt: 'prefix' put: 'newPrefixNS']]].
+						"skip one tag"
+						writer
+							tag: 'three'
+							with: [
+								"then add more reundant xmlns declarations"
+								(writer tag: 'four')
+									xmlns: 'defaultNS';
+									xmlnsAt: 'prefix' put: 'prefixNS']]]].
 	self assert:
-		(XMLWriter writeWith: withBlock) =
-			('<one xmlns="defaultNS" xmlns:prefix="prefixNS"><two>',
-			'<three xmlns="newDefaultNS" xmlns:prefix="newPrefixNS" />',
-			'</two></one>').
+		(XMLWriter new
+			writeWith: withBlock;
+			contents) =
+				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
+				'<two><three><four /></three></two>',
+				'</one>').
 	self assert:
 		(XMLWriter new
 			omitsRedundantXMLNSDeclarations: false;
@@ -1021,10 +1144,21 @@ XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 			contents) =
 			('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
 			'<two xmlns="defaultNS" xmlns:prefix="prefixNS">',
-			'<three xmlns="newDefaultNS" xmlns:prefix="newPrefixNS" />',
-			'</two></one>').
+			'<three>',
+			'<four xmlns="defaultNS" xmlns:prefix="prefixNS" />',
+			'</three>',
+			'</two>',
+			'</one>').
+
 	self assert:
 		(XMLWriter writeWith: [:writer | (writer tag: 'empty') xmlns: '']) =
+			'<empty />'.
+
+	self assert:
+		(XMLWriter writeWith: [:writer |
+			(writer
+				omitsRedundantXMLNSDeclarations: false;
+				tag: 'empty') xmlns: '']) =
 			'<empty xmlns="" />'.
 ]
 
