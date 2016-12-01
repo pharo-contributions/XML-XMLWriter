@@ -63,21 +63,144 @@ XMLWriterTest >> prettyPrintedLines: anArrayOfLineArrays [
 				stream nextPutAll: (each at: lineIndex)]]]
 ]
 
-{ #category : #tests }
-XMLWriterTest >> testActiveDoctypeWriter [
-	| writer doctypeWriter |
+{ #category : #'as yet unclassified' }
+XMLWriterTest >> should: aBlock enumerate: aCollection [
+	| enumerated |
+
+	enumerated := OrderedCollection new.
+	aBlock value: [:each | enumerated add: each].
+	self assert: enumerated = aCollection asOrderedCollection.
+]
+
+{ #category : #'as yet unclassified' }
+XMLWriterTest >> testActiveMarkupWriterAncestorsDo [
+	| writer enumerated oneTagWriter twoTagWriter threeTagWriter |
 
 	writer := XMLWriter new.
-	self assert: writer activeDoctypeDeclarationWriter isNil.
+	enumerated := OrderedCollection new.
+	self
+		should: [:block | writer activeMarkupWriterAncestorsDo: block]
+		enumerate: enumerated.
 
-	doctypeWriter := writer doctype.
-	self assert: writer activeDoctypeDeclarationWriter == doctypeWriter.
+	writer xml.
+	self
+		should: [:block | writer activeMarkupWriterAncestorsDo: block]
+		enumerate: enumerated.
 
-	doctypeWriter with: [
-		writer comment: 'test'.
-		self assert: writer activeDoctypeDeclarationWriter == doctypeWriter].
+	oneTagWriter := writer tag: 'one'.
+	self
+		should: [:block | writer activeMarkupWriterAncestorsDo: block]
+		enumerate: enumerated.
 
-	self assert: writer activeDoctypeDeclarationWriter isNil.
+	oneTagWriter with: [
+		twoTagWriter := writer tag: 'two'.
+		enumerated addFirst: oneTagWriter.
+		self
+			should: [:block | writer activeMarkupWriterAncestorsDo: block]
+			enumerate: enumerated.
+
+		twoTagWriter with: [
+			threeTagWriter := writer tag: 'three'.
+			enumerated addFirst: twoTagWriter.
+			self
+				should: [:block | writer activeMarkupWriterAncestorsDo: block]
+				enumerate: enumerated.
+			
+			threeTagWriter write.
+			enumerated removeFirst.
+			self
+				should: [:block | writer activeMarkupWriterAncestorsDo: block]
+				enumerate: enumerated]].
+
+	enumerated removeFirst.
+	self
+		should: [:block | writer activeMarkupWriterAncestorsDo: block]
+		enumerate: enumerated.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testActiveMarkupWriterParent [
+	| writer xmlDeclarationWriter tagWriter |
+
+	writer := XMLWriter new.
+	self assert: writer activeMarkupWriterParent isNil.
+	xmlDeclarationWriter := writer xml.
+	self
+		assert: writer activeMarkupWriterParent isNil;
+		assert: xmlDeclarationWriter parent isNil;
+		assert: (writer parentOfMarkupWriter: xmlDeclarationWriter) isNil.
+
+	tagWriter := writer tag: 'one'.
+	self
+		assert: writer activeMarkupWriterParent isNil;
+		assert: tagWriter parent isNil;
+		assert: (writer parentOfMarkupWriter: tagWriter) isNil.
+
+	tagWriter with: [| newTagWriter |
+		newTagWriter := writer tag: 'two'.
+		self
+			assert: writer activeMarkupWriterParent == tagWriter;
+			assert: newTagWriter parent == tagWriter;
+			assert: (writer parentOfMarkupWriter: newTagWriter) == tagWriter].
+
+	self
+		assert: writer activeMarkupWriterParent isNil;
+		assert: tagWriter parent isNil;
+		assert: (writer parentOfMarkupWriter: tagWriter) isNil.
+]
+
+{ #category : #'as yet unclassified' }
+XMLWriterTest >> testActiveMarkupWriterWithAncestorsDo [
+	| writer enumerated oneTagWriter twoTagWriter threeTagWriter |
+
+	writer := XMLWriter new.
+	enumerated := OrderedCollection new.
+	self
+		should: [:block | writer activeMarkupWriterWithAncestorsDo: block]
+		enumerate: enumerated.
+
+	enumerated addFirst: writer xml.
+	self
+		should: [:block | writer activeMarkupWriterWithAncestorsDo: block]
+		enumerate: enumerated.
+
+	oneTagWriter := writer tag: 'one'.
+	enumerated
+		removeFirst;
+		addFirst: oneTagWriter.
+	self
+		should: [:block | writer activeMarkupWriterWithAncestorsDo: block]
+		enumerate: enumerated.
+
+	oneTagWriter with: [
+		twoTagWriter := writer tag: 'two'.
+		enumerated addFirst: twoTagWriter.
+		self
+			should: [:block | writer activeMarkupWriterWithAncestorsDo: block]
+			enumerate: enumerated.
+
+		twoTagWriter with: [
+			threeTagWriter := writer tag: 'three'.
+			enumerated addFirst: threeTagWriter.
+			self
+				should: [:block | writer activeMarkupWriterWithAncestorsDo: block]
+				enumerate: enumerated.
+			
+			threeTagWriter write.
+			enumerated removeFirst.
+			self
+				should: [:block | writer activeMarkupWriterWithAncestorsDo: block]
+				enumerate: enumerated].
+
+		enumerated removeFirst.
+		self
+			should: [:block | writer activeMarkupWriterWithAncestorsDo: block]
+			enumerate: enumerated].
+
+	enumerated removeFirst.
+	self
+		should: [:block | writer activeMarkupWriterWithAncestorsDo: block]
+		enumerate: enumerated.
 ]
 
 { #category : #tests }
@@ -1190,32 +1313,6 @@ XMLWriterTest >> testOutputsSelfClosingTags [
 	self assert:
 		writer printString =
 			'<tags><self-closing /><not-self-closing></not-self-closing><self-closing /></tags>'.
-]
-
-{ #category : #tests }
-XMLWriterTest >> testParentMarkupWriter [
-	| writer xmlDeclarationWriter tagWriter |
-
-	writer := XMLWriter new.
-	self assert: writer parentMarkupWriter isNil.
-	xmlDeclarationWriter := writer xml.
-	self
-		assert: writer parentMarkupWriter isNil;
-		assert: xmlDeclarationWriter parentMarkupWriter isNil;
-		assert: (writer parentMarkupWriterOf: xmlDeclarationWriter) isNil.
-
-	tagWriter := writer tag: 'one'.
-	self
-		assert: writer parentMarkupWriter isNil;
-		assert: tagWriter parentMarkupWriter isNil;
-		assert: (writer parentMarkupWriterOf: tagWriter) isNil.
-
-	tagWriter with: [| newTagWriter |
-		newTagWriter := writer tag: 'two'.
-		self
-			assert: writer parentMarkupWriter == tagWriter;
-			assert: newTagWriter parentMarkupWriter == tagWriter;
-			assert: (writer parentMarkupWriterOf: newTagWriter) == tagWriter].
 ]
 
 { #category : #tests }
