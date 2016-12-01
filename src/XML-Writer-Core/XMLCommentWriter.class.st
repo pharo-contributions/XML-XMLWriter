@@ -13,7 +13,7 @@ Class {
 { #category : #testing }
 XMLCommentWriter >> isOmittable [
 	^ self isCanonical
-		and: [self isInDoctypeDeclaration]
+		and: [self isEmbeddedInDoctypeDeclaration]
 ]
 
 { #category : #accessing }

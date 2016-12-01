@@ -24,7 +24,7 @@ XMLCDataWriter >> string: aString [
 XMLCDataWriter >> writeBody [
 	self writer isCanonical
 		ifTrue: [
-			self parentMarkupWriter
+			self parent
 				ifNotNil: [:parent | parent newStringMarkupBeingWritten].
 			self writer writeEscapedContent: self string]
 		ifFalse: [self writer nextPutAll: self string]

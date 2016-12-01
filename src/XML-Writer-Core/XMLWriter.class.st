@@ -295,14 +295,6 @@ XMLWriter >> & anEntityReference [
 ]
 
 { #category : #accessing }
-XMLWriter >> activeDoctypeDeclarationWriter [
-	self markupWritersDo: [:each |
-		each isDoctypeDeclarationWriter
-			ifTrue: [^ each]].
-	^ nil.
-]
-
-{ #category : #accessing }
 XMLWriter >> activeMarkupWriter [
 	| markupWriterStackSize |
 
@@ -310,6 +302,21 @@ XMLWriter >> activeMarkupWriter [
 	^ (markupWriterStackSize := markupWriterStack size) > 0
 		ifTrue: [markupWriterStack at: markupWriterStackSize]
 		ifFalse: [nil]
+]
+
+{ #category : #enumerating }
+XMLWriter >> activeMarkupWriterAncestorsDo: aBlock [
+	self markupWriterStack size - 1 to: 1 by: -1 do: [:i |
+		 aBlock value: (self markupWriterStack at: i)]
+]
+
+{ #category : #accessing }
+XMLWriter >> activeMarkupWriterParent [
+	| markupWriterStackSize |
+
+	(markupWriterStackSize := self markupWriterStack size) >= 2
+		ifTrue: [^ self markupWriterStack at: markupWriterStackSize - 1]
+		ifFalse: [^ nil]
 ]
 
 { #category : #private }
@@ -329,18 +336,30 @@ XMLWriter >> activeMarkupWriterWhileChangingDo: aBlock [
 			previousActiveMarkupWriter := activeMarkupWriter]
 ]
 
+{ #category : #enumerating }
+XMLWriter >> activeMarkupWriterWithAncestorsDo: aBlock [
+	self markupWriterStack reverseDo: aBlock
+]
+
 { #category : #accessing }
 XMLWriter >> activeTagWriter [
-	self markupWritersDo: [:each |
+	self activeMarkupWriterWithAncestorsDo: [:each |
 		each isTagWriter
 			ifTrue: [^ each]].
 	^ nil.
 ]
 
-{ #category : #enumerating }
-XMLWriter >> ancestorMarkupWritersDo: aBlock [
-	self markupWriterStack size - 1 to: 1 by: -1 do: [:i |
-		aBlock value: (self markupWriterStack at: i)]
+{ #category : #private }
+XMLWriter >> ancestorsOfMarkupWriter: aMarkupWriter do: aBlock [
+	| enumeratingAncestors |
+
+	enumeratingAncestors := false.
+	self markupWriterStack size to: 1 by: -1 do: [:i |
+		enumeratingAncestors
+			ifTrue: [aBlock value: (self markupWriterStack at: i)]
+			ifFalse: [
+				enumeratingAncestors :=
+					(self markupWriterStack at: i) == aMarkupWriter]].
 ]
 
 { #category : #converting }
@@ -727,13 +746,17 @@ XMLWriter >> isEscaping: aBoolean [
 
 { #category : #private }
 XMLWriter >> isRedundantXMLNSPrefix: aPrefix uri: aURI [
-	self ancestorMarkupWritersDo: [:each |
+	self activeMarkupWriterAncestorsDo: [:each |
 		(each isTagWriter
 			and: [each hasXMLNSDeclarations])
 			ifTrue: [
 				each xmlnsDeclarations
 					at: aPrefix
 					ifPresent: [:uri | ^ uri = aURI]]].
+	
+	"declarations to reset the default namespace (like xmlns='') are
+	considered redundant when there's no previous default namespace
+	declaration being reset"
 	^ aPrefix size = 0
 		and: [aURI size = 0].
 ]
@@ -757,14 +780,10 @@ XMLWriter >> markupWriterStack [
 	^ markupWriterStack
 ]
 
-{ #category : #enumerating }
-XMLWriter >> markupWritersDo: aBlock [
-	self markupWriterStack reverseDo: aBlock
-]
-
 { #category : #private }
 XMLWriter >> newStringMarkup [
-	self activeMarkupWriterWhileChangingDo: [:each | each newStringMarkupBeingWritten]
+	self activeMarkupWriterWhileChangingDo: [:each |
+		each newStringMarkupBeingWritten]
 ]
 
 { #category : #private }
@@ -834,14 +853,8 @@ XMLWriter >> paramEntityRef: aName [
 		write
 ]
 
-{ #category : #accessing }
-XMLWriter >> parentMarkupWriter [
-	^ self activeMarkupWriter
-		ifNotNil: [:activeMarkupWriter | self parentMarkupWriterOf: activeMarkupWriter]
-]
-
-{ #category : #accessing }
-XMLWriter >> parentMarkupWriterOf: aMarkupWriter [
+{ #category : #private }
+XMLWriter >> parentOfMarkupWriter: aMarkupWriter [
 	self markupWriterStack size to: 2 by: -1 do: [:i |
 		(self markupWriterStack at: i) == aMarkupWriter
 			ifTrue: [^ self markupWriterStack at: i - 1]].
@@ -899,25 +912,18 @@ XMLWriter >> raw: aString [
 
 { #category : #private }
 XMLWriter >> resolveAttributePrefix: aPrefix [
-	^ self
-		resolveAttributePrefix: aPrefix
-		ifUnresolvable: [''].
-]
-
-{ #category : #private }
-XMLWriter >> resolveAttributePrefix: aPrefix ifUnresolvable: aBlock [
 	aPrefix size > 0
 		ifTrue: [
 			aPrefix = 'xml'
 				ifTrue: [^ 'http://www.w3.org/XML/1998/namespace'].
-			self markupWritersDo: [:each |
+			self activeMarkupWriterWithAncestorsDo: [:each |
 				each isTagWriter
 					and: [each hasXMLNSDeclarations
 						and: [
 							each xmlnsDeclarations
 								at: aPrefix
 								ifPresent: [:uri | ^ uri]]]]].
-	^ aBlock value.
+	^ ''.
 ]
 
 { #category : #private }
@@ -1054,18 +1060,17 @@ XMLWriter >> write: aString escapedWith: anEscapeTable [
 
 { #category : #private }
 XMLWriter >> writeAttributeName: aName value: aValue [ 
+	self space.
 	self
-		space;
-		writeName: aName escapedContentValue: aValue
+		writeName: aName
+		escapedContentValue: aValue.
 ]
 
 { #category : #private }
 XMLWriter >> writeAttributes: anAttributeCollection [
-	anAttributeCollection
-		ifNotNil: [
-			self isCanonical
-				ifTrue: [anAttributeCollection writeCanonicalAttributesOn: self]
-				ifFalse: [anAttributeCollection writeAttributesOn: self]]
+	self isCanonical
+		ifTrue: [anAttributeCollection writeCanonicalAttributesOn: self]
+		ifFalse: [anAttributeCollection writeAttributesOn: self]
 ]
 
 { #category : #private }
@@ -1173,9 +1178,6 @@ XMLWriter >> writeXMLNS: aPrefix uri: aURI [
 
 { #category : #private }
 XMLWriter >> writeXMLNSDeclarations: aDictionary [
-	aDictionary
-		ifNil: [^ self].
-
 	self isCanonical
 		ifTrue: [
 			aDictionary keys sort do: [:prefix |

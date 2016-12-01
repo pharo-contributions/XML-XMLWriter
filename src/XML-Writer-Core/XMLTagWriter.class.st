@@ -129,9 +129,11 @@ XMLTagWriter >> writePrologue [
 	self writer
 		formatBeforeStartTag: self;
 		nextPut: $<;
-		writeName: self name;
-		writeXMLNSDeclarations: xmlnsDeclarations;
-		writeAttributes: attributes
+		writeName: self name.
+	xmlnsDeclarations
+		ifNotNil: [self writer writeXMLNSDeclarations: xmlnsDeclarations].
+	attributes
+		ifNotNil: [self writer writeAttributes: attributes].
 ]
 
 { #category : #accessing }

@@ -36,7 +36,10 @@ XMLXMLDeclarationWriter >> standalone: aBooleanOrString [
 
 { #category : #accessing }
 XMLXMLDeclarationWriter >> version [
-	^ version ifNil: [version := '1.0']
+	(version isNil
+		or: [version isEmpty])
+		ifTrue: [version := '1.0'].
+	^ version.
 ]
 
 { #category : #accessing }
@@ -44,8 +47,9 @@ XMLXMLDeclarationWriter >> version: aVersionFloatOrString [
 	| versionString |
 
 	versionString := (aVersionFloatOrString ifNil: ['1.0']) asString.
+	"cutoff excess digits without first: for GS portability"
 	version :=
-		versionString "cutoff excess digits without first: for GS portability"
+		versionString
 			copyFrom: 1
 			to: (3 min: versionString size)
 ]
@@ -57,15 +61,13 @@ XMLXMLDeclarationWriter >> writeBody [
 
 	self writer
 		space;
-		writeName: 'version'
-		unescapedValue: (self version ifEmpty: ['1.0']).
+		writeName: 'version' unescapedValue: self version.
 
-	self encoding
-		ifNotEmpty: [:encodingName |
+	self encoding isEmpty
+		ifFalse: [
 			self writer
 				space;
-				writeName: 'encoding'
-				unescapedValue: encodingName].
+				writeName: 'encoding' unescapedValue: self encoding].
 
 	self standalone
 		ifTrue: [

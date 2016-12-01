@@ -73,10 +73,11 @@ XMLUnsafeStartTagWriter >> setXMLNSDeclarations: aDictionary [
 
 { #category : #private }
 XMLUnsafeStartTagWriter >> writeBody [
-	self writer
-		writeName: self name;
-		writeXMLNSDeclarations: xmlnsDeclarations;
-		writeAttributes: attributes
+	self writer writeName: self name.
+	xmlnsDeclarations
+		ifNotNil: [self writer writeXMLNSDeclarations: xmlnsDeclarations].
+	attributes
+		ifNotNil: [self writer writeAttributes: attributes].
 ]
 
 { #category : #private }

@@ -29,7 +29,7 @@ XMLPIWriter >> hasData [
 { #category : #testing }
 XMLPIWriter >> isOmittable [
 	^ self isCanonical
-		and: [self isInDoctypeDeclaration]
+		and: [self isEmbeddedInDoctypeDeclaration]
 ]
 
 { #category : #accessing }

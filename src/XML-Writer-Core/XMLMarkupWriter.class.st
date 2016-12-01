@@ -16,6 +16,13 @@ XMLMarkupWriter class >> writer: aWriter [
 	^ self new writer: aWriter
 ]
 
+{ #category : #enumerating }
+XMLMarkupWriter >> ancestorsDo: aBlock [
+	self writer
+		ancestorsOfMarkupWriter: self
+		do: aBlock
+]
+
 { #category : #converting }
 XMLMarkupWriter >> asString [
 	^ self writer asString
@@ -79,22 +86,21 @@ XMLMarkupWriter >> isDoctypeDeclarationWriter [
 
 { #category : #testing }
 XMLMarkupWriter >> isEmbedded [
-	^ self parentMarkupWriter notNil
+	^ self parent notNil
+]
+
+{ #category : #testing }
+XMLMarkupWriter >> isEmbeddedInDoctypeDeclaration [
+	self parent
+		ifNil: [^ false]
+		ifNotNil: [:parent | ^ parent isDoctypeDeclarationWriter]
 ]
 
 { #category : #testing }
 XMLMarkupWriter >> isEmbeddedWithStringMarkup [
-	| parent |
-
-	^ (parent := self parentMarkupWriter) notNil
-		and: [parent hasEmbeddedStringMarkup]
-]
-
-{ #category : #testing }
-XMLMarkupWriter >> isInDoctypeDeclaration [
-	^ self parentMarkupWriter
-		ifNil: [false]
-		ifNotNil: [:parent | parent isDoctypeDeclarationWriter]
+	self parent
+		ifNil: [^ false]
+		ifNotNil: [:parent | ^ parent hasEmbeddedStringMarkup]
 ]
 
 { #category : #testing }
@@ -118,8 +124,8 @@ XMLMarkupWriter >> newStringMarkupBeingWritten [
 ]
 
 { #category : #accessing }
-XMLMarkupWriter >> parentMarkupWriter [
-	^ self writer parentMarkupWriterOf: self
+XMLMarkupWriter >> parent [
+	^ self writer parentOfMarkupWriter: self
 ]
 
 { #category : #printing }
@@ -131,6 +137,12 @@ XMLMarkupWriter >> printOn: aStream [
 XMLMarkupWriter >> startWriting [
 	hasStartedWriting := true.
 	self writePrologue.
+]
+
+{ #category : #enumerating }
+XMLMarkupWriter >> withAncestorsDo: aBlock [
+	aBlock value: self.
+	self ancestorsDo: aBlock.
 ]
 
 { #category : #writing }
