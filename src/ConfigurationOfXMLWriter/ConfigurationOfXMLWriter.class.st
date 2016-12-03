@@ -1451,7 +1451,7 @@ ConfigurationOfXMLWriter >> version274: spec [
 
 { #category : #versions }
 ConfigurationOfXMLWriter >> version275: spec [ 
-        <version: '2.7.5' imports: #('2.7.5-baseline')>
+        <version: '2.7.5' imports: #('2.7.4-baseline')>
 
         spec for: #common do: [
                 spec blessing: #release.
