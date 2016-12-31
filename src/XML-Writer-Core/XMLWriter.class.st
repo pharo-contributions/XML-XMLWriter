@@ -474,7 +474,7 @@ XMLWriter >> enablePrettyPrinting [
 	self formatter: (XMLPrettyPrintingWriterFormatter writer: self)
 ]
 
-{ #category : #writing }
+{ #category : #'writing - unsafe' }
 XMLWriter >> endTag [
 	"Returns a new XMLUnsafeEndTagWriter for writing an end tag to close an element
 	started by a #startTag* message.
@@ -484,7 +484,7 @@ XMLWriter >> endTag [
 	^ self pushNewMarkupWriter: XMLUnsafeEndTagWriter
 ]
 
-{ #category : #writing }
+{ #category : #'writing - unsafe' }
 XMLWriter >> endTag: aName [
 	"Returns a new XMLUnsafeEndTagWriter for writing an end tag with the specified
 	name to close an element started by a #startTag* message.
@@ -898,7 +898,7 @@ XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
 	^ newMarkupWriter.
 ]
 
-{ #category : #writing }
+{ #category : #'writing - unsafe' }
 XMLWriter >> raw: aString [
 	"writes raw string content without doing any escaping of special
 	characters, unlike #string:"
@@ -942,7 +942,7 @@ XMLWriter >> space [
 	stream nextPut: SpaceCharacter
 ]
 
-{ #category : #writing }
+{ #category : #'writing - unsafe' }
 XMLWriter >> startTag [
 	"Returns a new XMLUnsafeStartTagWriter for writing a start tag that does
 	not support embedding or automatic end tag generation.
@@ -952,7 +952,7 @@ XMLWriter >> startTag [
 	^ self pushNewMarkupWriter: XMLUnsafeStartTagWriter
 ]
 
-{ #category : #writing }
+{ #category : #'writing - unsafe' }
 XMLWriter >> startTag: aName [
 	"Returns a new XMLUnsafeStartTagWriter for writing a start tag with the
 	specified name that does not support embedding or automatic end tag generation.
@@ -962,7 +962,7 @@ XMLWriter >> startTag: aName [
 	^ self startTag name: aName
 ]
 
-{ #category : #writing }
+{ #category : #'writing - unsafe' }
 XMLWriter >> startTag: aName attributes: aDictionaryOrArray [
 	"Returns a new XMLUnsafeStartTagWriter for writing a start tag with the
 	specified name and attributes that does not support embedding or automatic
