@@ -912,10 +912,19 @@ XMLWriter >> raw: aString [
 
 { #category : #private }
 XMLWriter >> resolveAttributePrefix: aPrefix [
-	aPrefix size > 0
+	"attributes with empty prefixes have no namespace, not even the
+	default, unlike elements"
+	aPrefix size > 0 "optimization"
 		ifTrue: [
-			aPrefix = 'xml'
-				ifTrue: [^ 'http://www.w3.org/XML/1998/namespace'].
+			(aPrefix at: 1) == $x "optimization"
+				ifTrue: [
+					aPrefix = 'xml'
+						ifTrue: [^ self xmlNamespaceURI].
+					"this prefix shouldn't be used for attributes, but we
+					resolve it anyway"
+					aPrefix = 'xmlns'
+						ifTrue: [^ self xmlnsNamespaceURI]].
+
 			self activeMarkupWriterWithAncestorsDo: [:each |
 				each isTagWriter
 					and: [each hasXMLNSDeclarations
@@ -923,6 +932,7 @@ XMLWriter >> resolveAttributePrefix: aPrefix [
 							each xmlnsDeclarations
 								at: aPrefix
 								ifPresent: [:uri | ^ uri]]]]].
+
 	^ ''.
 ]
 
@@ -1180,10 +1190,12 @@ XMLWriter >> writeXMLNS: aPrefix uri: aURI [
 XMLWriter >> writeXMLNSDeclarations: aDictionary [
 	self isCanonical
 		ifTrue: [
-			aDictionary keys sort do: [:prefix |
-				self
-					writeXMLNS: prefix
-					uri: (aDictionary at: prefix)]]
+			aDictionary keys
+				sort;
+				do: [:prefix |
+					self
+						writeXMLNS: prefix
+						uri: (aDictionary at: prefix)]]
 		ifFalse: [
 			aDictionary keysDo: [:prefix |
 				self
@@ -1201,4 +1213,14 @@ XMLWriter >> xml [
 { #category : #writing }
 XMLWriter >> xmlDeclaration [
 	^ self pushNewMarkupWriter: XMLXMLDeclarationWriter
+]
+
+{ #category : #private }
+XMLWriter >> xmlNamespaceURI [
+	^ 'http://www.w3.org/XML/1998/namespace'
+]
+
+{ #category : #private }
+XMLWriter >> xmlnsNamespaceURI [
+	^ 'http://www.w3.org/2000/xmlns/'
 ]
