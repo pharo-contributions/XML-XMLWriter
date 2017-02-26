@@ -12,20 +12,27 @@ OrderPreservingStringDictionary >> writeAttributesOn: aWriter [
 OrderPreservingStringDictionary >> writeCanonicalAttributesOn: aWriter [
 	| sortedAttributeNames |
 
-	sortedAttributeNames :=
-		self keys sort: [:a :b |
-			| prefixOfA prefixOfB namespaceURIOfA namespaceURIOfB |
-			"the namespace URI is the primary key and
-			the local name is the secondary key"
-			prefixOfA := a xmlWriterPrefixBeforeLocalName.
-			prefixOfB := b xmlWriterPrefixBeforeLocalName.
-			namespaceURIOfA := aWriter resolveAttributePrefix: prefixOfA.
-			namespaceURIOfB := aWriter resolveAttributePrefix: prefixOfB.
-			namespaceURIOfA < namespaceURIOfB
-				or: [namespaceURIOfA = namespaceURIOfB
-					and: [
-						(a xmlWriterLocalNameAfterPrefix: prefixOfA)
-							<= (b xmlWriterLocalNameAfterPrefix: prefixOfB)]]].
+	(sortedAttributeNames := self keys) sort: [:a :b | | prefixOfA prefixOfB |
+		prefixOfA := a xmlWriterPrefixBeforeLocalName.
+		prefixOfB := b xmlWriterPrefixBeforeLocalName.
+		prefixOfA = prefixOfB
+			ifTrue: [
+				"if the prefixes are the same, no need to lookup the namespace"
+				(a xmlWriterLocalNameAfterPrefix: prefixOfA)
+					<= (b xmlWriterLocalNameAfterPrefix: prefixOfB)]
+			ifFalse: [| uriOfA uriOfB |
+				"the namespace URI is the primary key and
+				the local name is the secondary key"
+				uriOfA :=
+					aWriter resolveActiveTagWriterAttributePrefix: prefixOfA.
+				uriOfB :=
+					aWriter resolveActiveTagWriterAttributePrefix: prefixOfB.
+				uriOfA < uriOfB
+					or: [
+						uriOfA = uriOfB
+							and: [
+								(a xmlWriterLocalNameAfterPrefix: prefixOfA)
+									<= (b xmlWriterLocalNameAfterPrefix: prefixOfB)]]]].
 
 	"use to:do: for fast writing"
 	1 to: sortedAttributeNames size do: [:i | | attributeName |

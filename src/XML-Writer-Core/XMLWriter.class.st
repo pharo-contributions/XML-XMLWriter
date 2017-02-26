@@ -745,7 +745,7 @@ XMLWriter >> isEscaping: aBoolean [
 ]
 
 { #category : #private }
-XMLWriter >> isRedundantXMLNSPrefix: aPrefix uri: aURI [
+XMLWriter >> isRedundantActiveTagWriterXMLNSPrefix: aPrefix uri: aURI [
 	self activeMarkupWriterAncestorsDo: [:each |
 		(each isTagWriter
 			and: [each hasXMLNSDeclarations])
@@ -911,7 +911,7 @@ XMLWriter >> raw: aString [
 ]
 
 { #category : #private }
-XMLWriter >> resolveAttributePrefix: aPrefix [
+XMLWriter >> resolveActiveTagWriterAttributePrefix: aPrefix [
 	"attributes with empty prefixes have no namespace, not even the
 	default, unlike elements"
 	aPrefix size > 0 "optimization"
@@ -926,12 +926,12 @@ XMLWriter >> resolveAttributePrefix: aPrefix [
 						ifTrue: [^ self xmlnsNamespaceURI]].
 
 			self activeMarkupWriterWithAncestorsDo: [:each |
-				each isTagWriter
-					and: [each hasXMLNSDeclarations
-						and: [
-							each xmlnsDeclarations
-								at: aPrefix
-								ifPresent: [:uri | ^ uri]]]]].
+				(each isTagWriter
+					and: [each hasXMLNSDeclarations])
+					ifTrue: [
+						each xmlnsDeclarations
+							at: aPrefix
+							ifPresent: [:uri | ^ uri]]]].
 
 	^ ''.
 ]
@@ -1174,7 +1174,7 @@ XMLWriter >> writeXMLNS: aPrefix uri: aURI [
 	(self omitsRedundantXMLNSDeclarations
 		and: [
 			self
-				isRedundantXMLNSPrefix: aPrefix
+				isRedundantActiveTagWriterXMLNSPrefix: aPrefix
 				uri: aURI])
 		ifFalse: [
 			self
@@ -1192,15 +1192,15 @@ XMLWriter >> writeXMLNSDeclarations: aDictionary [
 		ifTrue: [
 			aDictionary keys
 				sort;
-				do: [:prefix |
+				do: [:each |
 					self
-						writeXMLNS: prefix
-						uri: (aDictionary at: prefix)]]
+						writeXMLNS: each
+						uri: (aDictionary at: each)]]
 		ifFalse: [
-			aDictionary keysDo: [:prefix |
+			aDictionary keysDo: [:each |
 				self
-					writeXMLNS: prefix
-					uri: (aDictionary at: prefix)]].
+					writeXMLNS: each
+					uri: (aDictionary at: each)]]
 ]
 
 { #category : #writing }

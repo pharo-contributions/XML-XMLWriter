@@ -35,7 +35,12 @@ XMLAttributeDeclarationWriter >> defaultPragma [
 
 { #category : #accessing }
 XMLAttributeDeclarationWriter >> defaultPragma: aDefaultPragma [
-	defaultPragma := aDefaultPragma
+	defaultPragma :=
+		(aDefaultPragma notNil
+			and: [aDefaultPragma notEmpty
+				and: [aDefaultPragma first == $#]])
+			ifTrue: [aDefaultPragma allButFirst]
+			ifFalse: [aDefaultPragma]
 ]
 
 { #category : #accessing }
@@ -83,23 +88,22 @@ XMLAttributeDeclarationWriter >> writeBody [
 		writeDefaultValue.
 ]
 
-{ #category : #private }
+{ #category : #writing }
 XMLAttributeDeclarationWriter >> writeDefaultPragma [
-	self defaultPragma
-		ifNotEmpty: [:pragma |
-			self writer space.
-
-			(pragma first == $#)
-				ifFalse: [self writer nextPut: $#].
-
-			self writer nextPutAll: pragma]
-]
-
-{ #category : #private }
-XMLAttributeDeclarationWriter >> writeDefaultValue [
-	self defaultValue
-		ifNotEmpty: [:value |
+	self defaultPragma notEmpty
+		ifTrue: [
 			self writer
 				space;
-				writeEscapedContentString: value]
+				nextPut: $#;
+				nextPutAll: self defaultPragma]
+]
+
+{ #category : #writing }
+XMLAttributeDeclarationWriter >> writeDefaultValue [
+	(self defaultPragma isEmpty
+		or: [self defaultPragma = 'FIXED'])
+		ifTrue: [
+			self writer
+				space;
+				writeEscapedContentString: self defaultValue]
 ]
