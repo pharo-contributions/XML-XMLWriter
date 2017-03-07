@@ -884,6 +884,11 @@ XMLWriter >> popActiveMarkupWriter [
 	^ self markupWriterStack removeLast
 ]
 
+{ #category : #accessing }
+XMLWriter >> position [
+	^ stream position
+]
+
 { #category : #private }
 XMLWriter >> prettyPrintingWriterFormatterClass [
 	^ XMLPrettyPrintingWriterFormatter
