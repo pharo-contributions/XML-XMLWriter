@@ -384,6 +384,11 @@ XMLWriter >> attributeDeclaration [
 	^ self pushNewMarkupWriter: XMLAttributeDeclarationWriter
 ]
 
+{ #category : #private }
+XMLWriter >> canonicalWriterFormatterClass [
+	^ XMLCanonicalWriterFormatter
+]
+
 { #category : #writing }
 XMLWriter >> cdata [
 	^ self pushNewMarkupWriter: XMLCDataWriter
@@ -471,7 +476,7 @@ XMLWriter >> enablePlatformSpecificLineBreak [
 XMLWriter >> enablePrettyPrinting [
 	"enables 'pretty printing' whitespace formatting to make nicer output"
 
-	self formatter: (XMLPrettyPrintingWriterFormatter writer: self)
+	self formatter: self prettyPrintingWriterFormatterClass new
 ]
 
 { #category : #'writing - unsafe' }
@@ -716,7 +721,7 @@ XMLWriter >> isCanonical: aBoolean [
 	(isCanonical := aBoolean)
 		ifTrue: [
 			self
-				formatter: XMLCanonicalWriterFormatter new;
+				formatter: self canonicalWriterFormatterClass new;
 				lineBreak: self class canonicalLineBreak;
 				contentEscapes: ContentCanonicalEscapes;
 				contentStringEscapes: ContentStringCanonicalEscapes;
@@ -877,6 +882,11 @@ XMLWriter >> pi [
 { #category : #private }
 XMLWriter >> popActiveMarkupWriter [
 	^ self markupWriterStack removeLast
+]
+
+{ #category : #private }
+XMLWriter >> prettyPrintingWriterFormatterClass [
+	^ XMLPrettyPrintingWriterFormatter
 ]
 
 { #category : #printing }
