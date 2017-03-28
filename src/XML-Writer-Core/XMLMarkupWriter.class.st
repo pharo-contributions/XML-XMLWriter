@@ -97,6 +97,13 @@ XMLMarkupWriter >> isEmbeddedInDoctypeDeclaration [
 ]
 
 { #category : #testing }
+XMLMarkupWriter >> isEmbeddedInTagWriter [
+	self parent
+		ifNil: [^ false]
+		ifNotNil: [:parent | ^ parent isTagWriter]
+]
+
+{ #category : #testing }
 XMLMarkupWriter >> isEmbeddedWithStringMarkup [
 	self parent
 		ifNil: [^ false]
