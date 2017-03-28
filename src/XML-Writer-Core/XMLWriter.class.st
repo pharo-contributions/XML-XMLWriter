@@ -479,6 +479,13 @@ XMLWriter >> enablePrettyPrinting [
 	self formatter: self prettyPrintingWriterFormatterClass new
 ]
 
+{ #category : #writing }
+XMLWriter >> enablePrologPrettyPrinting [
+	"enables 'pretty printing' whitespace formatting, but only for the prolog"
+
+	self formatter: self prologPrettyPrintingWriterFormatterClass new
+]
+
 { #category : #'writing - unsafe' }
 XMLWriter >> endTag [
 	"Returns a new XMLUnsafeEndTagWriter for writing an end tag to close an element
@@ -897,6 +904,11 @@ XMLWriter >> prettyPrintingWriterFormatterClass [
 { #category : #printing }
 XMLWriter >> printOn: aStream [
 	aStream nextPutAll: self contents
+]
+
+{ #category : #private }
+XMLWriter >> prologPrettyPrintingWriterFormatterClass [
+	^ XMLPrologPrettyPrintingWriterFormatter
 ]
 
 { #category : #private }
