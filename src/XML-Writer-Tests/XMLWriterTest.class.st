@@ -797,11 +797,14 @@ XMLWriterTest >> testEnablePrettyPrintingDTD [
 				element: 'pretty';
 				attribute: 'name';
 				type: 'CDATA';
-				defaultPragma: '#REQUIRED'.
+				defaultPragma: '#IMPLIED'.
 			writer comment: 'notation'.
 			writer notationDeclaration
 				name: 'external';
-				systemID: 'external.txt'].
+				systemID: 'external.txt'.
+			writer pi
+				target: 'target';
+				data: 'data'].
 
 	self assert:
 		writer contents =
@@ -814,9 +817,10 @@ XMLWriterTest >> testEnablePrettyPrintingDTD [
 					'<!ENTITY % comment "<!--attribute-->">'
 					'%comment;'
 					'<!--attribute-->'
-					'<!ATTLIST pretty name CDATA #REQUIRED>'
+					'<!ATTLIST pretty name CDATA #IMPLIED>'
 					'<!--notation-->'
-					'<!NOTATION external SYSTEM "external.txt">')
+					'<!NOTATION external SYSTEM "external.txt">'
+					'<?target data?>')
 				#(0 ']>'
 					''))).
 ]
@@ -834,7 +838,10 @@ XMLWriterTest >> testEnablePrologPrettyPrinting [
 			writer comment: 'element'.
 			writer elementDeclaration
 				name: 'pretty';
-				contentModel: 'EMPTY'.
+				contentModel: 'ANY'.
+			writer elementDeclaration
+				name: 'ugly';
+				contentModel: 'ANY'.
 			writer comment: 'entity'.
 			writer entityDeclaration
 				isParameter: true;
@@ -846,14 +853,33 @@ XMLWriterTest >> testEnablePrologPrettyPrinting [
 				element: 'pretty';
 				attribute: 'name';
 				type: 'CDATA';
-				defaultPragma: '#REQUIRED'.
+				defaultPragma: '#IMPLIED'.
 			writer comment: 'notation'.
 			writer notationDeclaration
 				name: 'external';
-				systemID: 'external.txt'].
+				systemID: 'external.txt'.
+			writer pi
+				target: 'target';
+				data: 'data'].
+	writer comment: 'before'.
+	writer pi
+		target: 'beforeTarget';
+		data: 'beforeData'.
+	"content should be unformatted"
 	writer
-		tag: 'test';
-		comment: 'comment'.
+		tag: 'pretty'
+		with: [
+			writer comment: 'ugly'.
+			writer pi
+				target: 'uglyTarget';
+				data: 'uglyData'.
+			writer
+				tag: 'ugly'
+				with: 'test'].
+	writer comment: 'after'.
+	writer pi
+		target: 'afterTarget';
+		data: 'afterData'.
 
 	self assert:
 		writer contents =
@@ -861,17 +887,22 @@ XMLWriterTest >> testEnablePrologPrettyPrinting [
 				#(0 '<?xml version="1.0"?>'
 					'<!DOCTYPE pretty [')
 				#(1 '<!--element-->'
-					'<!ELEMENT pretty EMPTY>'
+					'<!ELEMENT pretty ANY>'
+					'<!ELEMENT ugly ANY>'
 					'<!--entity-->'
 					'<!ENTITY % comment "<!--attribute-->">'
 					'%comment;'
 					'<!--attribute-->'
-					'<!ATTLIST pretty name CDATA #REQUIRED>'
+					'<!ATTLIST pretty name CDATA #IMPLIED>'
 					'<!--notation-->'
-					'<!NOTATION external SYSTEM "external.txt">')
+					'<!NOTATION external SYSTEM "external.txt">'
+					'<?target data?>')
 				#(0 ']>'
-					'<test />'
-					'<!--comment-->'))).
+					'<!--before-->'
+					'<?beforeTarget beforeData?>'
+					'<pretty><!--ugly--><?uglyTarget uglyData?><ugly>test</ugly></pretty>'
+					'<!--after-->'
+					'<?afterTarget afterData?>'))).
 ]
 
 { #category : #tests }
