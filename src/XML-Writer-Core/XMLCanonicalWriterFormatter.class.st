@@ -1,5 +1,5 @@
 "
-A formatter for adding LF linebreaks around canonical markup.
+A formatter that adds LF linebreaks around canonical markup.
 "
 Class {
 	#name : #XMLCanonicalWriterFormatter,
