@@ -1044,8 +1044,8 @@ XMLWriterTest >> testFormattingContent [
 		with: [
 			(commentWriter := writer comment) string: 'test'.
 			(piWriter := writer pi)
-				target: 'test';
-				data: 'test'.
+				target: 'xml-xsl';
+				data: 'type="text/xsl" href=''demo.xsl'' title="unterminated'. "deliberately unterminated"
 			(entityRefWriter := writer entityRef) name: 'test'].
 	self assert:
 		(formatter
@@ -1069,7 +1069,20 @@ XMLWriterTest >> testFormattingContent [
 			with: commentWriter).
 	self assert:
 		(formatter
-			receivedNextAll: #(formatBeforePI: formatAfterPI:)
+			receivedNext: #formatBeforePI:
+			with: piWriter).
+	"only the first two quoted string were properly terminated and recognized"
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'text/xsl').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'demo.xsl').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterPI:
 			with: piWriter).
 	self assert:
 		(formatter
@@ -1397,6 +1410,35 @@ XMLWriterTest >> testOutputsSelfClosingTags [
 	self assert:
 		writer printString =
 			'<tags><self-closing /><not-self-closing></not-self-closing><self-closing /></tags>'.
+]
+
+{ #category : #tests }
+XMLWriterTest >> testPIsWithStringValues [
+	| writer |
+
+	writer := XMLWriter new.
+	writer pi
+		target: 'xml-xsl';
+		data: 'type="text/xsl" href=''demo.xsl'''.
+	writer pi
+		target: 'xml-xsl';
+		data: 'type="''text''/xsl" href=''"demo".xsl'''.
+	writer pi
+		target: 'xml-xsl';
+		data: 'type="text/xsl" href=''demo.xsl'.
+	writer pi
+		target: 'xml-xsl';
+		data: 'type="text/xsl" href="demo.xsl'.
+	writer tag: 'test'.
+
+	"it should print PI data as-is, preserving the quotes exactly"
+	self assert:
+		writer contents =
+			('<?xml-xsl type="text/xsl" href=''demo.xsl''?>',
+				'<?xml-xsl type="''text''/xsl" href=''"demo".xsl''?>',
+				'<?xml-xsl type="text/xsl" href=''demo.xsl?>',
+				'<?xml-xsl type="text/xsl" href="demo.xsl?>',
+				'<test />').
 ]
 
 { #category : #tests }
