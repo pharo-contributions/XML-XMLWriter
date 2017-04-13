@@ -711,7 +711,7 @@ XMLWriterTest >> testEnablePlatformSpecificLineBreak [
 	writer := XMLWriter new.
 	self
 		assert: writer enablePlatformSpecificLineBreak == writer;
-		assert: writer lineBreak = XMLWriter platformSpecificLineBreak.
+		assert: writer lineBreak = writer platformSpecificLineBreak.
 ]
 
 { #category : #tests }
@@ -988,15 +988,15 @@ XMLWriterTest >> testEscapesContentEntityReferences [
 		assert: (writer escapesContentEntityReferences: true) == writer;
 		assert: writer escapesContentEntityReferences;
 		assert: writer isEscaping;
-		assert: writer contentEscapes = XMLWriter contentEscapes;
-		assert: writer contentStringEscapes = XMLWriter contentStringEscapes.
+		assert: writer contentEscapes = writer contentDefaultEscapes;
+		assert: writer contentStringEscapes = writer contentStringDefaultEscapes.
 
 	self
 		assert: (writer escapesContentEntityReferences: false) == writer;
 		deny: writer escapesContentEntityReferences;
 		assert: writer isEscaping;
-		assert: writer contentEscapes = XMLWriter contentNonEntityEscapes;
-		assert: writer contentStringEscapes = XMLWriter contentStringNonEntityEscapes.
+		assert: writer contentEscapes = writer contentNonEntityEscapes;
+		assert: writer contentStringEscapes = writer contentStringNonEntityEscapes.
 
 	writer isEscaping: false.
 	self
@@ -1004,8 +1004,8 @@ XMLWriterTest >> testEscapesContentEntityReferences [
 		assert: (writer escapesContentEntityReferences: true) == writer;
 		assert: writer escapesContentEntityReferences;
 		assert: writer isEscaping;
-		assert: writer contentEscapes = XMLWriter contentEscapes;
-		assert: writer contentStringEscapes = XMLWriter contentStringEscapes.
+		assert: writer contentEscapes = writer contentDefaultEscapes;
+		assert: writer contentStringEscapes = writer contentStringDefaultEscapes.
 ]
 
 { #category : #tests }
@@ -1027,34 +1027,176 @@ XMLWriterTest >> testFormatter [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testFormattingAttributeDeclarations [
+	| formatter writer doctypeWriter firstDeclarationWriter secondDeclarationWriter thirdDeclarationWriter |
+
+	formatter := XMLWriterRecordingFormatterProxy new.
+	(writer := XMLWriter new) formatter: formatter.
+	(doctypeWriter := writer doctype)
+		root: 'one';
+		with: [
+			(firstDeclarationWriter := writer attributeDeclaration)
+				element: 'one';
+				attribute: 'one';
+				type: 'CDATA';
+				defaultPragma: '#FIXED';
+				defaultValue: 'default'.
+			(secondDeclarationWriter := writer attributeDeclaration)
+				element: 'one';
+				attribute: 'two';
+				type: '(four | five)';
+				defaultPragma: '#IMPLIED'.
+			(thirdDeclarationWriter := writer attributeDeclaration)
+				element: 'one';
+				attribute: 'three';
+				type: 'NOTATION (six | seven)';
+				defaultPragma: '#IMPLIED'.].
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDoctypeDeclaration:
+			with: doctypeWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'one').
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeInternalSubset:
+			with: doctypeWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: firstDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'one').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'one').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'default').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: firstDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: secondDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'one').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'two').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'four').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'five').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: secondDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: thirdDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'one').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'three').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'six').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'seven').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: thirdDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNextAll: #(formatAfterInternalSubset: formatAfterDoctypeDeclaration:)
+			with: doctypeWriter).
+
+	self assert:
+		writer contents =
+			('<!DOCTYPE one [',
+					'<!ATTLIST one one CDATA #FIXED "default">',
+					'<!ATTLIST one two (four | five) #IMPLIED>',
+					'<!ATTLIST one three NOTATION (six | seven) #IMPLIED>',
+				']>').
+]
+
+{ #category : #tests }
 XMLWriterTest >> testFormattingContent [
-	| formatter writer tagWriter commentWriter piWriter entityRefWriter |
+	| formatter writer tagWriter commentWriter entityRefWriter |
 
 	formatter := XMLWriterRecordingFormatterProxy new.
 	(writer := XMLWriter new) formatter: formatter.
 	(tagWriter := writer tag: 'empty') write.
 	self assert:
 		(formatter
-			receivedNextAll: #(formatBeforeStartTag: formatAfterEndTag:)
+			receivedNext: #formatBeforeStartTag:
 			with: tagWriter).
-	
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'empty').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterEndTag:
+			with: tagWriter).
+
 	(tagWriter := writer tag: 'not-empty')
 		xmlns: 'defaultNS';
 		attributeAt: 'name' put: 'value';
 		with: [
-			(commentWriter := writer comment) string: 'test'.
-			(piWriter := writer pi)
-				target: 'xml-xsl';
-				data: 'type="text/xsl" href=''demo.xsl'' title="unterminated'. "deliberately unterminated"
-			(entityRefWriter := writer entityRef) name: 'test'].
+			writer string: 'one'.
+			(commentWriter := writer comment) string: 'two'.
+			(entityRefWriter := writer entityRef) name: 'three'.
+			writer string: 'four'].
 	self assert:
 		(formatter
 			receivedNext: #formatBeforeStartTag:
 			with: tagWriter).
 	self assert:
 		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'not-empty').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'xmlns').
+	self assert:
+		(formatter
 			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
 			with: 'defaultNS').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'name').
 	self assert:
 		(formatter
 			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
@@ -1063,15 +1205,377 @@ XMLWriterTest >> testFormattingContent [
 		(formatter
 			receivedNext: #formatAfterStartTag:
 			with: tagWriter).
+
 	self assert:
 		(formatter
 			receivedNextAll: #(formatBeforeComment: formatAfterComment:)
 			with: commentWriter).
+
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeEntityReference: formatAfterEntityReference:)
+			with: entityRefWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeEndTag:
+			with: tagWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'not-empty').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterEndTag:
+			with: tagWriter).
+
+	writer outputsSelfClosingTags: false.
+	(tagWriter := writer tag: 'empty') write.
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeStartTag:
+			with: tagWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'empty').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterStartTag:
+			with: tagWriter).
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeEndTag:
+			with: tagWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'empty').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterEndTag:
+			with: tagWriter).
+
+	self assert:
+		writer contents =
+			('<empty />',
+				'<not-empty xmlns="defaultNS" name="value">',
+					'one<!--two-->&three;four',
+				'</not-empty>',
+				'<empty></empty>').
+]
+
+{ #category : #tests }
+XMLWriterTest >> testFormattingElementDeclarations [
+	| formatter writer doctypeWriter firstDeclarationWriter secondDeclarationWriter thirdDeclarationWriter fourthDeclarationWriter |
+
+	formatter := XMLWriterRecordingFormatterProxy new.
+	(writer := XMLWriter new) formatter: formatter.
+	(doctypeWriter := writer doctype)
+		root: 'one';
+		with: [
+			(firstDeclarationWriter := writer elementDeclaration)
+				name: 'one';
+				contentModel: '(two, three)'.
+			(secondDeclarationWriter := writer elementDeclaration)
+				name: 'two';
+				contentModel: '(#PCDATA | four)*'.
+			(thirdDeclarationWriter := writer elementDeclaration)
+				name: 'three';
+				contentModel: 'ANY'.
+			(fourthDeclarationWriter := writer elementDeclaration)
+				name: 'four';
+				contentModel: 'EMPTY'].
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDoctypeDeclaration:
+			with: doctypeWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'one').
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeInternalSubset:
+			with: doctypeWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: firstDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'one').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'two').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'three').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: firstDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: secondDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'two').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'four').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: secondDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: thirdDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'three').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: thirdDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: fourthDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'four').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: fourthDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNextAll: #(formatAfterInternalSubset: formatAfterDoctypeDeclaration:)
+			with: doctypeWriter).
+
+	self assert:
+		writer contents =
+			('<!DOCTYPE one [',
+					'<!ELEMENT one (two, three)>',
+					'<!ELEMENT two (#PCDATA | four)*>',
+					'<!ELEMENT three ANY>',
+					'<!ELEMENT four EMPTY>',
+				']>').
+]
+
+{ #category : #tests }
+XMLWriterTest >> testFormattingEntityDelcarations [
+	| formatter writer xmlDeclarationWriter doctypeWriter firstDeclarationWriter secondDeclarationWriter thirdDeclarationWriter fourthDeclarationWriter |
+
+	formatter := XMLWriterRecordingFormatterProxy new.
+	(writer := XMLWriter new) formatter: formatter.
+	(doctypeWriter := writer doctype)
+		root: 'test';
+		with: [
+			(firstDeclarationWriter := writer entityDeclaration)
+				isParameter: true;
+				name: 'one';
+				replacement: 'replacement'.
+			(secondDeclarationWriter := writer entityDeclaration)
+				name: 'two';
+				publicID: 'second';
+				systemID: 'two.ent'.
+			(thirdDeclarationWriter := writer entityDeclaration)
+				name: 'three';
+				systemID: 'three.ent'.
+			(fourthDeclarationWriter := writer entityDeclaration)
+				name: 'four';
+				publicID: 'fourth';
+				systemID: 'four.ent';
+				ndata: 'notation'].
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDoctypeDeclaration:
+			with: doctypeWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'test').
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeInternalSubset:
+			with: doctypeWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: firstDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'one').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'replacement').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: firstDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: secondDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'two').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'second').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'two.ent').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: secondDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: thirdDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'three').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'three.ent').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: thirdDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDeclaration:
+			with: fourthDeclarationWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'four').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'fourth').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'four.ent').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'notation').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDeclaration:
+			with: fourthDeclarationWriter).
+
+	self assert:
+		(formatter
+			receivedNextAll: #(formatAfterInternalSubset: formatAfterDoctypeDeclaration:)
+			with: doctypeWriter).
+
+	self assert:
+		writer contents =
+			('<!DOCTYPE test [',
+					'<!ENTITY % one "replacement">',
+					'<!ENTITY two PUBLIC "second" "two.ent">',
+					'<!ENTITY three SYSTEM "three.ent">',
+					'<!ENTITY four PUBLIC "fourth" "four.ent" NDATA notation>',
+				']>').
+]
+
+{ #category : #tests }
+XMLWriterTest >> testFormattingPIs [
+	| formatter writer piWriter |
+
+	formatter := XMLWriterRecordingFormatterProxy new.
+	(writer := XMLWriter new) formatter: formatter.
+
+	(piWriter := writer pi)
+		target: 'xml-xsl';
+		data: 'type="text/xsl" href=''demo.xsl''';
+		write.
 	self assert:
 		(formatter
 			receivedNext: #formatBeforePI:
 			with: piWriter).
-	"only the first two quoted string were properly terminated and recognized"
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'type').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'text/xsl').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'href').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'demo.xsl').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterPI:
+			with: piWriter).
+
+	(piWriter := writer pi)
+		target: 'xml-xsl';
+		data: 'type href';
+		write.
+	self assert:
+		(formatter
+			receivedNext: #formatBeforePI:
+			with: piWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'type').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'href').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterPI:
+			with: piWriter).
+
+	(piWriter := writer pi)
+		target: 'xml-xsl';
+		data: '"text/xsl" ''demo.xsl''';
+		write.
+	self assert:
+		(formatter
+			receivedNext: #formatBeforePI:
+			with: piWriter).
 	self assert:
 		(formatter
 			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
@@ -1084,38 +1588,89 @@ XMLWriterTest >> testFormattingContent [
 		(formatter
 			receivedNext: #formatAfterPI:
 			with: piWriter).
-	self assert:
-		(formatter
-			receivedNextAll: #(formatBeforeEntityReference: formatAfterEntityReference:)
-			with: entityRefWriter).
-	self assert:
-		(formatter
-			receivedNextAll: #(formatBeforeEndTag: formatAfterEndTag:)
-			with: tagWriter).
 
-	writer outputsSelfClosingTags: false.
-	(tagWriter := writer tag: 'empty') write.
+	(piWriter := writer pi)
+		target: 'xml-xsl';
+		data: '"text/xsl" "demo.xsl';
+		write.
 	self assert:
 		(formatter
-			receivedNextAll: #(formatBeforeStartTag: formatAfterStartTag: formatBeforeEndTag: formatAfterEndTag:)
-			with: tagWriter).
+			receivedNext: #formatBeforePI:
+			with: piWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'text/xsl').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterPI:
+			with: piWriter).
+
+	(piWriter := writer pi)
+		target: 'xml-xsl';
+		data: '"text/xsl" ''demo.xsl';
+		write.
+	self assert:
+		(formatter
+			receivedNext: #formatBeforePI:
+			with: piWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'text/xsl').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterPI:
+			with: piWriter).
+
+	self assert:
+		writer contents =
+			('<?xml-xsl type="text/xsl" href=''demo.xsl''?>',
+				'<?xml-xsl type href?>',
+				'<?xml-xsl "text/xsl" ''demo.xsl''?>',
+				'<?xml-xsl "text/xsl" "demo.xsl?>',
+				'<?xml-xsl "text/xsl" ''demo.xsl?>').
 ]
 
 { #category : #tests }
 XMLWriterTest >> testFormattingProlog [
-	| formatter writer xmlDeclarationWriter doctypeWriter paramEntityDeclarationWriter paramEntityRefWriter |
+	| formatter writer xmlDeclarationWriter doctypeWriter |
 
 	formatter := XMLWriterRecordingFormatterProxy new.
 	(writer := XMLWriter new) formatter: formatter.
-	(xmlDeclarationWriter := writer xml) write.
+	(xmlDeclarationWriter := writer xml)
+		version: '1.0';
+		encoding: 'UTF-16';
+		standalone: 'yes';
+		write.
 	self assert:
 		(formatter
 			receivedNext: #formatBeforeXMLDeclaration:
 			with: xmlDeclarationWriter).
 	self assert:
 		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'version').
+	self assert:
+		(formatter
 			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
 			with: '1.0').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'encoding').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'UTF-16').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'standalone').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'yes').
 	self assert:
 		(formatter
 			receivedNext: #formatAfterXMLDeclaration:
@@ -1123,36 +1678,56 @@ XMLWriterTest >> testFormattingProlog [
 
 	(doctypeWriter := writer doctype)
 		root: 'test';
-		with: [
-			(paramEntityDeclarationWriter := writer entityDeclaration)
-				isParameter: true;
-				name: 'test';
-				replacement: 'replacement'.
-			(paramEntityRefWriter := writer paramEntityRef) name: 'test'].
+		publicID: 'public';
+		systemID: 'system';
+		write.
 	self assert:
 		(formatter
-			receivedNextAll: #(formatBeforeDoctypeDeclaration: formatBeforeInternalSubset:)
+			receivedNext: #formatBeforeDoctypeDeclaration:
 			with: doctypeWriter).
 	self assert:
 		(formatter
-			receivedNext: #formatBeforeDeclaration:
-			with: paramEntityDeclarationWriter).
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'test').
 	self assert:
 		(formatter
 			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
-			with: 'replacement').
+			with: 'public').
 	self assert:
 		(formatter
-			receivedNext: #formatAfterDeclaration:
-			with: paramEntityDeclarationWriter).
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'system').
 	self assert:
 		(formatter
-			receivedNextAll: #(formatBeforeEntityReference: formatAfterEntityReference:)
-			with: paramEntityRefWriter).
-	self assert:
-		(formatter
-			receivedNextAll: #(formatAfterInternalSubset: formatAfterDoctypeDeclaration:)
+			receivedNext: #formatAfterDoctypeDeclaration:
 			with: doctypeWriter).
+
+	(doctypeWriter := writer doctype)
+		root: 'test';
+		systemID: 'system';
+		write.
+	self assert:
+		(formatter
+			receivedNext: #formatBeforeDoctypeDeclaration:
+			with: doctypeWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'test').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
+			with: 'system').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterDoctypeDeclaration:
+			with: doctypeWriter).
+
+	self assert:
+		writer contents =
+			('<?xml version="1.0" encoding="UTF-16" standalone="yes"?>',
+				'<!DOCTYPE test PUBLIC "public" "system">',
+				'<!DOCTYPE test SYSTEM "system">').
 ]
 
 { #category : #tests }
@@ -1171,8 +1746,20 @@ XMLWriterTest >> testFormattingUnsafeTagWriters [
 			with: tagWriter).
 	self assert:
 		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'test').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'xmlns').
+	self assert:
+		(formatter
 			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
 			with: 'defaultNS').
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeQuotedStringName: formatAfterQuotedStringName:)
+			with: 'name').
 	self assert:
 		(formatter
 			receivedNextAll: #(formatBeforeQuotedStringValue: formatAfterQuotedStringValue:)
@@ -1181,11 +1768,24 @@ XMLWriterTest >> testFormattingUnsafeTagWriters [
 		(formatter
 			receivedNext: #formatAfterStartTag:
 			with: tagWriter).
-	(tagWriter := writer endTag: 'empty') write.
+
+	(tagWriter := writer endTag: 'test') write.
 	self assert:
 		(formatter
-			receivedNextAll: #(formatBeforeEndTag: formatAfterEndTag:)
+			receivedNext: #formatBeforeEndTag:
 			with: tagWriter).
+	self assert:
+		(formatter
+			receivedNextAll: #(formatBeforeName: formatAfterName:)
+			with: 'test').
+	self assert:
+		(formatter
+			receivedNext: #formatAfterEndTag:
+			with: tagWriter).
+
+	self assert:
+		writer contents =
+			'<test xmlns="defaultNS" name="value"></test>'.
 ]
 
 { #category : #tests }
@@ -1235,6 +1835,20 @@ XMLWriterTest >> testHasActiveTagWriter [
 ]
 
 { #category : #tests }
+XMLWriterTest >> testHasFormatter [
+	| writer |
+
+	writer := XMLWriter new.
+	self deny: writer hasFormatter.
+
+	writer formatter: XMLPrettyPrintingWriterFormatter new.
+	self assert: writer hasFormatter.
+
+	writer formatter: nil.
+	self deny: writer hasFormatter.
+]
+
+{ #category : #tests }
 XMLWriterTest >> testIsCanonical [
 	| writer |
 
@@ -1255,9 +1869,9 @@ XMLWriterTest >> testIsCanonical [
 	self
 		assert: (writer isCanonical: true) == writer;
 		assert: (writer formatter isKindOf: XMLCanonicalWriterFormatter);
-		assert: writer lineBreak = XMLWriter canonicalLineBreak;
-		assert: writer contentEscapes = XMLWriter contentCanonicalEscapes;
-		assert: writer contentStringEscapes = XMLWriter contentStringCanonicalEscapes;
+		assert: writer lineBreak = writer canonicalLineBreak;
+		assert: writer contentEscapes = writer contentCanonicalEscapes;
+		assert: writer contentStringEscapes = writer contentStringCanonicalEscapes;
 		assert: writer isEscaping;
 		assert: writer escapesContentEntityReferences;
 		assert: writer omitsRedundantXMLNSDeclarations.
@@ -1265,9 +1879,9 @@ XMLWriterTest >> testIsCanonical [
 	self
 		assert: (writer isCanonical: false) == writer;
 		assert: writer formatter isNil;
-		assert: writer lineBreak = XMLWriter defaultLineBreak;
-		assert: writer contentEscapes = XMLWriter contentEscapes;
-		assert: writer contentStringEscapes = XMLWriter contentStringEscapes;
+		assert: writer lineBreak = writer defaultLineBreak;
+		assert: writer contentEscapes = writer contentDefaultEscapes;
+		assert: writer contentStringEscapes = writer contentStringDefaultEscapes;
 		assert: writer isEscaping;
 		assert: writer escapesContentEntityReferences;
 		assert: writer omitsRedundantXMLNSDeclarations.
