@@ -26,6 +26,11 @@ XMLEntityDeclarationWriter >> externalIDWriter [
 ]
 
 { #category : #testing }
+XMLEntityDeclarationWriter >> isExternalIDOmittable [
+	^ self externalIDWriter isOmittable
+]
+
+{ #category : #testing }
 XMLEntityDeclarationWriter >> isParameter [
 	^ isParameter ifNil: [isParameter := false]
 ]
@@ -83,19 +88,33 @@ XMLEntityDeclarationWriter >> systemID: aSystemID [
 { #category : #private }
 XMLEntityDeclarationWriter >> writeBody [
 	self isOmittable
-		ifTrue: [^ self].
-
-	self externalIDWriter isOmittable
-		ifTrue: [
-			self writer writeEscapedEntityValueString:
-				self replacement]
 		ifFalse: [
-			self externalIDWriter writeOn: self writer.
-			self isUnparsed
-				ifTrue: [
-					self writer
-						space;
-						nextPutAll: 'NDATA';
-						space;
-						writeName: self ndata]].
+			self isExternalIDOmittable
+				ifTrue: [self writeReplacement]
+				ifFalse: [
+					self writeExternalID.
+					self isUnparsed
+						ifTrue: [self writeNData]]]
+]
+
+{ #category : #private }
+XMLEntityDeclarationWriter >> writeExternalID [
+	self writer space.
+	self externalIDWriter writeOn: self writer.
+]
+
+{ #category : #private }
+XMLEntityDeclarationWriter >> writeNData [
+	self writer
+		space;
+		nextPutAll: 'NDATA';
+		space;
+		writeName: self ndata
+]
+
+{ #category : #private }
+XMLEntityDeclarationWriter >> writeReplacement [
+	self writer
+		space;
+		writeEscapedEntityString: self replacement
 ]

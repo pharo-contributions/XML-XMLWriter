@@ -22,6 +22,26 @@ XMLXMLDeclarationWriter >> encoding: anEncoding [
 	encoding := anEncoding
 ]
 
+{ #category : #testing }
+XMLXMLDeclarationWriter >> hasEncoding [
+	^ self encoding notEmpty
+]
+
+{ #category : #testing }
+XMLXMLDeclarationWriter >> isOmittable [
+	^ self isCanonical
+]
+
+{ #category : #testing }
+XMLXMLDeclarationWriter >> isStandalone [
+	^ self standalone
+]
+
+{ #category : #accessing }
+XMLXMLDeclarationWriter >> isStandalone: aBoolean [
+	self standalone: aBoolean
+]
+
 { #category : #accessing }
 XMLXMLDeclarationWriter >> standalone [
 	^ standalone ifNil: [standalone := false]
@@ -29,9 +49,10 @@ XMLXMLDeclarationWriter >> standalone [
 
 { #category : #accessing }
 XMLXMLDeclarationWriter >> standalone: aBooleanOrString [
-	aBooleanOrString isString
-		ifTrue: [standalone := aBooleanOrString = 'yes']
-		ifFalse: [standalone := aBooleanOrString].
+	standalone :=
+		aBooleanOrString isString
+			ifTrue: [aBooleanOrString = 'yes']
+			ifFalse: [aBooleanOrString]
 ]
 
 { #category : #accessing }
@@ -57,29 +78,26 @@ XMLXMLDeclarationWriter >> version: aVersionNumberOrString [
 
 { #category : #private }
 XMLXMLDeclarationWriter >> writeBody [
-	self isCanonical
-		ifTrue: [^ self].
-
-	self writer
-		space;
-		writeName: 'version' unescapedValue: self version.
-
-	self encoding isEmpty
+	self isOmittable
 		ifFalse: [
-			self writer
-				space;
-				writeName: 'encoding' unescapedValue: self encoding].
+			self
+				writeVersion;
+				writeEncoding;
+				writeStandalone]
+]
 
-	self standalone
+{ #category : #private }
+XMLXMLDeclarationWriter >> writeEncoding [
+	self hasEncoding
 		ifTrue: [
 			self writer
-				space;
-				writeName: 'standalone' unescapedValue: 'yes'].
+				writeAttributeName: 'encoding'
+				unescapedValue: self encoding]
 ]
 
 { #category : #private }
 XMLXMLDeclarationWriter >> writeEpilogue [
-	self isCanonical
+	self isOmittable
 		ifFalse: [
 			self writer
 				nextPutAll: '?>';
@@ -88,9 +106,25 @@ XMLXMLDeclarationWriter >> writeEpilogue [
 
 { #category : #private }
 XMLXMLDeclarationWriter >> writePrologue [
-	self isCanonical
+	self isOmittable
 		ifFalse: [
 			self writer
 				formatBeforeXMLDeclaration: self;
 				nextPutAll: '<?xml']
+]
+
+{ #category : #private }
+XMLXMLDeclarationWriter >> writeStandalone [
+	self standalone
+		ifTrue: [
+			self writer
+				writeAttributeName: 'standalone'
+				unescapedValue: 'yes']
+]
+
+{ #category : #private }
+XMLXMLDeclarationWriter >> writeVersion [
+	self writer
+		writeAttributeName: 'version'
+		unescapedValue: self version
 ]

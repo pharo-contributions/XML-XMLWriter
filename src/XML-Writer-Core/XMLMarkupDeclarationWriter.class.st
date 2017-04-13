@@ -46,8 +46,7 @@ XMLMarkupDeclarationWriter >> writePrologue [
 			self writer
 				formatBeforeDeclaration: self;
 				nextPutAll: '<!';
-				writeName: self declarationType;
+				nextPutAll: self declarationType;
 				space;
-				writeName: self name;
-				space]
+				writeName: self name]
 ]

@@ -101,6 +101,12 @@ XMLDoctypeDeclarationWriter >> writeEpilogue [
 ]
 
 { #category : #private }
+XMLDoctypeDeclarationWriter >> writeExternalID [
+	self writer space.
+	self externalIDWriter writeOn: self writer.
+]
+
+{ #category : #private }
 XMLDoctypeDeclarationWriter >> writePrologue [
 	self isOmittable
 		ifTrue: [^ self].
@@ -112,7 +118,5 @@ XMLDoctypeDeclarationWriter >> writePrologue [
 		writeName: self root.
 
 	self isExternalIDOmittable
-		ifFalse: [
-			self writer space.
-			self externalIDWriter writeOn: self writer].
+		ifFalse: [self writeExternalID].
 ]

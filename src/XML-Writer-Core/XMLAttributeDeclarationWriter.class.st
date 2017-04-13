@@ -74,18 +74,21 @@ XMLAttributeDeclarationWriter >> type: aType [
 ]
 
 { #category : #private }
+XMLAttributeDeclarationWriter >> writeAttribute [
+	self writer
+		space;
+		writeName: self attribute
+]
+
+{ #category : #private }
 XMLAttributeDeclarationWriter >> writeBody [
 	self isOmittable
-		ifTrue: [^ self].
-
-	self writer
-		writeName: self attribute;
-		space;
-		writeName: self type.
-
-	self
-		writeDefaultPragma;
-		writeDefaultValue.
+		ifFalse: [
+			self
+				writeAttribute;
+				writeType;
+				writeDefaultPragma;
+				writeDefaultValue]
 ]
 
 { #category : #writing }
@@ -106,4 +109,42 @@ XMLAttributeDeclarationWriter >> writeDefaultValue [
 			self writer
 				space;
 				writeEscapedContentString: self defaultValue]
+]
+
+{ #category : #private }
+XMLAttributeDeclarationWriter >> writeType [
+	| typeString typeStringSize isEnumeration nameStart |
+
+	self writer space.
+	typeString := self type.
+	typeStringSize := typeString size.
+	isEnumeration := false.
+	1 to: typeStringSize do: [:i | | nextChar |
+		nextChar := typeString at: i.
+		isEnumeration
+			ifTrue: [
+				nameStart
+					ifNil: [
+						nextChar isXMLWriterNameStartChar
+							ifTrue: [nameStart := i]
+							ifFalse: [self writer nextPut: nextChar]]
+					ifNotNil: [
+						nextChar isXMLWriterNameChar
+							ifFalse: [
+								self writer writeName:
+									(typeString
+										copyFrom: nameStart
+										to: i - 1).
+								nameStart := nil.
+								self writer nextPut: nextChar]]]
+			ifFalse: [
+				isEnumeration := nextChar == $(.
+				self writer nextPut: nextChar]].
+
+	nameStart
+		ifNotNil: [
+			self writer writeName:
+				(typeString
+					copyFrom: nameStart
+					to: typeStringSize)].
 ]

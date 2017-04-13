@@ -33,7 +33,8 @@ XMLEntityReferenceWriter >> name: aName [
 
 { #category : #private }
 XMLEntityReferenceWriter >> writeBody [
-	self writer writeName: self name
+	"avoid #writeName: to avoid formatting"
+	self writer nextPutAll: self name
 ]
 
 { #category : #private }

@@ -43,5 +43,11 @@ XMLNotationDeclarationWriter >> systemID: aSystemID [
 { #category : #private }
 XMLNotationDeclarationWriter >> writeBody [
 	self isOmittable
-		ifFalse: [self externalIDWriter writeOn: self writer]
+		ifFalse: [self writeExternalID]
+]
+
+{ #category : #private }
+XMLNotationDeclarationWriter >> writeExternalID [
+	self writer space.
+	self externalIDWriter writeOn: self writer.
 ]

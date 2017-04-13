@@ -27,6 +27,11 @@ XMLPIWriter >> hasData [
 ]
 
 { #category : #testing }
+XMLPIWriter >> isDataOmittable [
+	^ self hasData not
+]
+
+{ #category : #testing }
 XMLPIWriter >> isOmittable [
 	^ self isCanonical
 		and: [self isEmbeddedInDoctypeDeclaration]
@@ -44,45 +49,72 @@ XMLPIWriter >> target: aString [
 
 { #category : #private }
 XMLPIWriter >> writeBody [
-	| quotedStringStart quote |
-
 	(self isOmittable
-		or: [self hasData not])
-		ifTrue: [^ self].
+		or: [self isDataOmittable])
+		ifFalse: [self writeData]
+]
+
+{ #category : #private }
+XMLPIWriter >> writeData [
+	| dataString dataStringSize quotedStringStart quotedStringNameStart quote |
 
 	self writer space.
-	1 to: data size do: [:i | | nextChar |
-		nextChar := data at: i.
+	dataString := self data.
+	dataStringSize := dataString size.
+	1 to: dataStringSize do: [:i | | nextChar |
+		nextChar := dataString at: i.
 		quotedStringStart
 			ifNil: [
-				(nextChar == $"
-					or: [nextChar == $'])
-					ifTrue: [
-						quote := nextChar.
-						quotedStringStart := i]
-					ifFalse: [self writer nextPut: nextChar]]
+				quotedStringNameStart
+					ifNil: [
+						nextChar isXMLWriterNameStartChar
+							ifTrue: [quotedStringNameStart := i]
+							ifFalse: [
+								(nextChar == $"
+									or: [nextChar == $'])
+									ifTrue: [
+										quote := nextChar.
+										quotedStringStart := i]
+									ifFalse: [self writer nextPut: nextChar]]]
+					ifNotNil: [
+						nextChar isXMLWriterNameChar
+							ifFalse: [
+								self writer writeStringName:
+									(dataString
+										copyFrom: quotedStringNameStart
+										to: i - 1).
+								quotedStringNameStart := nil.
+								(nextChar == $"
+									or: [nextChar == $'])
+									ifTrue: [
+										quote := nextChar.
+										quotedStringStart := i]
+									ifFalse: [self writer nextPut: nextChar]]]]
 			ifNotNil: [
 				nextChar == quote
-					ifTrue: [| quotedStringValue |
-						quotedStringValue :=
-							data
-								copyFrom: quotedStringStart + 1
-								to: i - 1.
-						"do not use #writeUnescapedString: here to preserve the exact
-						quote char used, because PIs can contain arbitrary data"
+					ifTrue: [
 						self writer
-							nextPut: quote;
-							formatBeforeQuotedStringValue: quotedStringValue;
-							nextPutAll: quotedStringValue;
-							formatAfterQuotedStringValue: quotedStringValue;
-							nextPut: quote.
+							writeUnescapedString:
+								(dataString
+									copyFrom: quotedStringStart + 1
+									to: i - 1)
+							quotedBy: quote.
 						quotedStringStart := nil]]].
 
-	"allow unterminated strings, because PIs can contain arbitrary data"
 	quotedStringStart
+		ifNil: [
+			quotedStringNameStart
+				ifNotNil: [
+					self writer writeStringName:
+						(dataString
+							copyFrom: quotedStringNameStart
+							to: dataStringSize)]]
 		ifNotNil: [
-			quotedStringStart to: data size do: [:i |
-				self writer nextPut: (data at: i)]].
+			"allow unterminated strings, because PIs can contain arbitrary data"
+			self writer nextPutAll:
+				(dataString
+					copyFrom: quotedStringStart
+					to: dataStringSize)].
 ]
 
 { #category : #private }
@@ -101,5 +133,7 @@ XMLPIWriter >> writePrologue [
 			self writer
 				formatBeforePI: self;
 				nextPutAll: '<?';
-				writeName: self target]
+				"do not treat PI targets as names to be consistent
+				with XMLXMLDeclarationWriter"
+				nextPutAll: self target]
 ]

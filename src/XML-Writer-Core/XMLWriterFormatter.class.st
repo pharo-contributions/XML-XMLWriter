@@ -38,6 +38,7 @@ XMLWriterFormatter >> formatAfterCData: aCDataWriter [
 
 { #category : #formatting }
 XMLWriterFormatter >> formatAfterCharacterEscape: aCharacterEscape [
+	"sent after outputting an escape sequence for some character"
 ]
 
 { #category : #formatting }
@@ -65,7 +66,15 @@ XMLWriterFormatter >> formatAfterInternalSubset: aDoctypeDeclarationWriter [
 ]
 
 { #category : #formatting }
+XMLWriterFormatter >> formatAfterName: aName [
+]
+
+{ #category : #formatting }
 XMLWriterFormatter >> formatAfterPI: aPIWriter [
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatAfterQuotedStringName: aName [
 ]
 
 { #category : #formatting }
@@ -86,6 +95,7 @@ XMLWriterFormatter >> formatBeforeCData: aCDataWriter [
 
 { #category : #formatting }
 XMLWriterFormatter >> formatBeforeCharacterEscape: aCharacterEscape [
+	"sent before outputting an escape sequence for some character"
 ]
 
 { #category : #formatting }
@@ -113,7 +123,15 @@ XMLWriterFormatter >> formatBeforeInternalSubset: aDoctypeDeclarationWriter [
 ]
 
 { #category : #formatting }
+XMLWriterFormatter >> formatBeforeName: aName [
+]
+
+{ #category : #formatting }
 XMLWriterFormatter >> formatBeforePI: aPIWriter [
+]
+
+{ #category : #formatting }
+XMLWriterFormatter >> formatBeforeQuotedStringName: aName [
 ]
 
 { #category : #formatting }
@@ -170,7 +188,7 @@ XMLWriterFormatter >> writeLineBreak [
 		ifFalse: [
 			self writer nextPutAll: self writer lineBreak.
 			(self currentIndentLevel > 0
-				and: [self indentString notEmpty])
+				and: [self indentString size > 0])
 				ifTrue: [self writeIndent]]
 ]
 
