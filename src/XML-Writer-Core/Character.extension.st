@@ -31,20 +31,20 @@ Character >> isXMLWriterNameChar [
 				ifTrue: [
 					tempValue <= 16r5A "$Z asciiValue hex"
 						ifTrue: [^ true].
-					^ tempValue = 16r5F]. "$_ asciiValue hex"
+					^ tempValue == 16r5F]. "$_ asciiValue hex"
 
 			tempValue >= 16r30 "$0 asciiValue hex"
 				ifTrue: [
 					tempValue <= 16r39 "$9 asciiValue hex"
 						ifTrue: [^ true].
-					^ tempValue = 16r3A]. "$: asciiValue hex"
+					^ tempValue == 16r3A]. "$: asciiValue hex"
 
-			tempValue = 16r2E "$. asciiValue hex"
+			tempValue == 16r2E "$. asciiValue hex"
 				ifTrue: [^ true].
-			^ tempValue = 16r2D]. "$- asciiValue hex"
+			^ tempValue == 16r2D]. "$- asciiValue hex"
 
 	tempValue >= 16rC0
-		ifFalse: [^ tempValue = 16rB7].
+		ifFalse: [^ tempValue == 16rB7].
 	tempValue <= 16rD6
 		ifTrue: [^ true].
 
@@ -136,9 +136,9 @@ Character >> isXMLWriterNameStartChar [
 				ifTrue: [
 					tempValue <= 16r5A "$Z asciiValue hex"
 						ifTrue: [^ true].
-					^ tempValue = 16r5F]. "$_ asciiValue hex"
+					^ tempValue == 16r5F]. "$_ asciiValue hex"
 	
-			^ tempValue = 16r3A]. "$: asciiValue hex"
+			^ tempValue == 16r3A]. "$: asciiValue hex"
 
 	tempValue >= 16rC0
 		ifFalse: [^ false].

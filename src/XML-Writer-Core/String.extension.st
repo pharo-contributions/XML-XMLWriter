@@ -10,9 +10,9 @@ String >> xmlWriterLocalNameAfterPrefix: aPrefix [
 	"optimized"
 	| prefixSize |
 
-	(prefixSize := aPrefix size) > 0
-		ifTrue: [^ self copyFrom: prefixSize + 2 to: self size]
-		ifFalse: [^ self]
+	(prefixSize := aPrefix size) == 0
+		ifTrue: [^ self]
+		ifFalse: [^ self copyFrom: prefixSize + 2 to: self size]
 ]
 
 { #category : #'*XML-Writer-Core' }
@@ -21,8 +21,8 @@ String >> xmlWriterPrefixBeforeLocalName [
 	| i |
 
 	i := self size.
-	[i > 1]
-		whileTrue: [
+	[i == 0]
+		whileFalse: [
 			((self at: i) == $:)
 				ifTrue: [^ (self copyFrom: 1 to: i - 1)].
 			i := i - 1].

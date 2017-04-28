@@ -114,9 +114,9 @@ XMLWriter class >> contentStringNonEntityEscapes [
 ]
 
 { #category : #private }
-XMLWriter class >> copyExtensionMethods [
+XMLWriter class >> copyXMLExtensionMethods [
 	"
-	self copyXMLWriterExtensionMethods
+	self copyXMLExtensionMethods
 	"
 	#(isXMLNameChar isXMLNameStartChar) do: [:each |
 		Character
