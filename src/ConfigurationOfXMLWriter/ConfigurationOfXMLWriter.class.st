@@ -663,7 +663,7 @@ ConfigurationOfXMLWriter >> baseline281: spec [
 			spec blessing: #baseline.
 			spec
 				package: 'XML-Writer-GemstoneCompatibility'
-				with: 'XML-Writer-GemstoneCompatibility-monty.6'. ].
+				with: 'XML-Writer-GemstoneCompatibility-monty.7'. ].
 ]
 
 { #category : #symbolic }
@@ -1532,7 +1532,7 @@ ConfigurationOfXMLWriter >> version281: spec [
 
         spec for: #common do: [
                 spec blessing: #release.
-			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.69'.
+			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.70'.
 			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.37'.
                 ].
 ]
