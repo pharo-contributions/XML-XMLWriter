@@ -61,7 +61,7 @@ XMLDoctypeDeclarationWriter >> systemID: aSystemID [
 	self externalIDWriter systemID: aSystemID
 ]
 
-{ #category : #writing }
+{ #category : #deprecated }
 XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
 	self deprecated: 'use #with: instead'.
 

@@ -918,7 +918,7 @@ XMLWriter >> parentOfMarkupWriter: aMarkupWriter [
 	^ nil.
 ]
 
-{ #category : #writing }
+{ #category : #deprecated }
 XMLWriter >> pcdata: aString [
 	self deprecated: 'use #string: instead'.
 	self string: aString.
