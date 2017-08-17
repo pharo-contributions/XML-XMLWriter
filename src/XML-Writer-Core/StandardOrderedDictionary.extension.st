@@ -1,7 +1,7 @@
-Extension { #name : #OrderPreservingStringDictionary }
+Extension { #name : #StandardOrderedDictionary }
 
 { #category : #'*XML-Writer-Core' }
-OrderPreservingStringDictionary >> writeAttributesOn: aWriter [
+StandardOrderedDictionary >> writeAttributesOn: aWriter [
 	self keysDo: [:attributeName |
 		aWriter
 			writeAttributeName: attributeName
@@ -9,7 +9,7 @@ OrderPreservingStringDictionary >> writeAttributesOn: aWriter [
 ]
 
 { #category : #'*XML-Writer-Core' }
-OrderPreservingStringDictionary >> writeCanonicalAttributesOn: aWriter [
+StandardOrderedDictionary >> writeCanonicalAttributesOn: aWriter [
 	| sortedAttributeNames |
 
 	(sortedAttributeNames := self keys) sort: [:a :b | | prefixOfA prefixOfB |

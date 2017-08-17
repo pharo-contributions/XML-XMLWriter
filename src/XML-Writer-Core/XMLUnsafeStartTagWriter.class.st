@@ -37,8 +37,8 @@ XMLUnsafeStartTagWriter >> attributes [
 ]
 
 { #category : #accessing }
-XMLUnsafeStartTagWriter >> attributes: aDictionaryOrArray [
-	attributes := OrderPreservingStringDictionary newFrom: aDictionaryOrArray
+XMLUnsafeStartTagWriter >> attributes: anAssociationCollection [
+	attributes := OrderPreservingStringDictionary newFrom: anAssociationCollection
 ]
 
 { #category : #testing }
@@ -131,8 +131,9 @@ XMLUnsafeStartTagWriter >> xmlnsDeclarations [
 ]
 
 { #category : #accessing }
-XMLUnsafeStartTagWriter >> xmlnsDeclarations: aDictionaryOrArray [
+XMLUnsafeStartTagWriter >> xmlnsDeclarations: anAssociationCollection [
 	"set xmlns decls using a dictionary or array of prefix/uri associations.
 	empty prefix is default xmlns."
-	xmlnsDeclarations := OrderPreservingStringDictionary newFrom: aDictionaryOrArray
+	xmlnsDeclarations :=
+		OrderPreservingStringDictionary newFrom: anAssociationCollection
 ]

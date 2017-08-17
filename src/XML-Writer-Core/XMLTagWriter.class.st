@@ -42,8 +42,8 @@ XMLTagWriter >> attributes [
 ]
 
 { #category : #accessing }
-XMLTagWriter >> attributes: aDictionaryOrArray [
-	attributes := OrderPreservingStringDictionary newFrom: aDictionaryOrArray
+XMLTagWriter >> attributes: anAssociationCollection [
+	attributes := OrderPreservingStringDictionary newFrom: anAssociationCollection
 ]
 
 { #category : #testing }
@@ -175,8 +175,9 @@ XMLTagWriter >> xmlnsDeclarations [
 ]
 
 { #category : #accessing }
-XMLTagWriter >> xmlnsDeclarations: aDictionaryOrArray [
+XMLTagWriter >> xmlnsDeclarations: anAssociationCollection [
 	"set xmlns decls using a dictionary or array of prefix/uri associations.
 	empty prefix is default xmlns."
-	xmlnsDeclarations := OrderPreservingStringDictionary newFrom: aDictionaryOrArray
+	xmlnsDeclarations :=
+		OrderPreservingStringDictionary newFrom: anAssociationCollection
 ]

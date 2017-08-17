@@ -83,32 +83,32 @@ XMLWriter class >> canonicalLineBreak: aCharacterOrString [
 	CanonicalLineBreak := aCharacterOrString asString
 ]
 
-{ #category : #private }
+{ #category : #accessing }
 XMLWriter class >> contentCanonicalEscapes [
 	^ ContentCanonicalEscapes
 ]
 
-{ #category : #private }
+{ #category : #accessing }
 XMLWriter class >> contentDefaultEscapes [
 	^ ContentDefaultEscapes
 ]
 
-{ #category : #private }
+{ #category : #accessing }
 XMLWriter class >> contentNonEntityEscapes [
 	^ ContentNonEntityEscapes
 ]
 
-{ #category : #private }
+{ #category : #accessing }
 XMLWriter class >> contentStringCanonicalEscapes [
 	^ ContentStringCanonicalEscapes
 ]
 
-{ #category : #private }
+{ #category : #accessing }
 XMLWriter class >> contentStringDefaultEscapes [
 	^ ContentStringDefaultEscapes
 ]
 
-{ #category : #private }
+{ #category : #accessing }
 XMLWriter class >> contentStringNonEntityEscapes [
 	^ ContentStringNonEntityEscapes
 ]
@@ -118,6 +118,11 @@ XMLWriter class >> copyXMLExtensionMethods [
 	"
 	self copyXMLExtensionMethods
 	"
+	
+	"This generates XMLWriter String and Character extension methods
+	from XMLParser String and Character extension methods.
+	These could be placed in a shared .mcz they would both depend on,
+	but this is simpler and loads faster."
 	#(isXMLNameChar isXMLNameStartChar) do: [:each |
 		Character
 			compile:
@@ -403,12 +408,12 @@ XMLWriter >> attributeDeclaration [
 	^ self pushNewMarkupWriter: XMLAttributeDeclarationWriter
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> canonicalLineBreak [
 	^ CanonicalLineBreak
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> canonicalWriterFormatterClass [
 	^ XMLCanonicalWriterFormatter
 ]
@@ -443,12 +448,12 @@ XMLWriter >> comment: aString [
 		write
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> contentCanonicalEscapes [
 	^ ContentCanonicalEscapes
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> contentDefaultEscapes [
 	^ ContentDefaultEscapes
 ]
@@ -463,17 +468,17 @@ XMLWriter >> contentEscapes: aContentEscapesTable [
 	contentEscapes := aContentEscapesTable
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> contentNonEntityEscapes [
 	^ ContentNonEntityEscapes
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> contentStringCanonicalEscapes [
 	^ ContentStringCanonicalEscapes
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> contentStringDefaultEscapes [
 	^ ContentStringDefaultEscapes
 ]
@@ -488,7 +493,7 @@ XMLWriter >> contentStringEscapes: aContentStringEscapesTable [
 	contentStringEscapes := aContentStringEscapesTable
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> contentStringNonEntityEscapes [
 	^ ContentStringNonEntityEscapes
 ]
@@ -502,7 +507,7 @@ XMLWriter >> contents [
 	^ stream contents.
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> defaultLineBreak [
 	^ DefaultLineBreak
 ]
@@ -584,7 +589,7 @@ XMLWriter >> entityRef: aName [
 		write
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> entityValueEscapes [
 	^ EntityValueEscapes
 ]
@@ -931,7 +936,7 @@ XMLWriter >> pi [
 	^ self pushNewMarkupWriter: XMLPIWriter
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> platformSpecificLineBreak [
 	^ PlatformSpecificLineBreak
 ]
@@ -946,7 +951,7 @@ XMLWriter >> position [
 	^ stream position
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> prettyPrintingWriterFormatterClass [
 	^ XMLPrettyPrintingWriterFormatter
 ]
@@ -956,7 +961,7 @@ XMLWriter >> printOn: aStream [
 	aStream nextPutAll: self contents
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> prologPrettyPrintingWriterFormatterClass [
 	^ XMLPrologPrettyPrintingWriterFormatter
 ]
@@ -1332,12 +1337,12 @@ XMLWriter >> xmlDeclaration [
 	^ self pushNewMarkupWriter: XMLXMLDeclarationWriter
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> xmlNamespaceURI [
 	^ 'http://www.w3.org/XML/1998/namespace'
 ]
 
-{ #category : #private }
+{ #category : #defaults }
 XMLWriter >> xmlnsNamespaceURI [
 	^ 'http://www.w3.org/2000/xmlns/'
 ]
