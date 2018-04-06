@@ -118,7 +118,6 @@ XMLTagWriter >> writeEpilogue [
 				formatAfterEndTag: self]
 		ifFalse: [
 			self writer
-				space;
 				nextPut: $/;
 				nextPut: $>;
 				formatAfterEndTag: self]
