@@ -237,11 +237,11 @@ XMLWriterTest >> testAsString [
 		(XMLWriter new
 			tag: 'one';
 			tag: 'two';
-			asString) = '<one /><two />'.
+			asString) = '<one/><two/>'.
 	self assert:
 		(XMLWriter new
 			tag: 'one';
-			tag: 'two') asString = '<one /><two />'.
+			tag: 'two') asString = '<one/><two/>'.
 ]
 
 { #category : #tests }
@@ -605,12 +605,12 @@ XMLWriterTest >> testClose [
 			(XMLWriter on: stream)
 				tag: 'one';
 				tag: 'two';
-				close]) = '<one /><two />'.
+				close]) = '<one/><two/>'.
 	self assert:
 		(String streamContents: [:stream |
 			((XMLWriter on: stream)
 				tag: 'one';
-				tag: 'two') close]) = '<one /><two />'.
+				tag: 'two') close]) = '<one/><two/>'.
 ]
 
 { #category : #tests }
@@ -664,11 +664,11 @@ XMLWriterTest >> testContents [
 		(XMLWriter new
 			tag: 'one';
 			tag: 'two';
-			contents) = '<one /><two />'.
+			contents) = '<one/><two/>'.
 	self assert:
 		(XMLWriter new
 			tag: 'one';
-			tag: 'two') contents = '<one /><two />'.
+			tag: 'two') contents = '<one/><two/>'.
 ]
 
 { #category : #tests }
@@ -701,7 +701,7 @@ XMLWriterTest >> testEmbedInMarkupWriter [
 			(XMLWriter writeWith: [:writer |
 				writer
 					tag: 'test'
-					with: each]) = '<test />'].
+					with: each]) = '<test/>'].
 ]
 
 { #category : #tests }
@@ -768,7 +768,7 @@ XMLWriterTest >> testEnablePrettyPrinting [
 				#(1 '</age>'
 					'<id>101<!----></id>'
 					'<contact>')
-				#(2 '<email />alternate</contact>')
+				#(2 '<email/>alternate</contact>')
 				#(0 '</example:user>'))).
 ]
 
@@ -1258,7 +1258,7 @@ XMLWriterTest >> testFormattingContent [
 
 	self assert:
 		writer contents =
-			('<empty />',
+			('<empty/>',
 				'<not-empty xmlns="defaultNS" name="value">',
 					'one<!--two-->&three;four',
 				'</not-empty>',
@@ -1906,7 +1906,7 @@ XMLWriterTest >> testLineBreak [
 						onLineBreak: each
 						join:
 							#('<?xml version="1.0"?>'
-								'<test />'))]
+								'<test/>'))]
 ]
 
 { #category : #tests }
@@ -1937,7 +1937,7 @@ XMLWriterTest >> testNonRedundantXMLNSDeclarations [
 				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
 				'<two xmlns="newDefaultNS" xmlns:prefix="newPrefixNS">',
 				'<three>',
-				'<four xmlns="" xmlns:prefix="prefixNS" />',
+				'<four xmlns="" xmlns:prefix="prefixNS"/>',
 				'</three>',
 				'</two>',
 				'</one>').
@@ -1969,7 +1969,7 @@ XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 			writeWith: withBlock;
 			contents) =
 				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
-				'<two><three><four /></three></two>',
+				'<two><three><four/></three></two>',
 				'</one>').
 	self assert:
 		(XMLWriter new
@@ -1979,21 +1979,21 @@ XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 			('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
 			'<two xmlns="defaultNS" xmlns:prefix="prefixNS">',
 			'<three>',
-			'<four xmlns="defaultNS" xmlns:prefix="prefixNS" />',
+			'<four xmlns="defaultNS" xmlns:prefix="prefixNS"/>',
 			'</three>',
 			'</two>',
 			'</one>').
 
 	self assert:
 		(XMLWriter writeWith: [:writer | (writer tag: 'empty') xmlns: '']) =
-			'<empty />'.
+			'<empty/>'.
 
 	self assert:
 		(XMLWriter writeWith: [:writer |
 			(writer
 				omitsRedundantXMLNSDeclarations: false;
 				tag: 'empty') xmlns: '']) =
-			'<empty xmlns="" />'.
+			'<empty xmlns=""/>'.
 ]
 
 { #category : #tests }
@@ -2023,7 +2023,7 @@ XMLWriterTest >> testOutputsSelfClosingTags [
 
 	self assert:
 		writer printString =
-			'<tags><self-closing /><not-self-closing></not-self-closing><self-closing /></tags>'.
+			'<tags><self-closing/><not-self-closing></not-self-closing><self-closing/></tags>'.
 ]
 
 { #category : #tests }
@@ -2052,7 +2052,7 @@ XMLWriterTest >> testPIsWithStringValues [
 				'<?xml-xsl type="''text''/xsl" href=''"demo".xsl''?>',
 				'<?xml-xsl type="text/xsl" href=''demo.xsl?>',
 				'<?xml-xsl type="text/xsl" href="demo.xsl?>',
-				'<test />').
+				'<test/>').
 ]
 
 { #category : #tests }
@@ -2067,7 +2067,7 @@ XMLWriterTest >> testRaw [
 		(XMLWriter writeWith: [:writer |
 			writer
 				tag: 'test'
-				with: [writer raw: '']]) = '<test />'.
+				with: [writer raw: '']]) = '<test/>'.
 ]
 
 { #category : #tests }
@@ -2109,7 +2109,7 @@ XMLWriterTest >> testSimpleExample [
 			attributeAt: 'a' put: 'one';
 			write.
 			
-	self assert: writer contents  =  '<emptyTag a="one" />'
+	self assert: writer contents = '<emptyTag a="one"/>'
 ]
 
 { #category : #tests }
@@ -2121,7 +2121,7 @@ XMLWriterTest >> testSimpleExampleWithWriteWith [
 			writer tag
 				name: 'emptyTag';
 				attributeAt: 'a' put: 'value'].
-	contents := '<emptyTag a="value" />'.
+	contents := '<emptyTag a="value"/>'.
 	self
 		assert: (XMLWriter new writeWith: block) contents = contents;
 		assert: (XMLWriter writeWith: block) = contents.
@@ -2150,7 +2150,7 @@ XMLWriterTest >> testStartingAndFinishing [
 
 	self assert:
 		writer contents =
-			'<outer xmlns="default" test="value"><inner>test<empty /></inner></outer>'.
+			'<outer xmlns="default" test="value"><inner>test<empty/></inner></outer>'.
 ]
 
 { #category : #tests }
@@ -2165,7 +2165,7 @@ XMLWriterTest >> testString [
 		(XMLWriter writeWith: [:writer |
 			writer
 				tag: 'test'
-				with: [writer string: '']]) = '<test />'.
+				with: [writer string: '']]) = '<test/>'.
 ]
 
 { #category : #tests }
@@ -2355,5 +2355,5 @@ XMLWriterTest >> testXMLNSDeclarations [
 
 	self assert:
 		writer contents =
-			'<test xmlns="default2" xmlns:ns1="first" xmlns:ns2="second" xmlns:ns3="third" />'.
+			'<test xmlns="default2" xmlns:ns1="first" xmlns:ns2="second" xmlns:ns3="third"/>'.
 ]
