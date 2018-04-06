@@ -234,6 +234,20 @@ ConfigurationOfXMLWriter class >> unloadMetacello [
 	Smalltalk at: #ConfigurationOfMetacello ifPresent: [:cls | cls unloadMetacello ]
 ]
 
+{ #category : #'development support' }
+ConfigurationOfXMLWriter class >> validate [
+	"Check the configuration for Errors, Critical Warnings, and Warnings (see class comment for MetacelloMCVersionValidator for more information). 
+	Errors identify specification issues that will result in unexpected behaviour when you load the configuration. 
+	Critical Warnings identify specification issues that may result in unexpected behavior when you load the configuration.
+	Warnings identify specification issues that are technically correct, but are worth take a look at."
+
+	"self validate"
+
+	<apiDocumentation>
+	self ensureMetacello.
+	^ ((Smalltalk at: #MetacelloToolBox) validateConfiguration: self debug: #() recurse: false) explore
+]
+
 { #category : #baselines }
 ConfigurationOfXMLWriter >> baseline100: spec [ 
 	<version: '1.0-baseline'>
@@ -704,7 +718,7 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 
-	spec for: #'common' version: '2.8.3'.
+	spec for: #'common' version: '2.8.4'.
 
 
 ]
@@ -1569,5 +1583,16 @@ ConfigurationOfXMLWriter >> version283: spec [
                 spec blessing: #release.
 			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.73'.
 			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.37'.
+                ].
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version284: spec [ 
+        <version: '2.8.4' imports: #('2.8.1-baseline')>
+
+        spec for: #common do: [
+                spec blessing: #release.
+			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.74'.
+			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.38'.
                 ].
 ]
