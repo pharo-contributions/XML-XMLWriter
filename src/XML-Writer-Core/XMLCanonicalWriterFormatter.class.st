@@ -4,7 +4,7 @@ A formatter that adds LF linebreaks around canonical markup.
 Class {
 	#name : #XMLCanonicalWriterFormatter,
 	#superclass : #XMLWriterFormatter,
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Formatting'
 }
 
 { #category : #formatting }

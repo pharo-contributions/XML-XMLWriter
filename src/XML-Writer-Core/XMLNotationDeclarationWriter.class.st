@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'externalIDWriter'
 	],
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Writers'
 }
 
 { #category : #accessing }

@@ -5,7 +5,7 @@ Please add more tests to it!
 Class {
 	#name : #XMLWriterTest,
 	#superclass : #TestCase,
-	#category : #'XML-Writer-Tests'
+	#category : #'XML-Writer-Tests-Tests'
 }
 
 { #category : #private }

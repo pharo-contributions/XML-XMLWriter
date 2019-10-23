@@ -10,7 +10,7 @@ Class {
 		'externalIDWriter',
 		'ndata'
 	],
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Writers'
 }
 
 { #category : #accessing }

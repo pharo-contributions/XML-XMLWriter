@@ -4,7 +4,7 @@ This class is an end tag writer used to close an element started by an XMLUnsafe
 Class {
 	#name : #XMLUnsafeEndTagWriter,
 	#superclass : #XMLUnsafeTagWriter,
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Writers'
 }
 
 { #category : #private }

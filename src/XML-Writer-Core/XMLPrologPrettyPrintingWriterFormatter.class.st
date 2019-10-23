@@ -4,7 +4,7 @@ A formatter that inserts whitespace formatting to make the prolog XML output nic
 Class {
 	#name : #XMLPrologPrettyPrintingWriterFormatter,
 	#superclass : #XMLWriterFormatter,
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Formatting'
 }
 
 { #category : #formatting }

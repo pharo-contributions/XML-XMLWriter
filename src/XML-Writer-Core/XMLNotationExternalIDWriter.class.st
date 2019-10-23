@@ -4,7 +4,7 @@ This class writes the external ID of a notaion. It omits empty system ID literal
 Class {
 	#name : #XMLNotationExternalIDWriter,
 	#superclass : #XMLExternalIDWriter,
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Writers'
 }
 
 { #category : #writing }

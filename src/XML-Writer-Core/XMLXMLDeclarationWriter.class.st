@@ -9,7 +9,7 @@ Class {
 		'version',
 		'standalone'
 	],
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Writers'
 }
 
 { #category : #accessing }

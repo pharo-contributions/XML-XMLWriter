@@ -4,7 +4,7 @@ A formatter that inserts whitespace formatting to make XML output nicer and more
 Class {
 	#name : #XMLPrettyPrintingWriterFormatter,
 	#superclass : #XMLPrologPrettyPrintingWriterFormatter,
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Formatting'
 }
 
 { #category : #formatting }

@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'name'
 	],
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Writers'
 }
 
 { #category : #testing }

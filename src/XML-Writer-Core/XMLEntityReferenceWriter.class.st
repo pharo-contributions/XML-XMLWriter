@@ -8,7 +8,7 @@ Class {
 		'name',
 		'isParameter'
 	],
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Writers'
 }
 
 { #category : #testing }

@@ -8,7 +8,7 @@ Class {
 		'writer',
 		'hasStartedWriting'
 	],
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Writers'
 }
 
 { #category : #'instance creation' }

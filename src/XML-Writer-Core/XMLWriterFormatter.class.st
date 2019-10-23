@@ -9,7 +9,7 @@ Class {
 		'indentString',
 		'currentIndentLevel'
 	],
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Formatting'
 }
 
 { #category : #accessing }

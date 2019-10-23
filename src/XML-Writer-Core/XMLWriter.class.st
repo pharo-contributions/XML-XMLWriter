@@ -70,7 +70,7 @@ Class {
 		'PlatformSpecificLineBreak',
 		'SpaceCharacter'
 	],
-	#category : #'XML-Writer-Core'
+	#category : #'XML-Writer-Core-Base'
 }
 
 { #category : #accessing }
