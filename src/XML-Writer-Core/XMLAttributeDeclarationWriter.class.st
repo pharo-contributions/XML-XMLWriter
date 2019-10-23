@@ -146,5 +146,5 @@ XMLAttributeDeclarationWriter >> writeType [
 			self writer writeName:
 				(typeString
 					copyFrom: nameStart
-					to: typeStringSize)].
+					to: typeStringSize)]
 ]

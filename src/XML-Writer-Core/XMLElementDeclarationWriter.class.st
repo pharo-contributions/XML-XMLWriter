@@ -82,7 +82,7 @@ XMLElementDeclarationWriter >> writeContentModel [
 					(contentModelString
 						copyFrom: nameStart
 						to: contentModelStringSize)
-				isNonElementName: isNonElementName].
+				isNonElementName: isNonElementName]
 ]
 
 { #category : #private }

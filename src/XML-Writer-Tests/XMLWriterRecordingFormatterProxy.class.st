@@ -19,7 +19,7 @@ XMLWriterRecordingFormatterProxy >> doesNotUnderstand: aMessage [
 { #category : #initialization }
 XMLWriterRecordingFormatterProxy >> initialize [
 	super initialize.
-	messageQueue := OrderedCollection new.
+	messageQueue := OrderedCollection new
 ]
 
 { #category : #testing }

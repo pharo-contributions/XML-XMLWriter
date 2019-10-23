@@ -31,7 +31,7 @@ XMLEmbeddedMarkupWriter >> initialize [
 	super initialize.
 
 	hasEmbeddedStringMarkup := false.
-	hasEmbeddedMarkupWriters := false.
+	hasEmbeddedMarkupWriters := false
 ]
 
 { #category : #private }

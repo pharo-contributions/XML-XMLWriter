@@ -114,7 +114,7 @@ XMLPIWriter >> writeData [
 			self writer nextPutAll:
 				(dataString
 					copyFrom: quotedStringStart
-					to: dataStringSize)].
+					to: dataStringSize)]
 ]
 
 { #category : #private }

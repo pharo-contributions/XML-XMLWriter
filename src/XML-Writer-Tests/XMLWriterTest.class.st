@@ -69,7 +69,7 @@ XMLWriterTest >> should: aBlock enumerate: aCollection [
 
 	enumerated := OrderedCollection new.
 	aBlock value: [:each | enumerated add: each].
-	self assert: enumerated = aCollection asOrderedCollection.
+	self assert: enumerated equals: aCollection asOrderedCollection
 ]
 
 { #category : #tests }
@@ -115,7 +115,7 @@ XMLWriterTest >> testActiveMarkupWriterAncestorsDo [
 	enumerated removeFirst.
 	self
 		should: [:block | writer activeMarkupWriterAncestorsDo: block]
-		enumerate: enumerated.
+		enumerate: enumerated
 ]
 
 { #category : #tests }
@@ -146,7 +146,7 @@ XMLWriterTest >> testActiveMarkupWriterParent [
 	self
 		assert: writer activeMarkupWriterParent isNil;
 		assert: tagWriter parent isNil;
-		assert: (writer parentOfMarkupWriter: tagWriter) isNil.
+		assert: (writer parentOfMarkupWriter: tagWriter) isNil
 ]
 
 { #category : #tests }
@@ -200,7 +200,7 @@ XMLWriterTest >> testActiveMarkupWriterWithAncestorsDo [
 	enumerated removeFirst.
 	self
 		should: [:block | writer activeMarkupWriterWithAncestorsDo: block]
-		enumerate: enumerated.
+		enumerate: enumerated
 ]
 
 { #category : #tests }
@@ -228,7 +228,7 @@ XMLWriterTest >> testActiveTagWriter [
 		newTagWriter write.
 		self assert: writer activeTagWriter == tagWriter].
 
-	self assert: writer activeTagWriter isNil.
+	self assert: writer activeTagWriter isNil
 ]
 
 { #category : #tests }
@@ -237,11 +237,11 @@ XMLWriterTest >> testAsString [
 		(XMLWriter new
 			tag: 'one';
 			tag: 'two';
-			asString) = '<one/><two/>'.
+			asString) equals: '<one/><two/>'.
 	self assert:
 		(XMLWriter new
 			tag: 'one';
-			tag: 'two') asString = '<one/><two/>'.
+			tag: 'two') asString equals: '<one/><two/>'
 ]
 
 { #category : #tests }
@@ -272,9 +272,9 @@ XMLWriterTest >> testAttributes [
 	tag := writer  tag: 'outer' attributes: (Array with: 'first' -> 'one').
 	self
 		assert: tag hasAttributes;
-		assert: (tag attributeAt: 'first') = 'one';
-		assert: (tag attributeAt: 'second' put: 'two') = 'two';
-		assert: (tag attributeAt: 'third' ifAbsentPut: ['three']) = 'three';
+		assert: (tag attributeAt: 'first') equals: 'one';
+		assert: (tag attributeAt: 'second' put: 'two') equals: 'two';
+		assert: (tag attributeAt: 'third' ifAbsentPut: ['three']) equals: 'three';
 		assert: (tag attributeAt: 'fourth' ifAbsent: [nil]) isNil;
 		assert: (tag attributeAt: 'fourth') isEmpty;
 		assert: (tag attributes at: 'fourth') isEmpty;
@@ -286,8 +286,8 @@ XMLWriterTest >> testAttributes [
 			attributes: (Dictionary with: 'fourth' -> 'four')
 			with: 'test'].
 	self assert:
-		writer contents =
-			'<outer first="one" second="two" third="three"><inner fourth="four">test</inner></outer>'.
+		writer contents equals:
+			'<outer first="one" second="two" third="three"><inner fourth="four">test</inner></outer>'
 ]
 
 { #category : #tests }
@@ -306,11 +306,11 @@ XMLWriterTest >> testCDataSections [
 							with: [w & 'value']])].
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<cdata>',
 			'<![CDATA[<escaped name="&value;" />]]>',
 			'<![CDATA[<escaped>&value;</escaped>]]>',
-			'</cdata>').
+			'</cdata>')
 ]
 
 { #category : #tests }
@@ -335,13 +335,13 @@ XMLWriterTest >> testCanonicalComments [
 		comment: 'ten'.
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			(self onCanonicalLineBreakJoin:
 				#('<!--one-->'
 					'<!--two-->'
 					'<three><!--four--><!--five--><six></six><!--seven--><!--eight--></three>'
 					'<!--nine-->'
-					'<!--ten-->')).
+					'<!--ten-->'))
 ]
 
 { #category : #tests }
@@ -378,11 +378,11 @@ XMLWriterTest >> testCanonicalDTDs [
 		tag: 'empty'.
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			(self onCanonicalLineBreakJoin:
 				#('<!--before dtd-->'
 					'<!--after dtd-->'
-					'<empty></empty>')).
+					'<empty></empty>'))
 ]
 
 { #category : #tests }
@@ -403,8 +403,8 @@ XMLWriterTest >> testCanonicalEscaping [
 		put: '<>"''&'.
 	tag with: '<>"''&'.
 	self assert:
-		writer contents =
-			'<canonical escaping="&lt;>&quot;''&amp;">&lt;&gt;"''&amp;</canonical>'.
+		writer contents equals:
+			'<canonical escaping="&lt;>&quot;''&amp;">&lt;&gt;"''&amp;</canonical>'
 ]
 
 { #category : #tests }
@@ -428,9 +428,9 @@ XMLWriterTest >> testCanonicalEscapingWhitespace [
 		put: whitespace.
 	tag with: whitespace.
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<canonical whitespace="&#x9;&#xA;&#xD;{4}">{1}{2}&#xD;{4}</canonical>'
-				format: whitespace).
+				format: whitespace)
 ]
 
 { #category : #tests }
@@ -458,14 +458,14 @@ XMLWriterTest >> testCanonicalNonRedundantXMLNSDeclarations [
 		(XMLWriter new
 			isCanonical: true;
 			writeWith: withBlock;
-			contents) =
+			contents) equals:
 				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
 				'<two xmlns="newDefaultNS" xmlns:prefix="newPrefixNS">',
 				'<three>',
 				'<four xmlns="" xmlns:prefix="prefixNS"></four>',
 				'</three>',
 				'</two>',
-				'</one>').
+				'</one>')
 ]
 
 { #category : #tests }
@@ -496,13 +496,13 @@ XMLWriterTest >> testCanonicalPIs [
 		data: 'ten'.
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			(self onCanonicalLineBreakJoin:
 				#('<?one one?>'
 					'<?two?>'
 					'<three><?four four?><?five?><six></six><?seven?><?eight eight?></three>'
 					'<?nine?>'
-					'<?ten ten?>')).
+					'<?ten ten?>'))
 ]
 
 { #category : #tests }
@@ -530,7 +530,7 @@ XMLWriterTest >> testCanonicalRedundantXMLNSDeclarations [
 		(XMLWriter new
 			isCanonical: true;
 			writeWith: withBlock;
-			contents) =
+			contents) equals:
 				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
 				'<two><three><four></four></three></two>',
 				'</one>').
@@ -539,7 +539,7 @@ XMLWriterTest >> testCanonicalRedundantXMLNSDeclarations [
 		(XMLWriter new
 			isCanonical: true;
 			writeWith: [:writer | (writer tag: 'empty') xmlns: ''];
-			contents) = '<empty></empty>'.
+			contents) equals: '<empty></empty>'
 ]
 
 { #category : #tests }
@@ -567,11 +567,11 @@ XMLWriterTest >> testCanonicalTags [
 				with: nil].
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<tags xmlns="default" xmlns:a="ns1" xmlns:b="ns2" a="1" xml:d="2" a:b="3" b:c="4" b:d="5">',
 			'<cdata undeclared:a="1" a:a="2">&lt;escaped name="&amp;value;" /&gt;</cdata>',
 			'<empty></empty>',
-			'</tags>').
+			'</tags>')
 ]
 
 { #category : #tests }
@@ -590,12 +590,12 @@ XMLWriterTest >> testCanonicalXMLDeclarationsAndPIs [
 		tag: 'empty'.
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			(self onCanonicalLineBreakJoin:
 				#('<!--start of pi-->'
 					'<?pi preserved?>'
 					'<!--end of pi-->'
-					'<empty></empty>')).
+					'<empty></empty>'))
 ]
 
 { #category : #tests }
@@ -605,12 +605,12 @@ XMLWriterTest >> testClose [
 			(XMLWriter on: stream)
 				tag: 'one';
 				tag: 'two';
-				close]) = '<one/><two/>'.
+				close]) equals: '<one/><two/>'.
 	self assert:
 		(String streamContents: [:stream |
 			((XMLWriter on: stream)
 				tag: 'one';
-				tag: 'two') close]) = '<one/><two/>'.
+				tag: 'two') close]) equals: '<one/><two/>'
 ]
 
 { #category : #tests }
@@ -621,7 +621,7 @@ XMLWriterTest >> testContentEntityReferenceEscaping [
 				escapesContentEntityReferences: false;
 				tag: 'one')
 				attributeAt: 'two' put: '<"&three;">';
-				with: '<"&four;">']) =
+				with: '<"&four;">']) equals:
 			'<one two="&lt;&quot;&three;&quot;>">&lt;"&four;"&gt;</one>'.
 
 	self assert:
@@ -630,8 +630,8 @@ XMLWriterTest >> testContentEntityReferenceEscaping [
 				escapesContentEntityReferences: true;
 				tag: 'one')
 				attributeAt: 'two' put: '<"&three;">';
-				with: '<"&four;">']) =
-			'<one two="&lt;&quot;&amp;three;&quot;>">&lt;"&amp;four;"&gt;</one>'.
+				with: '<"&four;">']) equals:
+			'<one two="&lt;&quot;&amp;three;&quot;>">&lt;"&amp;four;"&gt;</one>'
 ]
 
 { #category : #tests }
@@ -645,7 +645,7 @@ XMLWriterTest >> testContentEscaping [
 			xmlns: '& " < >';
 			with: '& " < >'.
 	self assert:
-		writer contents =
+		writer contents equals:
 			'<test xmlns="&amp; &quot; &lt; >" escaped="&amp; &quot; &lt; >">&amp; " &lt; &gt;</test>'.
 
 	((writer := XMLWriter new)
@@ -655,7 +655,7 @@ XMLWriterTest >> testContentEscaping [
 			xmlns: '& " < >';
 			attributeAt: 'unescaped' put: '& " < >';
 			with: '& " < >'.
-	self assert: writer contents = '<test xmlns="& " < >" unescaped="& " < >">& " < ></test>'.
+	self assert: writer contents equals: '<test xmlns="& " < >" unescaped="& " < >">& " < ></test>'
 ]
 
 { #category : #tests }
@@ -664,11 +664,11 @@ XMLWriterTest >> testContents [
 		(XMLWriter new
 			tag: 'one';
 			tag: 'two';
-			contents) = '<one/><two/>'.
+			contents) equals: '<one/><two/>'.
 	self assert:
 		(XMLWriter new
 			tag: 'one';
-			tag: 'two') contents = '<one/><two/>'.
+			tag: 'two') contents equals: '<one/><two/>'
 ]
 
 { #category : #tests }
@@ -688,20 +688,20 @@ XMLWriterTest >> testEmbedInMarkupWriter [
 				(XMLWriter writeWith: [:writer |
 					writer
 						tag: 'test'
-						with: each]) = '<test>one&lt;two/&gt;three</test>'].
+						with: each]) equals: '<test>one&lt;two/&gt;three</test>'].
 
 	self assert:
 		(XMLWriter writeWith: [:writer |
 			writer
 				tag: 'test'
-				with: $<]) = '<test>&lt;</test>'.
+				with: $<]) equals: '<test>&lt;</test>'.
 		
 	(Array with: nil with: '' with: #() with: []) do: [:each |
 		self assert:
 			(XMLWriter writeWith: [:writer |
 				writer
 					tag: 'test'
-					with: each]) = '<test/>'].
+					with: each]) equals: '<test/>']
 ]
 
 { #category : #tests }
@@ -711,7 +711,7 @@ XMLWriterTest >> testEnablePlatformSpecificLineBreak [
 	writer := XMLWriter new.
 	self
 		assert: writer enablePlatformSpecificLineBreak == writer;
-		assert: writer lineBreak = writer platformSpecificLineBreak.
+		assert: writer lineBreak equals: writer platformSpecificLineBreak
 ]
 
 { #category : #tests }
@@ -754,7 +754,7 @@ XMLWriterTest >> testEnablePrettyPrinting [
 						string: 'alternate']].
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			(self prettyPrintedLines: #(
 				#(0 '<!--an example-->'
 					'<example:user xmlns:example="urn://example">')
@@ -769,7 +769,7 @@ XMLWriterTest >> testEnablePrettyPrinting [
 					'<id>101<!----></id>'
 					'<contact>')
 				#(2 '<email/>alternate</contact>')
-				#(0 '</example:user>'))).
+				#(0 '</example:user>')))
 ]
 
 { #category : #tests }
@@ -807,7 +807,7 @@ XMLWriterTest >> testEnablePrettyPrintingDTD [
 				data: 'data'].
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			(self prettyPrintedLines: #(
 				#(0 '<?xml version="1.0"?>'
 					'<!DOCTYPE pretty [')
@@ -822,7 +822,7 @@ XMLWriterTest >> testEnablePrettyPrintingDTD [
 					'<!NOTATION external SYSTEM "external.txt">'
 					'<?target data?>')
 				#(0 ']>'
-					''))).
+					''))) 
 ]
 
 { #category : #tests }
@@ -882,7 +882,7 @@ XMLWriterTest >> testEnablePrologPrettyPrinting [
 		data: 'afterData'.
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			(self prettyPrintedLines: #(
 				#(0 '<?xml version="1.0"?>'
 					'<!DOCTYPE pretty [')
@@ -902,7 +902,7 @@ XMLWriterTest >> testEnablePrologPrettyPrinting [
 					'<?beforeTarget beforeData?>'
 					'<pretty><!--ugly--><?uglyTarget uglyData?><ugly>test</ugly></pretty>'
 					'<!--after-->'
-					'<?afterTarget afterData?>'))).
+					'<?afterTarget afterData?>')))
 ]
 
 { #category : #tests }
@@ -933,7 +933,7 @@ XMLWriterTest >> testEntityDeclaration [
 					ndata: 'notation'].
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<!DOCTYPE test [',
 				'<!ENTITY internal "replacement">',
 				'<!ENTITY emptyInternal "">',
@@ -941,7 +941,7 @@ XMLWriterTest >> testEntityDeclaration [
 				'<!ENTITY publicExternal PUBLIC "publicID" "">',
 				'<!ENTITY systemExternal SYSTEM "systemID">',
 				'<!ENTITY unparsed SYSTEM "systemID" NDATA notation>',
-				']>').
+				']>') 
 ]
 
 { #category : #tests }
@@ -955,7 +955,7 @@ XMLWriterTest >> testEntityReference [
 			writer string: 'two'.
 			writer & 'three'].
 
-	self assert: writer contents = '<entities>&one;two&three;</entities>'.
+	self assert: writer contents equals: '<entities>&one;two&three;</entities>' 
 ]
 
 { #category : #tests }
@@ -967,7 +967,7 @@ XMLWriterTest >> testEntityValueEscaping [
 			name: 'test';
 			replacement: '% " < >';
 			write.
-	self assert: writer contents = '<!ENTITY test "&#37; &#34; < >">'.
+	self assert: writer contents equals: '<!ENTITY test "&#37; &#34; < >">'.
 
 	((writer := XMLWriter new)
 		isEscaping: false;
@@ -975,7 +975,7 @@ XMLWriterTest >> testEntityValueEscaping [
 			name: 'test';
 			replacement: '% " < >';
 			write.
-	self assert: writer contents = '<!ENTITY test "% " < >">'.
+	self assert: writer contents equals: '<!ENTITY test "% " < >">'
 
 ]
 
@@ -988,15 +988,15 @@ XMLWriterTest >> testEscapesContentEntityReferences [
 		assert: (writer escapesContentEntityReferences: true) == writer;
 		assert: writer escapesContentEntityReferences;
 		assert: writer isEscaping;
-		assert: writer contentEscapes = writer contentDefaultEscapes;
-		assert: writer contentStringEscapes = writer contentStringDefaultEscapes.
+		assert: writer contentEscapes equals: writer contentDefaultEscapes;
+		assert: writer contentStringEscapes equals: writer contentStringDefaultEscapes.
 
 	self
 		assert: (writer escapesContentEntityReferences: false) == writer;
 		deny: writer escapesContentEntityReferences;
 		assert: writer isEscaping;
-		assert: writer contentEscapes = writer contentNonEntityEscapes;
-		assert: writer contentStringEscapes = writer contentStringNonEntityEscapes.
+		assert: writer contentEscapes equals: writer contentNonEntityEscapes;
+		assert: writer contentStringEscapes equals: writer contentStringNonEntityEscapes.
 
 	writer isEscaping: false.
 	self
@@ -1004,8 +1004,8 @@ XMLWriterTest >> testEscapesContentEntityReferences [
 		assert: (writer escapesContentEntityReferences: true) == writer;
 		assert: writer escapesContentEntityReferences;
 		assert: writer isEscaping;
-		assert: writer contentEscapes = writer contentDefaultEscapes;
-		assert: writer contentStringEscapes = writer contentStringDefaultEscapes.
+		assert: writer contentEscapes equals: writer contentDefaultEscapes;
+		assert: writer contentStringEscapes equals: writer contentStringDefaultEscapes 
 ]
 
 { #category : #tests }
@@ -1023,7 +1023,7 @@ XMLWriterTest >> testFormatter [
 
 	self
 		assert: (writer formatter: nil) == writer;
-		assert: writer formatter isNil.
+		assert: writer formatter isNil
 ]
 
 { #category : #tests }
@@ -1141,12 +1141,12 @@ XMLWriterTest >> testFormattingAttributeDeclarations [
 			with: doctypeWriter).
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<!DOCTYPE one [',
 					'<!ATTLIST one one CDATA #FIXED "default">',
 					'<!ATTLIST one two (four | five) #IMPLIED>',
 					'<!ATTLIST one three NOTATION (six | seven) #IMPLIED>',
-				']>').
+				']>')
 ]
 
 { #category : #tests }
@@ -1257,12 +1257,12 @@ XMLWriterTest >> testFormattingContent [
 			with: tagWriter).
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<empty/>',
 				'<not-empty xmlns="defaultNS" name="value">',
 					'one<!--two-->&three;four',
 				'</not-empty>',
-				'<empty></empty>').
+				'<empty></empty>')
 ]
 
 { #category : #tests }
@@ -1369,18 +1369,18 @@ XMLWriterTest >> testFormattingElementDeclarations [
 			with: doctypeWriter).
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<!DOCTYPE one [',
 					'<!ELEMENT one (two, three)>',
 					'<!ELEMENT two (#PCDATA | four)*>',
 					'<!ELEMENT three ANY>',
 					'<!ELEMENT four EMPTY>',
-				']>').
+				']>')
 ]
 
 { #category : #tests }
 XMLWriterTest >> testFormattingEntityDelcarations [
-	| formatter writer xmlDeclarationWriter doctypeWriter firstDeclarationWriter secondDeclarationWriter thirdDeclarationWriter fourthDeclarationWriter |
+	| formatter writer doctypeWriter firstDeclarationWriter secondDeclarationWriter thirdDeclarationWriter fourthDeclarationWriter |
 
 	formatter := XMLWriterRecordingFormatterProxy new.
 	(writer := XMLWriter new) formatter: formatter.
@@ -1502,13 +1502,13 @@ XMLWriterTest >> testFormattingEntityDelcarations [
 			with: doctypeWriter).
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<!DOCTYPE test [',
 					'<!ENTITY % one "replacement">',
 					'<!ENTITY two PUBLIC "second" "two.ent">',
 					'<!ENTITY three SYSTEM "three.ent">',
 					'<!ENTITY four PUBLIC "fourth" "four.ent" NDATA notation>',
-				']>').
+				']>')
 ]
 
 { #category : #tests }
@@ -1624,12 +1624,12 @@ XMLWriterTest >> testFormattingPIs [
 			with: piWriter).
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<?xml-xsl type="text/xsl" href=''demo.xsl''?>',
 				'<?xml-xsl type href?>',
 				'<?xml-xsl "text/xsl" ''demo.xsl''?>',
 				'<?xml-xsl "text/xsl" "demo.xsl?>',
-				'<?xml-xsl "text/xsl" ''demo.xsl?>').
+				'<?xml-xsl "text/xsl" ''demo.xsl?>')
 ]
 
 { #category : #tests }
@@ -1724,7 +1724,7 @@ XMLWriterTest >> testFormattingProlog [
 			with: doctypeWriter).
 
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<?xml version="1.0" encoding="UTF-16" standalone="yes"?>',
 				'<!DOCTYPE test PUBLIC "public" "system">',
 				'<!DOCTYPE test SYSTEM "system">').
@@ -1784,8 +1784,8 @@ XMLWriterTest >> testFormattingUnsafeTagWriters [
 			with: tagWriter).
 
 	self assert:
-		writer contents =
-			'<test xmlns="defaultNS" name="value"></test>'.
+		writer contents equals:
+			'<test xmlns="defaultNS" name="value"></test>'
 ]
 
 { #category : #tests }
@@ -1802,7 +1802,7 @@ XMLWriterTest >> testHadActiveTagWriter [
 	self assert: writer hadActiveTagWriter.
 
 	tagWriter write.
-	self assert: writer hadActiveTagWriter.
+	self assert: writer hadActiveTagWriter
 ]
 
 { #category : #tests }
@@ -1831,7 +1831,7 @@ XMLWriterTest >> testHasActiveTagWriter [
 	self assert: writer hasActiveTagWriter.
 
 	tagWriter write.
-	self deny: writer hasActiveTagWriter.
+	self deny: writer hasActiveTagWriter
 ]
 
 { #category : #tests }
@@ -1845,7 +1845,7 @@ XMLWriterTest >> testHasFormatter [
 	self assert: writer hasFormatter.
 
 	writer formatter: nil.
-	self deny: writer hasFormatter.
+	self deny: writer hasFormatter
 ]
 
 { #category : #tests }
@@ -1861,7 +1861,7 @@ XMLWriterTest >> testIsCanonical [
 	self
 		assert: (writer isCanonical: false) == writer;
 		assert: (writer formatter isKindOf: XMLPrettyPrintingWriterFormatter);
-		assert: writer lineBreak = String cr;
+		assert: writer lineBreak equals: String cr;
 		deny: writer isEscaping;
 		deny: writer escapesContentEntityReferences;
 		deny: writer omitsRedundantXMLNSDeclarations.
@@ -1869,9 +1869,9 @@ XMLWriterTest >> testIsCanonical [
 	self
 		assert: (writer isCanonical: true) == writer;
 		assert: (writer formatter isKindOf: XMLCanonicalWriterFormatter);
-		assert: writer lineBreak = writer canonicalLineBreak;
-		assert: writer contentEscapes = writer contentCanonicalEscapes;
-		assert: writer contentStringEscapes = writer contentStringCanonicalEscapes;
+		assert: writer lineBreak equals: writer canonicalLineBreak;
+		assert: writer contentEscapes equals: writer contentCanonicalEscapes;
+		assert: writer contentStringEscapes equals: writer contentStringCanonicalEscapes;
 		assert: writer isEscaping;
 		assert: writer escapesContentEntityReferences;
 		assert: writer omitsRedundantXMLNSDeclarations.
@@ -1879,12 +1879,12 @@ XMLWriterTest >> testIsCanonical [
 	self
 		assert: (writer isCanonical: false) == writer;
 		assert: writer formatter isNil;
-		assert: writer lineBreak = writer defaultLineBreak;
-		assert: writer contentEscapes = writer contentDefaultEscapes;
-		assert: writer contentStringEscapes = writer contentStringDefaultEscapes;
+		assert: writer lineBreak equals: writer defaultLineBreak;
+		assert: writer contentEscapes equals: writer contentDefaultEscapes;
+		assert: writer contentStringEscapes equals: writer contentStringDefaultEscapes;
 		assert: writer isEscaping;
 		assert: writer escapesContentEntityReferences;
-		assert: writer omitsRedundantXMLNSDeclarations.
+		assert: writer omitsRedundantXMLNSDeclarations
 ]
 
 { #category : #tests }
@@ -1901,7 +1901,7 @@ XMLWriterTest >> testLineBreak [
 				xml;
 				tag: 'test'.
 			self assert:
-				writer contents =
+				writer contents equals:
 					(self
 						onLineBreak: each
 						join:
@@ -1933,14 +1933,14 @@ XMLWriterTest >> testNonRedundantXMLNSDeclarations [
 	self assert:
 		(XMLWriter new
 			writeWith: withBlock;
-			contents) =
+			contents) equals:
 				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
 				'<two xmlns="newDefaultNS" xmlns:prefix="newPrefixNS">',
 				'<three>',
 				'<four xmlns="" xmlns:prefix="prefixNS"/>',
 				'</three>',
 				'</two>',
-				'</one>').
+				'</one>')
 ]
 
 { #category : #tests }
@@ -1967,7 +1967,7 @@ XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 	self assert:
 		(XMLWriter new
 			writeWith: withBlock;
-			contents) =
+			contents) equals:
 				('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
 				'<two><three><four/></three></two>',
 				'</one>').
@@ -1975,7 +1975,7 @@ XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 		(XMLWriter new
 			omitsRedundantXMLNSDeclarations: false;
 			writeWith: withBlock;
-			contents) =
+			contents) equals:
 			('<one xmlns="defaultNS" xmlns:prefix="prefixNS">',
 			'<two xmlns="defaultNS" xmlns:prefix="prefixNS">',
 			'<three>',
@@ -1985,15 +1985,15 @@ XMLWriterTest >> testOmitsRedundantXMLNSDeclarations [
 			'</one>').
 
 	self assert:
-		(XMLWriter writeWith: [:writer | (writer tag: 'empty') xmlns: '']) =
+		(XMLWriter writeWith: [:writer | (writer tag: 'empty') xmlns: '']) equals:
 			'<empty/>'.
 
 	self assert:
 		(XMLWriter writeWith: [:writer |
 			(writer
 				omitsRedundantXMLNSDeclarations: false;
-				tag: 'empty') xmlns: '']) =
-			'<empty xmlns=""/>'.
+				tag: 'empty') xmlns: '']) equals:
+			'<empty xmlns=""/>'
 ]
 
 { #category : #tests }
@@ -2005,7 +2005,7 @@ XMLWriterTest >> testOnFormatter [
 	writer := XMLWriter on: stream formatter: formatter.
 	self
 		assert: writer stream == stream;
-		assert: writer formatter == formatter.
+		assert: writer formatter == formatter
 ]
 
 { #category : #tests }
@@ -2022,8 +2022,8 @@ XMLWriterTest >> testOutputsSelfClosingTags [
 				tag: 'self-closing' with: nil].
 
 	self assert:
-		writer printString =
-			'<tags><self-closing/><not-self-closing></not-self-closing><self-closing/></tags>'.
+		writer printString equals:
+			'<tags><self-closing/><not-self-closing></not-self-closing><self-closing/></tags>'
 ]
 
 { #category : #tests }
@@ -2047,12 +2047,12 @@ XMLWriterTest >> testPIsWithStringValues [
 
 	"it should print PI data as-is, preserving the quotes exactly"
 	self assert:
-		writer contents =
+		writer contents equals:
 			('<?xml-xsl type="text/xsl" href=''demo.xsl''?>',
 				'<?xml-xsl type="''text''/xsl" href=''"demo".xsl''?>',
 				'<?xml-xsl type="text/xsl" href=''demo.xsl?>',
 				'<?xml-xsl type="text/xsl" href="demo.xsl?>',
-				'<test/>').
+				'<test/>')
 ]
 
 { #category : #tests }
@@ -2061,13 +2061,13 @@ XMLWriterTest >> testRaw [
 		(XMLWriter writeWith: [:writer |
 			writer
 				tag: 'test'
-				with: [writer raw: '<raw name="&value;"/>']]) =
+				with: [writer raw: '<raw name="&value;"/>']]) equals:
 					'<test><raw name="&value;"/></test>'.
 	self assert:
 		(XMLWriter writeWith: [:writer |
 			writer
 				tag: 'test'
-				with: [writer raw: '']]) = '<test/>'.
+				with: [writer raw: '']]) equals: '<test/>'
 ]
 
 { #category : #tests }
@@ -2092,7 +2092,7 @@ XMLWriterTest >> testRedundantWrites [
 							write.
 						writer2 write].
 					writer write].
-				writer write]) =
+				writer write]) equals:
 			('<report>',
 			'<name>TestName - Report</name>',
 			'<finality><!--status-->succeed</finality>',
@@ -2109,7 +2109,7 @@ XMLWriterTest >> testSimpleExample [
 			attributeAt: 'a' put: 'one';
 			write.
 			
-	self assert: writer contents = '<emptyTag a="one"/>'
+	self assert: writer contents equals: '<emptyTag a="one"/>'
 ]
 
 { #category : #tests }
@@ -2123,8 +2123,8 @@ XMLWriterTest >> testSimpleExampleWithWriteWith [
 				attributeAt: 'a' put: 'value'].
 	contents := '<emptyTag a="value"/>'.
 	self
-		assert: (XMLWriter new writeWith: block) contents = contents;
-		assert: (XMLWriter writeWith: block) = contents.
+		assert: (XMLWriter new writeWith: block) contents equals: contents;
+		assert: (XMLWriter writeWith: block) equals: contents
 ]
 
 { #category : #tests }
@@ -2149,8 +2149,8 @@ XMLWriterTest >> testStartingAndFinishing [
 	outer finishWriting.
 
 	self assert:
-		writer contents =
-			'<outer xmlns="default" test="value"><inner>test<empty/></inner></outer>'.
+		writer contents equals:
+			'<outer xmlns="default" test="value"><inner>test<empty/></inner></outer>'
 ]
 
 { #category : #tests }
@@ -2159,13 +2159,13 @@ XMLWriterTest >> testString [
 		(XMLWriter writeWith: [:writer |
 			writer
 				tag: 'test'
-				with: [writer string: '<escaped name="&value;"/>']]) =
+				with: [writer string: '<escaped name="&value;"/>']]) equals:
 					'<test>&lt;escaped name="&amp;value;"/&gt;</test>'.
 	self assert:
 		(XMLWriter writeWith: [:writer |
 			writer
 				tag: 'test'
-				with: [writer string: '']]) = '<test/>'.
+				with: [writer string: '']]) equals: '<test/>'
 ]
 
 { #category : #tests }
@@ -2179,7 +2179,7 @@ XMLWriterTest >> testSystemAndPublicIDs [
 			systemID: 'system"ID'''. "contains double and single quote"
 
 	"IDs are single quoted because they contain a double quote"
-	self assert: writer contents = '<!DOCTYPE test PUBLIC ''public"ID'' ''system"ID''>'
+	self assert: writer contents equals: '<!DOCTYPE test PUBLIC ''public"ID'' ''system"ID''>'
 ]
 
 { #category : #tests }
@@ -2190,14 +2190,14 @@ XMLWriterTest >> testUnsafeTagWriters [
 			writer
 				startTag: 'two'
 				attributes: (Array with: 'name' -> 'value');
-				startTag: 'three']) = '<one><two name="value"><three>'.
+				startTag: 'three']) equals: '<one><two name="value"><three>'.
 
 	self assert:
 		(XMLWriter writeWith: [:writer |
 			writer endTag name: 'three'.
 			writer
 				endTag: 'two';
-				endTag: 'one']) = '</three></two></one>'.
+				endTag: 'one']) equals: '</three></two></one>'
 ]
 
 { #category : #tests }
@@ -2208,9 +2208,9 @@ XMLWriterTest >> testUnsafeTagWritersAttributes [
 	tag := writer  startTag: 'outer' attributes: (Array with: 'first' -> 'one').
 	self
 		assert: tag hasAttributes;
-		assert: (tag attributeAt: 'first') = 'one';
-		assert: (tag attributeAt: 'second' put: 'two') = 'two';
-		assert: (tag attributeAt: 'third' ifAbsentPut: ['three']) = 'three';
+		assert: (tag attributeAt: 'first') equals: 'one';
+		assert: (tag attributeAt: 'second' put: 'two') equals: 'two';
+		assert: (tag attributeAt: 'third' ifAbsentPut: ['three']) equals: 'three';
 		assert: (tag attributeAt: 'fourth' ifAbsent: [nil]) isNil;
 		assert: (tag attributeAt: 'fourth') isEmpty;
 		assert: (tag attributes at: 'fourth') isEmpty;
@@ -2220,8 +2220,8 @@ XMLWriterTest >> testUnsafeTagWritersAttributes [
 		startTag: 'inner'
 		attributes: (Dictionary with: 'fourth' -> 'four').
 	self assert:
-		writer contents =
-			'<outer first="one" second="two" third="three"><inner fourth="four">'.
+		writer contents equals:
+			'<outer first="one" second="two" third="three"><inner fourth="four">'
 ]
 
 { #category : #tests }
@@ -2240,20 +2240,20 @@ XMLWriterTest >> testUnsafeTagWritersXMLNSDeclarations [
 		assert: tag hasXMLNSDeclarations;
 		assert: (tag includesXMLNS: '');
 		assert: (tag includesXMLNS: 'ns1');
-		assert: tag xmlns = 'default1';
-		assert: (tag xmlnsAt: '') = 'default1';
-		assert: (tag xmlns: 'default2') = tag;
-		assert: tag xmlns = 'default2';
-		assert: (tag xmlnsAt: 'ns1') = 'first';
-		assert: (tag xmlnsAt: 'ns2' put: 'second') = 'second';
-		assert: (tag xmlnsAt: 'ns3' ifAbsentPut: ['third']) = 'third';
+		assert: tag xmlns equals: 'default1';
+		assert: (tag xmlnsAt: '') equals: 'default1';
+		assert: (tag xmlns: 'default2') equals: tag;
+		assert: tag xmlns equals: 'default2';
+		assert: (tag xmlnsAt: 'ns1') equals: 'first';
+		assert: (tag xmlnsAt: 'ns2' put: 'second') equals: 'second';
+		assert: (tag xmlnsAt: 'ns3' ifAbsentPut: ['third']) equals: 'third';
 		assert: (tag xmlnsAt: 'ns4' ifAbsent: [nil]) isNil;
 		assert: (tag xmlnsAt: 'ns4') isEmpty;
 		assert: (tag xmlnsDeclarations at: 'ns4') isEmpty.
 
 	self assert:
-		writer contents =
-			'<test xmlns="default2" xmlns:ns1="first" xmlns:ns2="second" xmlns:ns3="third">'.
+		writer contents equals:
+			'<test xmlns="default2" xmlns:ns1="first" xmlns:ns2="second" xmlns:ns3="third">'
 ]
 
 { #category : #tests }
@@ -2280,9 +2280,9 @@ XMLWriterTest >> testWideStringContent [
 		with: wideStringContent.
 
 	self assert:
-		writer contents  =
+		writer contents  equals:
 			('<!DOCTYPE test [<!ENTITY test "{1}">]><test test="{1}">{1}</test>'
-				format: (Array with: wideStringContent)).
+				format: (Array with: wideStringContent)) 
 ]
 
 { #category : #tests }
@@ -2315,7 +2315,7 @@ XMLWriterTest >> testXMLDeclarations [
 		standalone: ''.
 
 	self assert:
-		writer printString =
+		writer printString equals:
 			('<?xml version="1.0"?>',
 			'<?xml version="1.0"?>',
 			'<?xml version="1.0"?>',
@@ -2323,7 +2323,7 @@ XMLWriterTest >> testXMLDeclarations [
 			'<?xml version="1.0" standalone="yes"?>',
 			'<?xml version="1.1" encoding="UTF-16LE" standalone="yes"?>',
 			'<?xml version="1.0"?>',
-			'<?xml version="1.0"?>').
+			'<?xml version="1.0"?>') 
 ]
 
 { #category : #tests }
@@ -2342,18 +2342,18 @@ XMLWriterTest >> testXMLNSDeclarations [
 		assert: tag hasXMLNSDeclarations;
 		assert: (tag includesXMLNS: '');
 		assert: (tag includesXMLNS: 'ns1');
-		assert: tag xmlns = 'default1';
-		assert: (tag xmlnsAt: '') = 'default1';
-		assert: (tag xmlns: 'default2') = tag;
-		assert: tag xmlns = 'default2';
-		assert: (tag xmlnsAt: 'ns1') = 'first';
-		assert: (tag xmlnsAt: 'ns2' put: 'second') = 'second';
-		assert: (tag xmlnsAt: 'ns3' ifAbsentPut: ['third']) = 'third';
+		assert: tag xmlns equals: 'default1';
+		assert: (tag xmlnsAt: '') equals: 'default1';
+		assert: (tag xmlns: 'default2') equals: tag;
+		assert: tag xmlns equals: 'default2';
+		assert: (tag xmlnsAt: 'ns1') equals: 'first';
+		assert: (tag xmlnsAt: 'ns2' put: 'second') equals: 'second';
+		assert: (tag xmlnsAt: 'ns3' ifAbsentPut: ['third']) equals: 'third';
 		assert: (tag xmlnsAt: 'ns4' ifAbsent: [nil]) isNil;
 		assert: (tag xmlnsAt: 'ns4') isEmpty;
 		assert: (tag xmlnsDeclarations at: 'ns4') isEmpty.
 
 	self assert:
-		writer contents =
-			'<test xmlns="default2" xmlns:ns1="first" xmlns:ns2="second" xmlns:ns3="third"/>'.
+		writer contents equals:
+			'<test xmlns="default2" xmlns:ns1="first" xmlns:ns2="second" xmlns:ns3="third"/>'
 ]

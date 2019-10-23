@@ -65,7 +65,7 @@ XMLDoctypeDeclarationWriter >> systemID: aSystemID [
 XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
 	self deprecated: 'use #with: instead'.
 
-	self with: aStringOrCollectionOrBlock.
+	self with: aStringOrCollectionOrBlock
 ]
 
 { #category : #private }
@@ -97,13 +97,13 @@ XMLDoctypeDeclarationWriter >> writeEpilogue [
 
 	self writer
 		nextPut: $>;
-		formatAfterDoctypeDeclaration: self.
+		formatAfterDoctypeDeclaration: self
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeExternalID [
 	self writer space.
-	self externalIDWriter writeOn: self writer.
+	self externalIDWriter writeOn: self writer
 ]
 
 { #category : #private }
@@ -118,5 +118,5 @@ XMLDoctypeDeclarationWriter >> writePrologue [
 		writeName: self root.
 
 	self isExternalIDOmittable
-		ifFalse: [self writeExternalID].
+		ifFalse: [self writeExternalID]
 ]

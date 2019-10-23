@@ -370,7 +370,7 @@ XMLWriter >> activeTagWriter [
 	self activeMarkupWriterWithAncestorsDo: [:each |
 		each isTagWriter
 			ifTrue: [^ each]].
-	^ nil.
+	^ nil
 ]
 
 { #category : #private }
@@ -383,13 +383,12 @@ XMLWriter >> ancestorsOfMarkupWriter: aMarkupWriter do: aBlock [
 			ifTrue: [aBlock value: (self markupWriterStack at: i)]
 			ifFalse: [
 				enumeratingAncestors :=
-					(self markupWriterStack at: i) == aMarkupWriter]].
+					(self markupWriterStack at: i) == aMarkupWriter]]
 ]
 
 { #category : #converting }
 XMLWriter >> asString [
-	"returns the full, untruncated output, unlike #printString, which may
-	truncate"
+	"Returns the full, untruncated output, unlike #printString, which may truncate"
 
 	^ self contents
 ]
@@ -433,7 +432,7 @@ XMLWriter >> cdata: aString [
 { #category : #closing }
 XMLWriter >> close [
 	self write.
-	stream close.
+	stream close
 ]
 
 { #category : #writing }
@@ -819,8 +818,8 @@ XMLWriter >> isRedundantActiveTagWriterXMLNSPrefix: aPrefix uri: aURI [
 	"declarations to reset the default namespace (like xmlns='') are
 	considered redundant when there's no previous default namespace
 	declaration being reset"
-	^ aPrefix size = 0
-		and: [aURI size = 0].
+	^ aPrefix isEmpty
+		and: [aURI isEmpty]
 ]
 
 { #category : #accessing }
@@ -885,7 +884,7 @@ XMLWriter >> on: aStream [
 	isCanonical := false.
 	outputsSelfClosingTags := true.
 	omitsRedundantXMLNSDeclarations := true.
-	hadActiveTagWriter := false.
+	hadActiveTagWriter := false
 ]
 
 { #category : #testing }
@@ -920,7 +919,7 @@ XMLWriter >> parentOfMarkupWriter: aMarkupWriter [
 	self markupWriterStack size to: 2 by: -1 do: [:i |
 		(self markupWriterStack at: i) == aMarkupWriter
 			ifTrue: [^ self markupWriterStack at: i - 1]].
-	^ nil.
+	^ nil
 ]
 
 { #category : #deprecated }
@@ -977,7 +976,7 @@ XMLWriter >> pushNewMarkupWriter: aMarkupWriterClass [
 			(aMarkupWriterClass writer: self).
 	hadActiveTagWriter
 		ifFalse: [hadActiveTagWriter := newMarkupWriter isTagWriter].
-	^ newMarkupWriter.
+	^ newMarkupWriter
 ]
 
 { #category : #'writing - unsafe' }
@@ -985,8 +984,7 @@ XMLWriter >> raw: aString [
 	"writes raw string content without doing any escaping of special
 	characters, unlike #string:"
 
-	aString size > 0
-		ifTrue: [
+	aString ifNotEmpty: [
 			self
 				newStringMarkup;
 				nextPutAll: aString]

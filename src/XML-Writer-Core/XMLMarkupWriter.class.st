@@ -71,7 +71,7 @@ XMLMarkupWriter >> hasStartedWriting [
 XMLMarkupWriter >> initialize [
 	super initialize.
 
-	hasStartedWriting := false.
+	hasStartedWriting := false
 ]
 
 { #category : #testing }
@@ -143,13 +143,13 @@ XMLMarkupWriter >> printOn: aStream [
 { #category : #writing }
 XMLMarkupWriter >> startWriting [
 	hasStartedWriting := true.
-	self writePrologue.
+	self writePrologue
 ]
 
 { #category : #enumerating }
 XMLMarkupWriter >> withAncestorsDo: aBlock [
 	aBlock value: self.
-	self ancestorsDo: aBlock.
+	self ancestorsDo: aBlock
 ]
 
 { #category : #writing }

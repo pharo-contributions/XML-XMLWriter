@@ -159,7 +159,7 @@ XMLWriterFormatter >> indentString [
 { #category : #accessing }
 XMLWriterFormatter >> indentString: aString [
 	currentIndentLevel := 0.
-	indentString := aString.
+	indentString := aString
 ]
 
 { #category : #initialization }
@@ -167,7 +167,7 @@ XMLWriterFormatter >> initialize [
 	super initialize.
 
 	currentIndentLevel := self class defaultIndentLevel.
-	indentString := self class defaultIndentString.
+	indentString := self class defaultIndentString
 ]
 
 { #category : #indenting }
