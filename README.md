@@ -12,6 +12,30 @@ Metacello new
 	repository: 'github://pharo-contributions/XML-XMLWriter/src';
 	load.
 ```
+## Usage
+
+A simple example on how to use the XML writer
+
+```Smalltalk
+|writer|
+writer := XMLWriter new.
+writer 
+	enablePrettyPrinting;
+	comment: 'A simple XML structure';
+	tag: 'hello'
+	with: [ writer tag: 'world' ].
+writer asString
+```
+
+results in the following XML output
+```XML
+<!--A simple XML structure-->
+<hello>
+    <world/>
+</hello>
+```
+
+Check the class **XMLWriterTest** for many other examples.
 
 ## History
 This project was migrated from [http://smalltalkhub.com/#!/~PharoExtras/XMLWriter](http://smalltalkhub.com/#!/~PharoExtras/XMLWriter)
