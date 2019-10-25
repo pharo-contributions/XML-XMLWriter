@@ -16,12 +16,8 @@ BaselineOfXMLWriter >> baseline: spec [
 		do: [ 
 			spec blessing: #baseline.
 			
-			"Projects"			
-			spec
-				baseline: 'OrderPreservingDictionary'
-				with: [ spec
-						repository: 'github://pharo-contributions/OrderPreservingDictionary';
-						loads: 'Core' ].
+			"Prerequisite Projects"			
+			self orderPreservingDictionaryOn: spec.
 								
 			"Packages"
 			spec 
@@ -47,4 +43,14 @@ BaselineOfXMLWriter >> baseline: spec [
 			spec
 				package: 'XML-Writer-GemstoneCompatibility'
 				with: [ spec requires: 'XML-Writer-Core' ].].
+]
+
+{ #category : #prerequisites }
+BaselineOfXMLWriter >> orderPreservingDictionaryOn: spec [
+
+	spec
+		baseline: 'OrderPreservingDictionary'
+		with: [ spec
+					repository: 'github://pharo-contributions/OrderPreservingDictionary';
+					loads: 'Core' ].
 ]
