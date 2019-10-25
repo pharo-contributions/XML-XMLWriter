@@ -248,7 +248,7 @@ ConfigurationOfXMLWriter class >> validate [
 	^ ((Smalltalk at: #MetacelloToolBox) validateConfiguration: self debug: #() recurse: false) explore
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline100: spec [ 
 	<version: '1.0-baseline'>
 	
@@ -268,7 +268,7 @@ ConfigurationOfXMLWriter >> baseline100: spec [
 			group: 'Tests' with: #()].
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline101: spec [ 
 	<version: '1.0.1-baseline'>
 	
@@ -290,7 +290,7 @@ ConfigurationOfXMLWriter >> baseline101: spec [
 			group: 'Core' with: #('XML-Writer')].
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline104: spec [ 
 	<version: '1.0.4-baseline'>
 	
@@ -316,7 +316,7 @@ ConfigurationOfXMLWriter >> baseline104: spec [
 			package: 'XML-Writer' with:[spec requires: #('Collections-CharacterSet')]]
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline105: spec [
 	<version: '1.0.5-baseline'>
 	spec for: #common do: [ 
@@ -353,7 +353,7 @@ ConfigurationOfXMLWriter >> baseline105: spec [
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline200: spec [
 	<version: '2.0.0-baseline'>
 
@@ -411,7 +411,7 @@ ConfigurationOfXMLWriter >> baseline200: spec [
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline210: spec [
 	<version: '2.1.0-baseline'>
 
@@ -461,7 +461,7 @@ ConfigurationOfXMLWriter >> baseline210: spec [
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline220: spec [
 	<version: '2.2.0-baseline'>
 	spec
@@ -507,7 +507,7 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 			spec group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline231: spec [
 	<version: '2.3.1-baseline'>
 	spec
@@ -553,7 +553,7 @@ ConfigurationOfXMLWriter >> baseline231: spec [
 			spec group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline243: spec [
 	<version: '2.4.3-baseline'>
 	spec
@@ -599,7 +599,7 @@ ConfigurationOfXMLWriter >> baseline243: spec [
 				package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ] 
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline250: spec [
 	<version: '2.5.0-baseline'>
 
@@ -638,7 +638,7 @@ ConfigurationOfXMLWriter >> baseline250: spec [
 				with: [ spec requires: 'XML-Writer-Core' ].].
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline251: spec [ 
 		<version: '2.5.1-baseline' imports: #('2.5.0-baseline')>
 
@@ -649,7 +649,7 @@ ConfigurationOfXMLWriter >> baseline251: spec [
 				with: 'XML-Writer-GemstoneCompatibility-monty.2'. ].
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline267: spec [ 
 		<version: '2.6.7-baseline' imports: #('2.5.0-baseline')>
 
@@ -660,7 +660,7 @@ ConfigurationOfXMLWriter >> baseline267: spec [
 				with: 'XML-Writer-GemstoneCompatibility-monty.3'. ].
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline270: spec [ 
 		<version: '2.7.0-baseline' imports: #('2.5.0-baseline')>
 
@@ -671,7 +671,7 @@ ConfigurationOfXMLWriter >> baseline270: spec [
 				with: 'XML-Writer-GemstoneCompatibility-monty.4'. ].
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline274: spec [ 
 		<version: '2.7.4-baseline' imports: #('2.5.0-baseline')>
 
@@ -682,7 +682,7 @@ ConfigurationOfXMLWriter >> baseline274: spec [
 				with: 'XML-Writer-GemstoneCompatibility-monty.5'. ].
 ]
 
-{ #category : #baselines }
+{ #category : #'baselines - outdated' }
 ConfigurationOfXMLWriter >> baseline281: spec [ 
 		<version: '2.8.1-baseline' imports: #('2.5.0-baseline')>
 
@@ -697,7 +697,12 @@ ConfigurationOfXMLWriter >> baseline281: spec [
 ConfigurationOfXMLWriter >> development: spec [
 	<symbolicVersion: #'development'>
 
-	spec for: #'common' version: '2.8.1-baseline'.
+	spec for: #'common' do: [ 
+		spec
+			baseline: 'XMLWriter' with: [ 
+				spec 
+					className: 'BaselineOfXMLWriter';
+					repository: 'github://pharo-contributions/XML-XMLWriter:master/src' ]]
 
 ]
 
@@ -717,9 +722,14 @@ ConfigurationOfXMLWriter >> project [
 { #category : #symbolic }
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
-
-	spec for: #'common' version: '2.8.4'.
-
+	
+	"Old STHub version"
+	spec for: #'pharo4.x' version: '2.8.4'.
+	spec for: #'pharo5.x' version: '2.8.4'.
+	spec for: #'pharo6.x' version: '2.8.4'.	
+		
+	"GitHub starting with Pharo 7 onwards"	
+	spec for: #'common' version: '2.8.5'.
 
 ]
 
@@ -1595,4 +1605,17 @@ ConfigurationOfXMLWriter >> version284: spec [
 			spec package: 'XML-Writer-Core' with: 'XML-Writer-Core-monty.74'.
 			spec package: 'XML-Writer-Tests' with: 'XML-Writer-Tests-monty.38'.
                 ].
+]
+
+{ #category : #versions }
+ConfigurationOfXMLWriter >> version285: spec [ 
+	<version: '2.8.5'>
+
+	spec for: #'common' do: [ 
+		spec
+			baseline: 'XMLWriter' with: [ 
+				spec 
+					className: 'BaselineOfXMLWriter';
+					repository: 'github://pharo-contributions/XML-XMLWriter:2.8.5/src' ]]
+
 ]
