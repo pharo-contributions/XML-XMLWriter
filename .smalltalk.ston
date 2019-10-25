@@ -1,7 +1,7 @@
 SmalltalkCISpec {
 	#loading : [
 		SCIMetacelloLoadSpec {
-			#baseline : 'XMLwriter',
+			#baseline : 'XMLWriter',
 			#directory : 'src',
 			#load : [ 'Tests' ],
 			#platforms : [ #pharo ]
