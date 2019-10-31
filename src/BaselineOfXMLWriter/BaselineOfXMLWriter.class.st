@@ -21,8 +21,8 @@ BaselineOfXMLWriter >> baseline: spec [
 								
 			"Packages"
 			spec 
-				package: 'XML-Writer-Core' with: [ spec requires: 'OrderPreservingDictionary' ];
-				package: 'XML-Writer-Tests' with: [ spec requires: 'XML-Writer-Core' ].
+				package: 'XML-Writer-Core' with: [ spec requires: #('OrderPreservingDictionary') ];
+				package: 'XML-Writer-Tests' with: [ spec requires: #('XML-Writer-Core' 'OrderPreservingDictionary Tests') ].
 			
 			
 			"Groups"
@@ -50,7 +50,12 @@ BaselineOfXMLWriter >> orderPreservingDictionaryOn: spec [
 
 	spec
 		baseline: 'OrderPreservingDictionary'
-		with: [ spec
-					repository: 'github://pharo-contributions/OrderPreservingDictionary';
-					loads: 'Core' ].
+      with: [ 
+			spec
+				loads: #('Core');
+				repository: 'github://pharo-contributions/OrderPreservingDictionary:1.5.x/src' ]. 
+				
+	spec project: 'OrderPreservingDictionary Tests' copyFrom: 'OrderPreservingDictionary' with: [ spec loads: #('Tests') ] 			
+				
+	
 ]
