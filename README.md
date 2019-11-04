@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/pharo-contributions/XML-XMLWriter.svg?branch=master)](https://travis-ci.org/pharo-contributions/XML-XMLWriter) [![Coverage Status](https://coveralls.io/repos/github/pharo-contributions/XML-XMLWriter/badge.svg?branch=master)](https://coveralls.io/github/pharo-contributions/XML-XMLWriter?branch=master)
 
-This package provides a Seaside-like, block-based API for XML generation for [Pharo](http://www.pharo.org)
+This package provides a [Seaside](http://www.seaside.st)-like, block-based API for XML generation for [Pharo](http://www.pharo.org)
 
 ## Installation
 
