@@ -725,15 +725,16 @@ ConfigurationOfXMLWriter >> stable: spec [
 	
 	"GitHub starting with Pharo 7 onwards"	
 	spec for: #'common' version: '2.8.5'.
-	
-	spec for: #'pharo7.x' version: '2.8.4'.
-	spec for: #'pharo8.x' version: '2.8.4'.
-	
+		
 	"Use last STHub version for elder Pharo versions"
 	spec for: #'pharo4.x' version: '2.8.4'.
 	spec for: #'pharo5.x' version: '2.8.4'.
 	spec for: #'pharo6.x' version: '2.8.4'.	
-		
+	
+	"Use latest Github version for more recent Pharo versions"
+	spec for: #'pharo7.x' version: '2.8.5'.
+	spec for: #'pharo8.x' version: '2.8.5'.
+	
 	
 
 ]
