@@ -37,5 +37,8 @@ results in the following XML output
 
 Check the class **XMLWriterTest** for many other examples.
 
+## LICENSE
+[MIT License](LICENSE)
+
 ## History
 This project was migrated from [http://smalltalkhub.com/#!/~PharoExtras/XMLWriter](http://smalltalkhub.com/#!/~PharoExtras/XMLWriter)
