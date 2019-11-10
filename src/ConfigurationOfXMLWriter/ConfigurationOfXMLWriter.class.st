@@ -248,7 +248,7 @@ ConfigurationOfXMLWriter class >> validate [
 	^ ((Smalltalk at: #MetacelloToolBox) validateConfiguration: self debug: #() recurse: false) explore
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline100: spec [ 
 	<version: '1.0-baseline'>
 	
@@ -268,7 +268,7 @@ ConfigurationOfXMLWriter >> baseline100: spec [
 			group: 'Tests' with: #()].
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline101: spec [ 
 	<version: '1.0.1-baseline'>
 	
@@ -290,7 +290,7 @@ ConfigurationOfXMLWriter >> baseline101: spec [
 			group: 'Core' with: #('XML-Writer')].
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline104: spec [ 
 	<version: '1.0.4-baseline'>
 	
@@ -316,7 +316,7 @@ ConfigurationOfXMLWriter >> baseline104: spec [
 			package: 'XML-Writer' with:[spec requires: #('Collections-CharacterSet')]]
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline105: spec [
 	<version: '1.0.5-baseline'>
 	spec for: #common do: [ 
@@ -353,7 +353,7 @@ ConfigurationOfXMLWriter >> baseline105: spec [
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline200: spec [
 	<version: '2.0.0-baseline'>
 
@@ -411,7 +411,7 @@ ConfigurationOfXMLWriter >> baseline200: spec [
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline210: spec [
 	<version: '2.1.0-baseline'>
 
@@ -461,7 +461,7 @@ ConfigurationOfXMLWriter >> baseline210: spec [
 			group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline220: spec [
 	<version: '2.2.0-baseline'>
 	spec
@@ -507,7 +507,7 @@ ConfigurationOfXMLWriter >> baseline220: spec [
 			spec group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline231: spec [
 	<version: '2.3.1-baseline'>
 	spec
@@ -553,7 +553,7 @@ ConfigurationOfXMLWriter >> baseline231: spec [
 			spec group: 'Tests' with: #('Collections-Tests-Support') ]
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline243: spec [
 	<version: '2.4.3-baseline'>
 	spec
@@ -599,7 +599,7 @@ ConfigurationOfXMLWriter >> baseline243: spec [
 				package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ] 
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline250: spec [
 	<version: '2.5.0-baseline'>
 
@@ -638,7 +638,7 @@ ConfigurationOfXMLWriter >> baseline250: spec [
 				with: [ spec requires: 'XML-Writer-Core' ].].
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline251: spec [ 
 		<version: '2.5.1-baseline' imports: #('2.5.0-baseline')>
 
@@ -649,7 +649,7 @@ ConfigurationOfXMLWriter >> baseline251: spec [
 				with: 'XML-Writer-GemstoneCompatibility-monty.2'. ].
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline267: spec [ 
 		<version: '2.6.7-baseline' imports: #('2.5.0-baseline')>
 
@@ -660,7 +660,7 @@ ConfigurationOfXMLWriter >> baseline267: spec [
 				with: 'XML-Writer-GemstoneCompatibility-monty.3'. ].
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline270: spec [ 
 		<version: '2.7.0-baseline' imports: #('2.5.0-baseline')>
 
@@ -671,7 +671,7 @@ ConfigurationOfXMLWriter >> baseline270: spec [
 				with: 'XML-Writer-GemstoneCompatibility-monty.4'. ].
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline274: spec [ 
 		<version: '2.7.4-baseline' imports: #('2.5.0-baseline')>
 
@@ -682,7 +682,7 @@ ConfigurationOfXMLWriter >> baseline274: spec [
 				with: 'XML-Writer-GemstoneCompatibility-monty.5'. ].
 ]
 
-{ #category : #'baselines - outdated' }
+{ #category : #'outdated - baselines' }
 ConfigurationOfXMLWriter >> baseline281: spec [ 
 		<version: '2.8.1-baseline' imports: #('2.5.0-baseline')>
 
@@ -739,7 +739,7 @@ ConfigurationOfXMLWriter >> stable: spec [
 
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version100: spec [ 
 	<version: '1.0' imports: #('1.0-baseline') >
 	
@@ -751,7 +751,7 @@ ConfigurationOfXMLWriter >> version100: spec [
 			package: 'XML-Writer' with: 'XML-Writer-JAAyer.1'].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version101: spec [ 
 	<version: '1.0.1' imports: #('1.0.1-baseline') >
 	
@@ -765,7 +765,7 @@ ConfigurationOfXMLWriter >> version101: spec [
 			package: 'XML-Writer' with: 'XML-Writer-JAAyer.2'].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version102: spec [ 
 	<version: '1.0.2' imports: #('1.0.1-baseline') >
 	
@@ -779,7 +779,7 @@ ConfigurationOfXMLWriter >> version102: spec [
 			package: 'XML-Writer' with: 'XML-Writer-JAAyer.3'].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version103: spec [ 
 	<version: '1.0.3' imports: #('1.0.1-baseline') >
 	
@@ -793,7 +793,7 @@ ConfigurationOfXMLWriter >> version103: spec [
 			package: 'XML-Writer' with: 'XML-Writer-JAAyer.4'].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version104: spec [ 
 	<version: '1.0.4' imports: #('1.0.4-baseline') >
 	
@@ -810,7 +810,7 @@ ConfigurationOfXMLWriter >> version104: spec [
 			package: 'Collections-CharacterSet' with: 'Collections-CharacterSet-JohanBrichau.1']
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version105: spec [
 	<version: '1.0.5' imports: #('1.0.5-baseline')>
 	spec
@@ -828,7 +828,7 @@ ConfigurationOfXMLWriter >> version105: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version200: spec [
 	<version: '2.0.0' imports: #('2.0.0-baseline')>
 	spec
@@ -846,7 +846,7 @@ ConfigurationOfXMLWriter >> version200: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version210: spec [
 	<version: '2.1.0' imports: #('2.1.0-baseline')>
 	spec
@@ -865,7 +865,7 @@ ConfigurationOfXMLWriter >> version210: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version220: spec [
 	<version: '2.2.0' imports: #('2.1.0-baseline')>
 	spec
@@ -883,7 +883,7 @@ ConfigurationOfXMLWriter >> version220: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version221: spec [
 	<version: '2.2.1' imports: #('2.1.0-baseline')>
 	spec
@@ -901,7 +901,7 @@ ConfigurationOfXMLWriter >> version221: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version230: spec [
 	<version: '2.3' imports: #('2.2.0-baseline')>
 	spec
@@ -920,7 +920,7 @@ ConfigurationOfXMLWriter >> version230: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version2310: spec [
 	<version: '2.3.10' imports: #('2.3.1-baseline' )>
 
@@ -942,7 +942,7 @@ ConfigurationOfXMLWriter >> version2310: spec [
 
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version231: spec [
 	<version: '2.3.1' imports: #('2.3.1-baseline')>
 	spec
@@ -961,7 +961,7 @@ ConfigurationOfXMLWriter >> version231: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version232: spec [
 	<version: '2.3.2' imports: #('2.3.1-baseline')>
 	spec
@@ -979,7 +979,7 @@ ConfigurationOfXMLWriter >> version232: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version233: spec [
 	<version: '2.3.3' imports: #('2.3.1-baseline')>
 	spec
@@ -997,7 +997,7 @@ ConfigurationOfXMLWriter >> version233: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version234: spec [
 	<version: '2.3.4' imports: #('2.3.1-baseline')>
 	spec
@@ -1015,7 +1015,7 @@ ConfigurationOfXMLWriter >> version234: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version235: spec [
 	<version: '2.3.5' imports: #('2.3.1-baseline')>
 	spec
@@ -1033,7 +1033,7 @@ ConfigurationOfXMLWriter >> version235: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version236: spec [
 	<version: '2.3.6' imports: #('2.3.1-baseline')>
 	spec
@@ -1051,7 +1051,7 @@ ConfigurationOfXMLWriter >> version236: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version237: spec [
 	<version: '2.3.7' imports: #('2.3.1-baseline')>
 	spec
@@ -1069,7 +1069,7 @@ ConfigurationOfXMLWriter >> version237: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version238: spec [
 	<version: '2.3.8' imports: #('2.3.1-baseline')>
 	spec
@@ -1087,7 +1087,7 @@ ConfigurationOfXMLWriter >> version238: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version239: spec [
 	<version: '2.3.9' imports: #('2.3.1-baseline')>
 	spec
@@ -1105,7 +1105,7 @@ ConfigurationOfXMLWriter >> version239: spec [
 						package: 'Collections-Tests-Support' with: 'Collections-Tests-Support.g-OttoBehrens.3' ]
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version240: spec [
 	<version: '2.4.0' imports: #('2.3.1-baseline' )>
 
@@ -1125,7 +1125,7 @@ ConfigurationOfXMLWriter >> version240: spec [
 
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version241: spec [
 	<version: '2.4.1' imports: #('2.3.1-baseline' )>
 
@@ -1143,7 +1143,7 @@ ConfigurationOfXMLWriter >> version241: spec [
 
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version242: spec [
 	<version: '2.4.2' imports: #('2.3.1-baseline' )>
 
@@ -1161,7 +1161,7 @@ ConfigurationOfXMLWriter >> version242: spec [
 
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version243: spec [
 	<version: '2.4.3' imports: #('2.4.3-baseline' )>
 
@@ -1173,7 +1173,7 @@ ConfigurationOfXMLWriter >> version243: spec [
 
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version244: spec [ 
         <version: '2.4.4' imports: #('2.4.3-baseline')>
 
@@ -1184,7 +1184,7 @@ ConfigurationOfXMLWriter >> version244: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version245: spec [ 
         <version: '2.4.5' imports: #('2.4.3-baseline')>
 
@@ -1195,7 +1195,7 @@ ConfigurationOfXMLWriter >> version245: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version246: spec [ 
         <version: '2.4.6' imports: #('2.4.3-baseline')>
 
@@ -1206,7 +1206,7 @@ ConfigurationOfXMLWriter >> version246: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version247: spec [ 
         <version: '2.4.7' imports: #('2.4.3-baseline')>
 
@@ -1217,7 +1217,7 @@ ConfigurationOfXMLWriter >> version247: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version248: spec [ 
         <version: '2.4.8' imports: #('2.4.3-baseline')>
 
@@ -1228,7 +1228,7 @@ ConfigurationOfXMLWriter >> version248: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version249: spec [ 
         <version: '2.4.9' imports: #('2.4.3-baseline')>
 
@@ -1239,7 +1239,7 @@ ConfigurationOfXMLWriter >> version249: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version251: spec [ 
         <version: '2.5.1' imports: #('2.5.1-baseline')>
 
@@ -1250,7 +1250,7 @@ ConfigurationOfXMLWriter >> version251: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version252: spec [ 
         <version: '2.5.2' imports: #('2.5.1-baseline')>
 
@@ -1261,7 +1261,7 @@ ConfigurationOfXMLWriter >> version252: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version253: spec [ 
         <version: '2.5.3' imports: #('2.5.1-baseline')>
 
@@ -1272,7 +1272,7 @@ ConfigurationOfXMLWriter >> version253: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version254: spec [ 
         <version: '2.5.4' imports: #('2.5.1-baseline')>
 
@@ -1283,7 +1283,7 @@ ConfigurationOfXMLWriter >> version254: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version255: spec [ 
         <version: '2.5.5' imports: #('2.5.1-baseline')>
 
@@ -1294,7 +1294,7 @@ ConfigurationOfXMLWriter >> version255: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version256: spec [ 
         <version: '2.5.6' imports: #('2.5.1-baseline')>
 
@@ -1305,7 +1305,7 @@ ConfigurationOfXMLWriter >> version256: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version257: spec [ 
         <version: '2.5.7' imports: #('2.5.1-baseline')>
 
@@ -1316,7 +1316,7 @@ ConfigurationOfXMLWriter >> version257: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version258: spec [ 
         <version: '2.5.8' imports: #('2.5.1-baseline')>
 
@@ -1327,7 +1327,7 @@ ConfigurationOfXMLWriter >> version258: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version259: spec [ 
         <version: '2.5.9' imports: #('2.5.1-baseline')>
 
@@ -1338,7 +1338,7 @@ ConfigurationOfXMLWriter >> version259: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version260: spec [ 
         <version: '2.6.0' imports: #('2.5.1-baseline')>
 
@@ -1349,7 +1349,7 @@ ConfigurationOfXMLWriter >> version260: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version261: spec [ 
         <version: '2.6.1' imports: #('2.5.1-baseline')>
 
@@ -1360,7 +1360,7 @@ ConfigurationOfXMLWriter >> version261: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version262: spec [ 
         <version: '2.6.2' imports: #('2.5.1-baseline')>
 
@@ -1371,7 +1371,7 @@ ConfigurationOfXMLWriter >> version262: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version263: spec [ 
         <version: '2.6.3' imports: #('2.5.1-baseline')>
 
@@ -1382,7 +1382,7 @@ ConfigurationOfXMLWriter >> version263: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version264: spec [ 
         <version: '2.6.4' imports: #('2.5.1-baseline')>
 
@@ -1393,7 +1393,7 @@ ConfigurationOfXMLWriter >> version264: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version265: spec [ 
         <version: '2.6.5' imports: #('2.5.1-baseline')>
 
@@ -1404,7 +1404,7 @@ ConfigurationOfXMLWriter >> version265: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version266: spec [ 
         <version: '2.6.6' imports: #('2.5.1-baseline')>
 
@@ -1415,7 +1415,7 @@ ConfigurationOfXMLWriter >> version266: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version267: spec [ 
         <version: '2.6.7' imports: #('2.6.7-baseline')>
 
@@ -1426,7 +1426,7 @@ ConfigurationOfXMLWriter >> version267: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version268: spec [ 
         <version: '2.6.8' imports: #('2.6.7-baseline')>
 
@@ -1437,7 +1437,7 @@ ConfigurationOfXMLWriter >> version268: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version269: spec [ 
         <version: '2.6.9' imports: #('2.6.7-baseline')>
 
@@ -1448,7 +1448,7 @@ ConfigurationOfXMLWriter >> version269: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version270: spec [ 
         <version: '2.7.0' imports: #('2.7.0-baseline')>
 
@@ -1459,7 +1459,7 @@ ConfigurationOfXMLWriter >> version270: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version271: spec [ 
         <version: '2.7.1' imports: #('2.7.0-baseline')>
 
@@ -1470,7 +1470,7 @@ ConfigurationOfXMLWriter >> version271: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version272: spec [ 
         <version: '2.7.2' imports: #('2.7.0-baseline')>
 
@@ -1481,7 +1481,7 @@ ConfigurationOfXMLWriter >> version272: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version273: spec [ 
         <version: '2.7.3' imports: #('2.7.0-baseline')>
 
@@ -1492,7 +1492,7 @@ ConfigurationOfXMLWriter >> version273: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version274: spec [ 
         <version: '2.7.4' imports: #('2.7.4-baseline')>
 
@@ -1503,7 +1503,7 @@ ConfigurationOfXMLWriter >> version274: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version275: spec [ 
         <version: '2.7.5' imports: #('2.7.4-baseline')>
 
@@ -1514,7 +1514,7 @@ ConfigurationOfXMLWriter >> version275: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version276: spec [ 
         <version: '2.7.6' imports: #('2.7.4-baseline')>
 
@@ -1525,7 +1525,7 @@ ConfigurationOfXMLWriter >> version276: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version277: spec [ 
         <version: '2.7.7' imports: #('2.7.4-baseline')>
 
@@ -1536,7 +1536,7 @@ ConfigurationOfXMLWriter >> version277: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version278: spec [ 
         <version: '2.7.8' imports: #('2.7.4-baseline')>
 
@@ -1547,7 +1547,7 @@ ConfigurationOfXMLWriter >> version278: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version279: spec [ 
         <version: '2.7.9' imports: #('2.7.4-baseline')>
 
@@ -1558,7 +1558,7 @@ ConfigurationOfXMLWriter >> version279: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version280: spec [ 
         <version: '2.8.0' imports: #('2.7.4-baseline')>
 
@@ -1569,7 +1569,7 @@ ConfigurationOfXMLWriter >> version280: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version281: spec [ 
         <version: '2.8.1' imports: #('2.8.1-baseline')>
 
@@ -1580,7 +1580,7 @@ ConfigurationOfXMLWriter >> version281: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version282: spec [ 
         <version: '2.8.2' imports: #('2.8.1-baseline')>
 
@@ -1591,7 +1591,7 @@ ConfigurationOfXMLWriter >> version282: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version283: spec [ 
         <version: '2.8.3' imports: #('2.8.1-baseline')>
 
@@ -1602,7 +1602,7 @@ ConfigurationOfXMLWriter >> version283: spec [
                 ].
 ]
 
-{ #category : #versions }
+{ #category : #'outdated - versions' }
 ConfigurationOfXMLWriter >> version284: spec [ 
         <version: '2.8.4' imports: #('2.8.1-baseline')>
 
