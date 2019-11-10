@@ -724,19 +724,7 @@ ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 	
 	"GitHub starting with Pharo 7 onwards"	
-	spec for: #'common' version: '2.8.5'.
-		
-	"Use last STHub version for elder Pharo versions"
-	spec for: #'pharo4.x' version: '2.8.4'.
-	spec for: #'pharo5.x' version: '2.8.4'.
-	spec for: #'pharo6.x' version: '2.8.4'.	
-	
-	"Use latest Github version for more recent Pharo versions"
-	spec for: #'pharo7.x' version: '2.8.5'.
-	spec for: #'pharo8.x' version: '2.8.5'.
-	
-	
-
+	spec for: #'common' version: '2.9.0'
 ]
 
 { #category : #'outdated - versions' }
@@ -1614,14 +1602,14 @@ ConfigurationOfXMLWriter >> version284: spec [
 ]
 
 { #category : #versions }
-ConfigurationOfXMLWriter >> version285: spec [ 
-	<version: '2.8.5'>
+ConfigurationOfXMLWriter >> version290: spec [ 
+	<version: '2.9.0'>
 
 	spec for: #'common' do: [ 
 		spec
 			baseline: 'XMLWriter' with: [ 
 				spec 
 					className: 'BaselineOfXMLWriter';
-					repository: 'github://pharo-contributions/XML-XMLWriter:2.8.5/src' ]]
+					repository: 'github://pharo-contributions/XML-XMLWriter:2.9.0/src' ]]
 
 ]
