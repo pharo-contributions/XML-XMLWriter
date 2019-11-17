@@ -694,8 +694,8 @@ ConfigurationOfXMLWriter >> baseline281: spec [
 ]
 
 { #category : #symbolic }
-ConfigurationOfXMLWriter >> development: spec [
-	<symbolicVersion: #'development'>
+ConfigurationOfXMLWriter >> dev: spec [
+	<version: #'dev'>
 
 	spec for: #'common' do: [ 
 		spec
@@ -704,6 +704,13 @@ ConfigurationOfXMLWriter >> development: spec [
 					className: 'BaselineOfXMLWriter';
 					repository: 'github://pharo-contributions/XML-XMLWriter:master/src' ]]
 
+]
+
+{ #category : #symbolic }
+ConfigurationOfXMLWriter >> development: spec [
+	<symbolicVersion: #'development'>
+
+	spec for: #'common' version: 'dev'
 ]
 
 { #category : #accessing }
@@ -723,7 +730,6 @@ ConfigurationOfXMLWriter >> project [
 ConfigurationOfXMLWriter >> stable: spec [
 	<symbolicVersion: #'stable'>
 	
-	"GitHub starting with Pharo 7 onwards"	
 	spec for: #'common' version: '2.9.0'
 ]
 
