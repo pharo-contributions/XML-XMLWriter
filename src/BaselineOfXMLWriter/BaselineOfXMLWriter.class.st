@@ -28,7 +28,8 @@ BaselineOfXMLWriter >> baseline: spec [
 			spec
 				group: 'Core' with: #('XML-Writer-Core');
 				group: 'Tools' with: #('OrderPreservingDictionary Tools');  
-				group: 'Tests' with: #('XML-Writer-Tests'); 	
+				group: 'Tests' with: #('XML-Writer-Tests');
+				group: 'CI' with: #('Tests');	
 				group: 'all' with: #('Core' 'Tools' 'Tests');
 				group: 'default' with: #('all') ].
 
