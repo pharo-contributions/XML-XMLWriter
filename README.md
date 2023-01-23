@@ -5,6 +5,8 @@ This package provides a [Seaside](http://www.seaside.st)-like, block-based API f
 [![Unit Tests](https://github.com/pharo-contributions/XML-XMLWriter/workflows/Unit%20Tests/badge.svg?branch=main)](https://github.com/pharo-contributions/XML-XMLWriter/actions?query=workflow%3AUnit%20Tests)
 [![Coverage Status](https://codecov.io/github/pharo-contributions/XML-XMLWriter/coverage.svg?branch=main)](https://codecov.io/gh/pharo-contributions/XML-XMLWriter/branch/master)
 
+[![Pharo 7](https://img.shields.io/badge/Pharo-7.0-%23aac9ff.svg)](https://pharo.org/download)
+[![Pharo 8](https://img.shields.io/badge/Pharo-8.0-%23aac9ff.svg)](https://pharo.org/download)
 [![Pharo 9](https://img.shields.io/badge/Pharo-9.0-%23aac9ff.svg)](https://pharo.org/download)
 [![Pharo 10](https://img.shields.io/badge/Pharo-10-%23aac9ff.svg)](https://pharo.org/download)
 [![Pharo 11](https://img.shields.io/badge/Pharo-11-%23aac9ff.svg)](https://pharo.org/download)
