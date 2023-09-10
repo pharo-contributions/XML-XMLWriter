@@ -1,10 +1,10 @@
 "
-A baseline for XML writer for Pharo (https://github.com/pharo-contributions/XML-XMLWriter)
+A baseline for XML writer for Pharo [https://github.com/pharo-contributions/XML-XMLWriter](https://github.com/pharo-contributions/XML-XMLWriter)
 "
 Class {
 	#name : #BaselineOfXMLWriter,
 	#superclass : #BaselineOf,
-	#category : #BaselineOfXMLWriter
+	#category : #'BaselineOfXMLWriter-Base'
 }
 
 { #category : #baselines }
@@ -50,7 +50,7 @@ BaselineOfXMLWriter >> orderPreservingDictionaryOn: spec [
       with: [ 
 			spec
 				loads: #('Core');
-				repository: 'github://pharo-contributions/OrderPreservingDictionary:1.5.x/src' ]. 
+				repository: 'github://pharo-contributions/OrderPreservingDictionary:v1.6.x/src' ]. 
 				
 	spec 
 		project: 'OrderPreservingDictionary Tests' copyFrom: 'OrderPreservingDictionary' with: [ spec loads: #('Tests') ];			
