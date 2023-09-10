@@ -12,31 +12,38 @@ Class {
 
 { #category : #accessing }
 XMLNotationDeclarationWriter >> declarationType [
+
 	^ 'NOTATION'
 ]
 
 { #category : #accessing }
 XMLNotationDeclarationWriter >> externalIDWriter [
-	^ externalIDWriter ifNil: [externalIDWriter := XMLNotationExternalIDWriter new]
+
+	^ externalIDWriter ifNil: [
+		  externalIDWriter := XMLNotationExternalIDWriter new ]
 ]
 
 { #category : #accessing }
 XMLNotationDeclarationWriter >> publicID [
+
 	^ self externalIDWriter publicID
 ]
 
 { #category : #accessing }
 XMLNotationDeclarationWriter >> publicID: aPublicID [
+
 	self externalIDWriter publicID: aPublicID
 ]
 
 { #category : #accessing }
 XMLNotationDeclarationWriter >> systemID [
+
 	^ self externalIDWriter systemID
 ]
 
 { #category : #accessing }
 XMLNotationDeclarationWriter >> systemID: aSystemID [
+
 	self externalIDWriter systemID: aSystemID
 ]
 

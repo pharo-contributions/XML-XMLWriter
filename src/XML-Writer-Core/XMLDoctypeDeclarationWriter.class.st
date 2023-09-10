@@ -13,56 +13,68 @@ Class {
 
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> externalIDWriter [
-	^ externalIDWriter ifNil: [externalIDWriter := XMLExternalIDWriter new]
+
+	^ externalIDWriter ifNil: [
+		  externalIDWriter := XMLExternalIDWriter new ]
 ]
 
 { #category : #testing }
 XMLDoctypeDeclarationWriter >> isDoctypeDeclarationWriter [
+
 	^ true
 ]
 
 { #category : #testing }
 XMLDoctypeDeclarationWriter >> isExternalIDOmittable [
+
 	^ self externalIDWriter isOmittable
 ]
 
 { #category : #testing }
 XMLDoctypeDeclarationWriter >> isOmittable [
+
 	^ self isCanonical
 ]
 
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> publicID [
+
 	^ self externalIDWriter publicID
 ]
 
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> publicID: aPublicID [
+
 	self externalIDWriter publicID: aPublicID
 ]
 
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> root [
-	^ root ifNil: ['']
+
+	^ root ifNil: [ '' ]
 ]
 
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> root: aRootElementName [
+
 	root := aRootElementName
 ]
 
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> systemID [
+
 	^ self externalIDWriter systemID
 ]
 
 { #category : #accessing }
 XMLDoctypeDeclarationWriter >> systemID: aSystemID [
+
 	self externalIDWriter systemID: aSystemID
 ]
 
 { #category : #deprecated }
 XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
+
 	self deprecated: 'use #with: instead'.
 
 	self with: aStringOrCollectionOrBlock
@@ -70,30 +82,30 @@ XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeBody: aStringOrCollectionOrBlock [
-	self isOmittable
-		ifFalse: [super writeBody: aStringOrCollectionOrBlock]
+
+	self isOmittable ifFalse: [
+		super writeBody: aStringOrCollectionOrBlock ]
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeEmbeddedMarkupPrologue [
-	self isOmittable
-		ifFalse: [
-			self writer
-				space;
-				nextPut: $[;
-				formatBeforeInternalSubset: self]
+
+	self isOmittable ifFalse: [
+		self writer
+			space;
+			nextPut: $[;
+			formatBeforeInternalSubset: self ]
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeEpilogue [
-	self isOmittable
-		ifTrue: [^ self].
 
-	self hasEmbeddedMarkup
-		ifTrue: [
-			self writer
-				formatAfterInternalSubset: self;
-				nextPut: $]].
+	self isOmittable ifTrue: [ ^ self ].
+
+	self hasEmbeddedMarkup ifTrue: [
+		self writer
+			formatAfterInternalSubset: self;
+			nextPut: $] ].
 
 	self writer
 		nextPut: $>;
@@ -102,14 +114,15 @@ XMLDoctypeDeclarationWriter >> writeEpilogue [
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeExternalID [
+
 	self writer space.
 	self externalIDWriter writeOn: self writer
 ]
 
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writePrologue [
-	self isOmittable
-		ifTrue: [^ self].
+
+	self isOmittable ifTrue: [ ^ self ].
 
 	self writer
 		formatBeforeDoctypeDeclaration: self;
@@ -117,6 +130,5 @@ XMLDoctypeDeclarationWriter >> writePrologue [
 		space;
 		writeName: self root.
 
-	self isExternalIDOmittable
-		ifFalse: [self writeExternalID]
+	self isExternalIDOmittable ifFalse: [ self writeExternalID ]
 ]

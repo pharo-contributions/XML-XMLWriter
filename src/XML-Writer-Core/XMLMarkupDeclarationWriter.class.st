@@ -10,43 +10,53 @@ Class {
 	#category : #'XML-Writer-Core-Writers'
 }
 
+{ #category : #testing }
+XMLMarkupDeclarationWriter class >> isAbstract [
+
+	^ self == XMLMarkupDeclarationWriter
+]
+
 { #category : #accessing }
 XMLMarkupDeclarationWriter >> declarationType [
+
 	self subclassResponsibility
 ]
 
 { #category : #testing }
 XMLMarkupDeclarationWriter >> isOmittable [
+
 	^ self isCanonical
 ]
 
 { #category : #accessing }
 XMLMarkupDeclarationWriter >> name [
-	^ name ifNil: ['']
+
+	^ name ifNil: [ '' ]
 ]
 
 { #category : #accessing }
 XMLMarkupDeclarationWriter >> name: aName [
+
 	name := aName
 ]
 
 { #category : #private }
 XMLMarkupDeclarationWriter >> writeEpilogue [
-	self isOmittable
-		ifFalse: [
-			self writer
-				nextPut: $>;
-				formatAfterDeclaration: self]
+
+	self isOmittable ifFalse: [
+		self writer
+			nextPut: $>;
+			formatAfterDeclaration: self ]
 ]
 
 { #category : #private }
 XMLMarkupDeclarationWriter >> writePrologue [
-	self isOmittable
-		ifFalse: [
-			self writer
-				formatBeforeDeclaration: self;
-				nextPutAll: '<!';
-				nextPutAll: self declarationType;
-				space;
-				writeName: self name]
+
+	self isOmittable ifFalse: [
+		self writer
+			formatBeforeDeclaration: self;
+			nextPutAll: '<!';
+			nextPutAll: self declarationType;
+			space;
+			writeName: self name ]
 ]

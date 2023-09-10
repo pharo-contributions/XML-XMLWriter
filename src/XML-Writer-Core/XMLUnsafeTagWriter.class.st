@@ -11,21 +11,31 @@ Class {
 }
 
 { #category : #testing }
+XMLUnsafeTagWriter class >> isAbstract [
+
+	^ self == XMLUnsafeTagWriter
+]
+
+{ #category : #testing }
 XMLUnsafeTagWriter >> isTagWriter [
+
 	^ true
 ]
 
 { #category : #testing }
 XMLUnsafeTagWriter >> isUnsafeTagWriter [
+
 	^ true
 ]
 
 { #category : #accessing }
 XMLUnsafeTagWriter >> name [
-	^ name ifNil: [name := '']
+
+	^ name ifNil: [ name := '' ]
 ]
 
 { #category : #accessing }
 XMLUnsafeTagWriter >> name: aString [
+
 	name := aString
 ]

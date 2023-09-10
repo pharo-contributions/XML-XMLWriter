@@ -75,41 +75,49 @@ Class {
 
 { #category : #accessing }
 XMLWriter class >> canonicalLineBreak [
+
 	^ CanonicalLineBreak
 ]
 
 { #category : #accessing }
 XMLWriter class >> canonicalLineBreak: aCharacterOrString [
+
 	CanonicalLineBreak := aCharacterOrString asString
 ]
 
 { #category : #accessing }
 XMLWriter class >> contentCanonicalEscapes [
+
 	^ ContentCanonicalEscapes
 ]
 
 { #category : #accessing }
 XMLWriter class >> contentDefaultEscapes [
+
 	^ ContentDefaultEscapes
 ]
 
 { #category : #accessing }
 XMLWriter class >> contentNonEntityEscapes [
+
 	^ ContentNonEntityEscapes
 ]
 
 { #category : #accessing }
 XMLWriter class >> contentStringCanonicalEscapes [
+
 	^ ContentStringCanonicalEscapes
 ]
 
 { #category : #accessing }
 XMLWriter class >> contentStringDefaultEscapes [
+
 	^ ContentStringDefaultEscapes
 ]
 
 { #category : #accessing }
 XMLWriter class >> contentStringNonEntityEscapes [
+
 	^ ContentStringNonEntityEscapes
 ]
 
@@ -118,38 +126,38 @@ XMLWriter class >> copyXMLExtensionMethods [
 	"
 	self copyXMLExtensionMethods
 	"
-	
+
 	"This generates XMLWriter String and Character extension methods
 	from XMLParser String and Character extension methods.
 	These could be placed in a shared .mcz they would both depend on,
 	but this is simpler and loads faster."
-	#(isXMLNameChar isXMLNameStartChar) do: [:each |
+
+	#( isXMLNameChar isXMLNameStartChar ) do: [ :each |
 		Character
-			compile:
-				'isXMLWriter',
-				((Character sourceCodeAt: each) allButFirst: 'isXML' size)
-			classified: #'*XML-Writer-Core'].
-	#(xmlPrefixBeforeLocalName xmlLocalNameAfterPrefix:) do: [:each |
+			compile: 'isXMLWriter'
+				, ((Character sourceCodeAt: each) allButFirst: 'isXML' size)
+			classified: #'*XML-Writer-Core' ].
+	#( xmlPrefixBeforeLocalName xmlLocalNameAfterPrefix: ) do: [ :each |
 		String
 			compile:
-				'xmlWriter',
-				((String sourceCodeAt: each) allButFirst: 'xml' size)
-			classified: #'*XML-Writer-Core'].
+			'xmlWriter' , ((String sourceCodeAt: each) allButFirst: 'xml' size)
+			classified: #'*XML-Writer-Core' ]
 ]
 
 { #category : #accessing }
 XMLWriter class >> defaultLineBreak [
+
 	^ DefaultLineBreak
 ]
 
 { #category : #accessing }
 XMLWriter class >> defaultLineBreak: aCharacterOrString [
+
 	DefaultLineBreak := aCharacterOrString asString
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initialize [
-	"self initialize"
 
 	self
 		initializeDefaultLineBreak;
@@ -162,16 +170,18 @@ XMLWriter class >> initialize [
 		initializeContentStringCanonicalEscapes;
 		initializeContentStringNonEntityEscapes;
 		initializeEntityValueEscapes;
-		initializeSpaceCharacter.
+		initializeSpaceCharacter
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeCanonicalLineBreak [
+
 	self canonicalLineBreak: Character lf
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentCanonicalEscapes [
+
 	ContentCanonicalEscapes :=
 		ContentDefaultEscapes copy
 			at: 16rD put: '&#xD;'; "CR"
@@ -180,9 +190,10 @@ XMLWriter class >> initializeContentCanonicalEscapes [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentDefaultEscapes [
-	"use an array instead of a dictionary for speed, and
+	"Use an array instead of a dictionary for speed, and
 	assign after with #yourself to avoid possible race
 	conditions when reinitializing the class"
+
 	ContentDefaultEscapes :=
 		(Array new: 255)
 			at: $& asciiValue put: '&amp;';
@@ -199,6 +210,7 @@ XMLWriter class >> initializeContentNonEntityEscapes [
 	Use an array instead of a dictionary for speed, and assign
 	after with #yourself to avoid possible race conditions
 	when reinitializing the class."
+
 	ContentNonEntityEscapes :=
 		ContentDefaultEscapes copy
 			at: $& asciiValue put: nil;
@@ -207,6 +219,7 @@ XMLWriter class >> initializeContentNonEntityEscapes [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentStringCanonicalEscapes [
+
 	ContentStringCanonicalEscapes :=
 		ContentStringDefaultEscapes copy
 			at: 16r9 put: '&#x9;'; "tab"
@@ -217,9 +230,10 @@ XMLWriter class >> initializeContentStringCanonicalEscapes [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeContentStringDefaultEscapes [
-	"use an array instead of a dictionary for speed, and
+	"Use an array instead of a dictionary for speed, and
 	assign after with #yourself to avoid possible race
 	conditions when reinitializing the class"
+
 	ContentStringDefaultEscapes :=
 		(Array new: 255)
 			at: $& asciiValue put: '&amp;';
@@ -236,6 +250,7 @@ XMLWriter class >> initializeContentStringNonEntityEscapes [
 	Use an array instead of a dictionary for speed, and assign
 	after with #yourself to avoid possible race conditions
 	when reinitializing the class."
+
 	ContentStringNonEntityEscapes :=
 		ContentStringDefaultEscapes copy
 			at: $& asciiValue put: nil;
@@ -244,14 +259,16 @@ XMLWriter class >> initializeContentStringNonEntityEscapes [
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeDefaultLineBreak [
+
 	self defaultLineBreak: Character cr
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeEntityValueEscapes [
-	"use an array instead of a dictionary for speed, and
+	"Use an array instead of a dictionary for speed, and
 	assign after with #yourself to avoid possible race
 	conditions when reinitializing the class"
+
 	EntityValueEscapes :=
 		(Array new: 255)
 			at: $" asciiValue put: '&#34;';
@@ -266,43 +283,51 @@ XMLWriter class >> initializePlatformSpecificLineBreak [
 	"'Smalltalk os platformName' is used for compatibility with GS and Squeak
 	which don't have the OSPlatform classes, and also instead of the shorter
 	'Smalltalk platformName' which doesn't work in all Pharos"
+
 	(Smalltalk os platformName asLowercase beginsWith: 'win')
-		ifTrue: [self platformSpecificLineBreak: String crlf]
-		ifFalse: [self platformSpecificLineBreak: String lf].
+		ifTrue: [ self platformSpecificLineBreak: String crlf ]
+		ifFalse: [ self platformSpecificLineBreak: String lf ]
 ]
 
 { #category : #'class initialization' }
 XMLWriter class >> initializeSpaceCharacter [
+
 	SpaceCharacter := Character space
 ]
 
 { #category : #'instance creation' }
 XMLWriter class >> new [
+
 	^ self on: (String new: 512) writeStream
 ]
 
 { #category : #'instance creation' }
 XMLWriter class >> on: aStream [
+
 	^ self basicNew initialize on: aStream
 ]
 
 { #category : #'instance creation' }
 XMLWriter class >> on: aStream formatter: aFormatter [
+
 	^ (self on: aStream) formatter: aFormatter
 ]
 
 { #category : #accessing }
 XMLWriter class >> platformSpecificLineBreak [
+
 	^ PlatformSpecificLineBreak
 ]
 
 { #category : #accessing }
 XMLWriter class >> platformSpecificLineBreak: aCharacterOrString [
+
 	PlatformSpecificLineBreak := aCharacterOrString asString
 ]
 
 { #category : #writing }
 XMLWriter class >> writeWith: aBlock [
+
 	^ self new
 		writeWith: aBlock;
 		contents
@@ -310,42 +335,45 @@ XMLWriter class >> writeWith: aBlock [
 
 { #category : #writing }
 XMLWriter >> % aParameterEntityReference [
+
 	self paramEntityRef: aParameterEntityReference
 ]
 
 { #category : #writing }
 XMLWriter >> & anEntityReference [
+
 	self entityRef: anEntityReference
 ]
 
 { #category : #accessing }
 XMLWriter >> activeMarkupWriter [
-	| markupWriterStackSize |
 
-	"optimized to avoid at:ifAbsent:/ifNotEmpty: closure"
+	| markupWriterStackSize |
+	"Optimized to avoid at:ifAbsent:/ifNotEmpty: closure"
 	^ (markupWriterStackSize := markupWriterStack size) > 0
-		ifTrue: [markupWriterStack at: markupWriterStackSize]
-		ifFalse: [nil]
+		  ifTrue: [ markupWriterStack at: markupWriterStackSize ]
+		  ifFalse: [ nil ]
 ]
 
 { #category : #enumerating }
 XMLWriter >> activeMarkupWriterAncestorsDo: aBlock [
-	self markupWriterStack size - 1 to: 1 by: -1 do: [:i |
-		 aBlock value: (self markupWriterStack at: i)]
+
+	self markupWriterStack size - 1 to: 1 by: -1 do: [ :i |
+	aBlock value: (self markupWriterStack at: i) ]
 ]
 
 { #category : #accessing }
 XMLWriter >> activeMarkupWriterParent [
-	| markupWriterStackSize |
 
+	| markupWriterStackSize |
 	(markupWriterStackSize := self markupWriterStack size) >= 2
-		ifTrue: [^ self markupWriterStack at: markupWriterStackSize - 1]
-		ifFalse: [^ nil]
+		ifTrue: [ ^ self markupWriterStack at: markupWriterStackSize - 1 ]
+		ifFalse: [ ^ nil ]
 ]
 
 { #category : #private }
 XMLWriter >> activeMarkupWriterWhileChangingDo: aBlock [
-	"evaluate aBlock for the active (top) markup writer until there isn't
+	"Evaluate aBlock for the active (top) markup writer until there isn't
 	one or it's the same (still active) writer after evaluating aBlock"
 
 	| markupWriterStackSize activeMarkupWriter previousActiveMarkupWriter |
@@ -362,28 +390,29 @@ XMLWriter >> activeMarkupWriterWhileChangingDo: aBlock [
 
 { #category : #enumerating }
 XMLWriter >> activeMarkupWriterWithAncestorsDo: aBlock [
+
 	self markupWriterStack reverseDo: aBlock
 ]
 
 { #category : #accessing }
 XMLWriter >> activeTagWriter [
-	self activeMarkupWriterWithAncestorsDo: [:each |
-		each isTagWriter
-			ifTrue: [^ each]].
+
+	self activeMarkupWriterWithAncestorsDo: [ :each |
+		each isTagWriter ifTrue: [ ^ each ] ].
 	^ nil
 ]
 
 { #category : #private }
 XMLWriter >> ancestorsOfMarkupWriter: aMarkupWriter do: aBlock [
-	| enumeratingAncestors |
 
+	| enumeratingAncestors |
 	enumeratingAncestors := false.
-	self markupWriterStack size to: 1 by: -1 do: [:i |
+	self markupWriterStack size to: 1 by: -1 do: [ :i |
 		enumeratingAncestors
-			ifTrue: [aBlock value: (self markupWriterStack at: i)]
+			ifTrue: [ aBlock value: (self markupWriterStack at: i) ]
 			ifFalse: [
-				enumeratingAncestors :=
-					(self markupWriterStack at: i) == aMarkupWriter]]
+				enumeratingAncestors := (self markupWriterStack at: i)
+				                        == aMarkupWriter ] ]
 ]
 
 { #category : #converting }
@@ -404,26 +433,31 @@ XMLWriter >> atBeginning [
 
 { #category : #writing }
 XMLWriter >> attributeDeclaration [
+
 	^ self pushNewMarkupWriter: XMLAttributeDeclarationWriter
 ]
 
 { #category : #defaults }
 XMLWriter >> canonicalLineBreak [
+
 	^ CanonicalLineBreak
 ]
 
 { #category : #defaults }
 XMLWriter >> canonicalWriterFormatterClass [
+
 	^ XMLCanonicalWriterFormatter
 ]
 
 { #category : #writing }
 XMLWriter >> cdata [
+
 	^ self pushNewMarkupWriter: XMLCDataWriter
 ]
 
 { #category : #writing }
 XMLWriter >> cdata: aString [
+
 	self cdata
 		string: aString;
 		write
@@ -431,17 +465,20 @@ XMLWriter >> cdata: aString [
 
 { #category : #closing }
 XMLWriter >> close [
+
 	self write.
 	stream close
 ]
 
 { #category : #writing }
 XMLWriter >> comment [
+
 	^ self pushNewMarkupWriter: XMLCommentWriter
 ]
 
 { #category : #writing }
 XMLWriter >> comment: aString [
+
 	self comment
 		string: aString;
 		write
@@ -449,6 +486,7 @@ XMLWriter >> comment: aString [
 
 { #category : #defaults }
 XMLWriter >> contentCanonicalEscapes [
+
 	^ ContentCanonicalEscapes
 ]
 
@@ -1018,7 +1056,8 @@ XMLWriter >> resolveActiveTagWriterAttributePrefix: aPrefix [
 
 { #category : #private }
 XMLWriter >> space [
-	"redefined for speed and portability"
+	"Redefined for speed and portability"
+
 	stream nextPut: SpaceCharacter
 ]
 
@@ -1047,37 +1086,37 @@ XMLWriter >> startTag: aName attributes: aDictionaryOrArray [
 	"Returns a new XMLUnsafeStartTagWriter for writing a start tag with the
 	specified name and attributes that does not support embedding or automatic
 	end tag generation.
-	
+
 	Use the #tag* messages instead if possible."
 
-	^ (self startTag: aName)
-		attributes: aDictionaryOrArray
+	^ (self startTag: aName) attributes: aDictionaryOrArray
 ]
 
 { #category : #private }
 XMLWriter >> stream [
+
 	^ stream
 ]
 
 { #category : #private }
 XMLWriter >> stream: aStream [
+
 	self on: aStream
 ]
 
 { #category : #writing }
 XMLWriter >> string: aString [
-	"writes string content while '&'-escaping any special characters"
+	"Writes string content while '&'-escaping any special characters"
 
-	aString size > 0
-		ifTrue: [
-			self
-				newStringMarkup;
-				writeEscapedContent: aString]
+	aString ifNotEmpty: [
+		self
+			newStringMarkup;
+			writeEscapedContent: aString ]
 ]
 
 { #category : #writing }
 XMLWriter >> tag [
-	"returns a new XMLTagWriter for writing an element that supports embedding
+	"Returns a new XMLTagWriter for writing an element that supports embedding
 	markup using #with: and automatic end tag generation"
 
 	^ self pushNewMarkupWriter: XMLTagWriter
@@ -1085,7 +1124,7 @@ XMLWriter >> tag [
 
 { #category : #writing }
 XMLWriter >> tag: aName [
-	"returns a new XMLTagWriter for writing an element with the specified name
+	"Returns a new XMLTagWriter for writing an element with the specified name
 	that supports embedding markup using #with: and automatic end tag generation"
 
 	^ self tag name: aName
@@ -1093,7 +1132,7 @@ XMLWriter >> tag: aName [
 
 { #category : #writing }
 XMLWriter >> tag: aName attributes: aDictionaryOrArray [
-	"returns a new XMLTagWriter for writing an element with the specified name and
+	"Returns a new XMLTagWriter for writing an element with the specified name and
 	attributes that supports embedding markup using #with: and automatic end tag
 	generation"
 
@@ -1103,57 +1142,55 @@ XMLWriter >> tag: aName attributes: aDictionaryOrArray [
 
 { #category : #writing }
 XMLWriter >> tag: aName attributes: aDictionaryOrArray with: aStringOrCollectionOrBlock [
-	"writes an element with the specified name, attributes, and embedded markup"
+	"Writes an element with the specified name, attributes, and embedded markup"
 
 	^ (self tag: aName)
-		attributes: aDictionaryOrArray;
-		with: aStringOrCollectionOrBlock
+		  attributes: aDictionaryOrArray;
+		  with: aStringOrCollectionOrBlock
 ]
 
 { #category : #writing }
 XMLWriter >> tag: aName with: aStringOrCollectionOrBlock [
-	"writes an element with the specified name and embedded markup"
+	"Writes an element with the specified name and embedded markup"
 
 	^ (self tag: aName) with: aStringOrCollectionOrBlock
 ]
 
 { #category : #writing }
 XMLWriter >> write [
-	"writes any unwritten markup, including any markup writer that hasn't
+	"Writes any unwritten markup, including any markup writer that hasn't
 	been written yet"
 
-	self activeMarkupWriterWhileChangingDo: [:each |
-		each hasStartedWriting
-			ifFalse: [each write]]
+	self activeMarkupWriterWhileChangingDo: [ :each |
+		each hasStartedWriting ifFalse: [ each write ] ]
 ]
 
 { #category : #private }
 XMLWriter >> write: aString escapedWith: anEscapeTable [
-	| tableSize |
 
+	| tableSize |
 	tableSize := anEscapeTable size.
 	"to:do: for performance"
-	1 to: aString size do: [:i | | nextChar asciiValue |
-		((asciiValue := (nextChar := aString at: i) asciiValue) > 0
-			and: [asciiValue <= tableSize
-				and: [(anEscapeTable at: asciiValue) notNil]])
-			ifTrue: [| replacement |
+	1 to: aString size do: [ :i |
+		| nextChar asciiValue |
+		((asciiValue := (nextChar := aString at: i) asciiValue) > 0 and: [
+			 asciiValue <= tableSize and: [
+				 (anEscapeTable at: asciiValue) notNil ] ])
+			ifTrue: [
+				| replacement |
 				(replacement := anEscapeTable at: asciiValue) == #LineBreak
-					ifTrue: [stream nextPutAll: self lineBreak]
+					ifTrue: [ stream nextPutAll: self lineBreak ]
 					ifFalse: [
-						formatter
-							ifNil: [stream nextPutAll: replacement]
-							ifNotNil: [
-								formatter formatBeforeCharacterEscape:
-									replacement.
-								stream nextPutAll: replacement.
-								formatter formatAfterCharacterEscape:
-									replacement]]]
-			ifFalse: [stream nextPut: nextChar]].
+						formatter ifNil: [ stream nextPutAll: replacement ] ifNotNil: [
+							formatter formatBeforeCharacterEscape: replacement.
+							stream nextPutAll: replacement.
+							formatter formatAfterCharacterEscape: replacement ] ] ]
+			ifFalse: [ stream nextPut: nextChar ] ]
 ]
 
 { #category : #private }
 XMLWriter >> writeAttributeName: aName unescapedValue: aValue [
+
 	self
 		space;
 		writeStringName: aName;
@@ -1163,6 +1200,7 @@ XMLWriter >> writeAttributeName: aName unescapedValue: aValue [
 
 { #category : #private }
 XMLWriter >> writeAttributeName: aName value: aValue [
+
 	self
 		space;
 		writeStringName: aName;
@@ -1172,106 +1210,96 @@ XMLWriter >> writeAttributeName: aName value: aValue [
 
 { #category : #private }
 XMLWriter >> writeAttributes: anAttributeCollection [
+
 	self isCanonical
-		ifTrue: [anAttributeCollection writeCanonicalAttributesOn: self]
-		ifFalse: [anAttributeCollection writeAttributesOn: self]
+		ifTrue: [ anAttributeCollection writeCanonicalAttributesOn: self ]
+		ifFalse: [ anAttributeCollection writeAttributesOn: self ]
 ]
 
 { #category : #private }
 XMLWriter >> writeEscapedContent: aString [
+
 	self isEscaping
-		ifTrue: [
-			self
-				write: aString
-				escapedWith: contentEscapes]
-		ifFalse: [stream nextPutAll: aString]
+		ifTrue: [ self write: aString escapedWith: contentEscapes ]
+		ifFalse: [ stream nextPutAll: aString ]
 ]
 
 { #category : #private }
 XMLWriter >> writeEscapedContentString: aString [
+
 	stream nextPut: $".
-	formatter
-		ifNotNil: [formatter formatBeforeQuotedStringValue: aString].
+	formatter ifNotNil: [
+		formatter formatBeforeQuotedStringValue: aString ].
 	self isEscaping
-		ifTrue: [
-			self
-				write: aString
-				escapedWith: contentStringEscapes]
-		ifFalse: [stream nextPutAll: aString].
-	formatter
-		ifNotNil: [formatter formatAfterQuotedStringValue: aString].
-	stream nextPut: $".
+		ifTrue: [ self write: aString escapedWith: contentStringEscapes ]
+		ifFalse: [ stream nextPutAll: aString ].
+	formatter ifNotNil: [
+		formatter formatAfterQuotedStringValue: aString ].
+	stream nextPut: $"
 ]
 
 { #category : #private }
 XMLWriter >> writeEscapedEntityString: aString [
+
 	stream nextPut: $".
-	formatter
-		ifNotNil: [formatter formatBeforeQuotedStringValue: aString].
+	formatter ifNotNil: [
+		formatter formatBeforeQuotedStringValue: aString ].
 	self isEscaping
-		ifTrue: [
-			self
-				write: aString
-				escapedWith: self entityValueEscapes]
-		ifFalse: [stream nextPutAll: aString].
-	formatter
-		ifNotNil: [formatter formatAfterQuotedStringValue: aString].
-	stream nextPut: $".
+		ifTrue: [ self write: aString escapedWith: self entityValueEscapes ]
+		ifFalse: [ stream nextPutAll: aString ].
+	formatter ifNotNil: [
+		formatter formatAfterQuotedStringValue: aString ].
+	stream nextPut: $"
 ]
 
 { #category : #private }
 XMLWriter >> writeName: aName [
-	formatter
-		ifNil: [stream nextPutAll: aName]
-		ifNotNil: [
-			formatter formatBeforeName: aName.
-			stream nextPutAll: aName.
-			formatter formatAfterName: aName]
+
+	formatter ifNil: [ stream nextPutAll: aName ] ifNotNil: [
+		formatter formatBeforeName: aName.
+		stream nextPutAll: aName.
+		formatter formatAfterName: aName ]
 ]
 
 { #category : #private }
 XMLWriter >> writeStringName: aName [
-	formatter
-		ifNil: [stream nextPutAll: aName]
-		ifNotNil: [
-			formatter formatBeforeQuotedStringName: aName.
-			stream nextPutAll: aName.
-			formatter formatAfterQuotedStringName: aName]
+
+	formatter ifNil: [ stream nextPutAll: aName ] ifNotNil: [
+		formatter formatBeforeQuotedStringName: aName.
+		stream nextPutAll: aName.
+		formatter formatAfterQuotedStringName: aName ]
 ]
 
 { #category : #private }
 XMLWriter >> writeUnescapedString: aString [
-	self
-		writeUnescapedString: aString
-		quotedBy:
-			((aString includes: $")
-				ifTrue: [$']
-				ifFalse: [$"])
+
+	self writeUnescapedString: aString quotedBy: ((aString includes: $")
+			 ifTrue: [ $' ]
+			 ifFalse: [ $" ])
 ]
 
 { #category : #private }
 XMLWriter >> writeUnescapedString: aString quotedBy: aQuote [
+
 	stream nextPut: aQuote.
-	formatter
-		ifNotNil: [
-			formatter formatBeforeQuotedStringValue: aString].
-	1 to: aString size do: [:i | | nextChar |
+	formatter ifNotNil: [
+		formatter formatBeforeQuotedStringValue: aString ].
+	1 to: aString size do: [ :i |
+		| nextChar |
 		"delimiters are skipped because they can't be escaped here"
-		(nextChar := aString at: i) == aQuote
-			ifFalse: [stream nextPut: nextChar]].
-	formatter
-		ifNotNil: [
-			formatter formatAfterQuotedStringValue: aString].
-	stream nextPut: aQuote.
+		(nextChar := aString at: i) == aQuote ifFalse: [
+			stream nextPut: nextChar ] ].
+	formatter ifNotNil: [
+		formatter formatAfterQuotedStringValue: aString ].
+	stream nextPut: aQuote
 ]
 
 { #category : #private }
 XMLWriter >> writeUnwrittenMarkupWritersEmbeddedIn: aMarkupWriter [
-	self activeMarkupWriterWhileChangingDo: [:each |
-		each == aMarkupWriter
-			ifTrue: [^ self].
-		each hasStartedWriting
-			ifFalse: [each write]]
+
+	self activeMarkupWriterWhileChangingDo: [ :each |
+		each == aMarkupWriter ifTrue: [ ^ self ].
+		each hasStartedWriting ifFalse: [ each write ] ]
 ]
 
 { #category : #writing }
@@ -1280,47 +1308,41 @@ XMLWriter >> writeWith: aBlock [
 	automatically sends #write after"
 
 	aBlock cull: self.
-	self write.
+	self write
 ]
 
 { #category : #private }
 XMLWriter >> writeXMLNS: aPrefix [
-	self writeStringName:
-		(aPrefix isEmpty
-			ifTrue: ['xmlns']
-			ifFalse: ['xmlns:', aPrefix])
+
+	self writeStringName: (aPrefix isEmpty
+			 ifTrue: [ 'xmlns' ]
+			 ifFalse: [ 'xmlns:' , aPrefix ])
 ]
 
 { #category : #private }
 XMLWriter >> writeXMLNS: aPrefix uri: aURI [
-	(self omitsRedundantXMLNSDeclarations
-		and: [
-			self
-				isRedundantActiveTagWriterXMLNSPrefix: aPrefix
-				uri: aURI])
+
+	(self omitsRedundantXMLNSDeclarations and: [
+		 self isRedundantActiveTagWriterXMLNSPrefix: aPrefix uri: aURI ])
 		ifFalse: [
 			self
 				space;
 				writeXMLNS: aPrefix;
 				nextPut: $=;
-				writeEscapedContentString: aURI]
+				writeEscapedContentString: aURI ]
 ]
 
 { #category : #private }
 XMLWriter >> writeXMLNSDeclarations: aDictionary [
+
 	self isCanonical
 		ifTrue: [
 			aDictionary keys
 				sort;
-				do: [:each |
-					self
-						writeXMLNS: each
-						uri: (aDictionary at: each)]]
+				do: [ :each | self writeXMLNS: each uri: (aDictionary at: each) ] ]
 		ifFalse: [
-			aDictionary keysDo: [:each |
-				self
-					writeXMLNS: each
-					uri: (aDictionary at: each)]]
+			aDictionary keysDo: [ :each |
+				self writeXMLNS: each uri: (aDictionary at: each) ] ]
 ]
 
 { #category : #writing }
@@ -1332,15 +1354,18 @@ XMLWriter >> xml [
 
 { #category : #writing }
 XMLWriter >> xmlDeclaration [
+
 	^ self pushNewMarkupWriter: XMLXMLDeclarationWriter
 ]
 
 { #category : #defaults }
 XMLWriter >> xmlNamespaceURI [
+
 	^ 'http://www.w3.org/XML/1998/namespace'
 ]
 
 { #category : #defaults }
 XMLWriter >> xmlnsNamespaceURI [
+
 	^ 'http://www.w3.org/2000/xmlns/'
 ]
