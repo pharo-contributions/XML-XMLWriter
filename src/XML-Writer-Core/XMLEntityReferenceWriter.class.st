@@ -13,32 +13,38 @@ Class {
 
 { #category : #testing }
 XMLEntityReferenceWriter >> isParameter [
-	^ isParameter ifNil: [isParameter := false]
+
+	^ isParameter ifNil: [ isParameter := false ]
 ]
 
 { #category : #accessing }
 XMLEntityReferenceWriter >> isParameter: aBoolean [
+
 	isParameter := aBoolean
 ]
 
 { #category : #accessing }
 XMLEntityReferenceWriter >> name [
-	^ name ifNil: [name := '']
+
+	^ name ifNil: [ name := '' ]
 ]
 
 { #category : #accessing }
 XMLEntityReferenceWriter >> name: aName [
+
 	name := aName
 ]
 
 { #category : #private }
 XMLEntityReferenceWriter >> writeBody [
 	"avoid #writeName: to avoid formatting"
+
 	self writer nextPutAll: self name
 ]
 
 { #category : #private }
 XMLEntityReferenceWriter >> writeEpilogue [
+
 	self writer
 		nextPut: $;;
 		formatAfterEntityReference: self
@@ -46,10 +52,10 @@ XMLEntityReferenceWriter >> writeEpilogue [
 
 { #category : #private }
 XMLEntityReferenceWriter >> writePrologue [
+
 	self writer
 		formatBeforeEntityReference: self;
-		nextPut:
-			(self isParameter
-				ifTrue: [$%]
-				ifFalse: [$&])
+		nextPut: (self isParameter
+				 ifTrue: [ $% ]
+				 ifFalse: [ $& ])
 ]

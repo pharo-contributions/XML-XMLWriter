@@ -14,16 +14,19 @@ Class {
 
 { #category : #accessing }
 XMLWriterFormatter class >> defaultIndentLevel [
+
 	^ 0
 ]
 
 { #category : #accessing }
 XMLWriterFormatter class >> defaultIndentString [
+
 	^ '    '
 ]
 
 { #category : #'instance creation' }
 XMLWriterFormatter class >> writer: aWriter [
+
 	^ self new writer: aWriter
 ]
 
@@ -148,22 +151,26 @@ XMLWriterFormatter >> formatBeforeXMLDeclaration: anXMLDeclarationWriter [
 
 { #category : #indenting }
 XMLWriterFormatter >> indent [
+
 	currentIndentLevel := self currentIndentLevel + 1
 ]
 
 { #category : #accessing }
 XMLWriterFormatter >> indentString [
+
 	^ indentString
 ]
 
 { #category : #accessing }
 XMLWriterFormatter >> indentString: aString [
+
 	currentIndentLevel := 0.
 	indentString := aString
 ]
 
 { #category : #initialization }
 XMLWriterFormatter >> initialize [
+
 	super initialize.
 
 	currentIndentLevel := self class defaultIndentLevel.
@@ -172,18 +179,21 @@ XMLWriterFormatter >> initialize [
 
 { #category : #indenting }
 XMLWriterFormatter >> outdent [
+
 	currentIndentLevel := self currentIndentLevel - 1
 ]
 
 { #category : #writing }
 XMLWriterFormatter >> writeIndent [
-	"use #to:do: over #timesRepeat: for speed"
-	1 to: self currentIndentLevel do: [:i |
-		self writer nextPutAll: self indentString]
+	"Use #to:do: over #timesRepeat: for speed"
+
+	1 to: self currentIndentLevel do: [ :i |
+	self writer nextPutAll: self indentString ]
 ]
 
 { #category : #writing }
 XMLWriterFormatter >> writeLineBreak [
+
 	self writer atBeginning
 		ifFalse: [
 			self writer nextPutAll: self writer lineBreak.
@@ -194,10 +204,12 @@ XMLWriterFormatter >> writeLineBreak [
 
 { #category : #accessing }
 XMLWriterFormatter >> writer [
+
 	^ writer
 ]
 
 { #category : #accessing }
 XMLWriterFormatter >> writer: aWriter [
+
 	writer := aWriter
 ]

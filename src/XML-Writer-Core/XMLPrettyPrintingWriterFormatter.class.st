@@ -9,37 +9,39 @@ Class {
 
 { #category : #formatting }
 XMLPrettyPrintingWriterFormatter >> formatAfterDoctypeDeclaration: aDoctypeDeclarationWriter [
+
 	self writeLineBreak
 ]
 
 { #category : #formatting }
 XMLPrettyPrintingWriterFormatter >> formatAfterStartTag: aTagWriter [
+
 	self indent
 ]
 
 { #category : #formatting }
 XMLPrettyPrintingWriterFormatter >> formatBeforeComment: aCommentWriter [
-	aCommentWriter isEmbeddedWithStringMarkup
-		ifFalse: [self writeLineBreak]
+
+	aCommentWriter isEmbeddedWithStringMarkup ifFalse: [
+		self writeLineBreak ]
 ]
 
 { #category : #formatting }
 XMLPrettyPrintingWriterFormatter >> formatBeforeEndTag: aTagWriter [
-	aTagWriter hasEmbeddedMarkup
-		ifTrue: [
-			self outdent.
-			aTagWriter hasEmbeddedStringMarkup
-				ifFalse: [self writeLineBreak]]
+
+	aTagWriter hasEmbeddedMarkup ifTrue: [
+		self outdent.
+		aTagWriter hasEmbeddedStringMarkup ifFalse: [ self writeLineBreak ] ]
 ]
 
 { #category : #formatting }
 XMLPrettyPrintingWriterFormatter >> formatBeforePI: aPIWriter [
-	aPIWriter isEmbeddedWithStringMarkup
-		ifFalse: [self writeLineBreak]
+
+	aPIWriter isEmbeddedWithStringMarkup ifFalse: [ self writeLineBreak ]
 ]
 
 { #category : #formatting }
 XMLPrettyPrintingWriterFormatter >> formatBeforeStartTag: aTagWriter [
-	aTagWriter isEmbeddedWithStringMarkup
-		ifFalse: [self writeLineBreak]
+
+	aTagWriter isEmbeddedWithStringMarkup ifFalse: [ self writeLineBreak ]
 ]

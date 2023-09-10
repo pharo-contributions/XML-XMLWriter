@@ -9,48 +9,51 @@ Class {
 
 { #category : #formatting }
 XMLPrologPrettyPrintingWriterFormatter >> formatAfterInternalSubset: aDoctypeDeclarationWriter [
-	aDoctypeDeclarationWriter hasEmbeddedMarkup
-		ifTrue: [
-			self
-				outdent;
-				writeLineBreak]
+
+	aDoctypeDeclarationWriter hasEmbeddedMarkup ifTrue: [
+		self
+			outdent;
+			writeLineBreak ]
 ]
 
 { #category : #formatting }
 XMLPrologPrettyPrintingWriterFormatter >> formatBeforeComment: aCommentWriter [
-	aCommentWriter isEmbeddedInTagWriter
-		ifFalse: [self writeLineBreak]
+
+	aCommentWriter isEmbeddedInTagWriter ifFalse: [ self writeLineBreak ]
 ]
 
 { #category : #formatting }
 XMLPrologPrettyPrintingWriterFormatter >> formatBeforeDeclaration: aDeclarationWriter [
+
 	self writeLineBreak
 ]
 
 { #category : #formatting }
 XMLPrologPrettyPrintingWriterFormatter >> formatBeforeDoctypeDeclaration: aDoctypeDeclarationWriter [
+
 	self writeLineBreak
 ]
 
 { #category : #formatting }
 XMLPrologPrettyPrintingWriterFormatter >> formatBeforeEntityReference: anEntityReferenceWriter [
-	anEntityReferenceWriter isParameter
-		ifTrue: [self writeLineBreak]
+
+	anEntityReferenceWriter isParameter ifTrue: [ self writeLineBreak ]
 ]
 
 { #category : #formatting }
 XMLPrologPrettyPrintingWriterFormatter >> formatBeforeInternalSubset: aDoctypeDeclarationWriter [
+
 	self indent
 ]
 
 { #category : #formatting }
 XMLPrologPrettyPrintingWriterFormatter >> formatBeforePI: aPIWriter [
-	aPIWriter isEmbeddedInTagWriter
-		ifFalse: [self writeLineBreak]
+
+	aPIWriter isEmbeddedInTagWriter ifFalse: [ self writeLineBreak ]
 ]
 
 { #category : #formatting }
 XMLPrologPrettyPrintingWriterFormatter >> formatBeforeStartTag: aTagWriter [
-	aTagWriter isEmbeddedInTagWriter
-		ifFalse: [self writeLineBreak]
+
+	aTagWriter isEmbeddedInTagWriter ifFalse: [ self writeLineBreak ]
 ]

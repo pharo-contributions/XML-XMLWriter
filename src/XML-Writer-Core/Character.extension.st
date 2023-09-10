@@ -2,6 +2,7 @@ Extension { #name : #Character }
 
 { #category : #'*XML-Writer-Core' }
 Character >> embedInXMLMarkupWriter: aMarkupWriter [
+
 	self asString embedInXMLMarkupWriter: aMarkupWriter
 ]
 
@@ -10,7 +11,7 @@ Character >> isXMLWriterNameChar [
 	"Range tests are faster and use less memory than a BitmapCharacterSet, and
 	a temp is used because Character in newer SpurVM images has no 'value'
 	inst var.
-	
+
 	NameStartChar ::=
 		':' | [A-Z] | '_' | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] |
 		[#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] |
@@ -46,7 +47,7 @@ Character >> isXMLWriterNameChar [
 	tempValue <= 16r2040
 		ifTrue: [
 			tempValue <= 16r36F
-				ifTrue: [	
+				ifTrue: [
 					tempValue <= 16rF6
 						ifTrue: [
 							tempValue <= 16rD6
@@ -60,7 +61,7 @@ Character >> isXMLWriterNameChar [
 							^ tempValue >= 16r300]]
 				ifFalse: [
 					tempValue <= 16r1FFF
-						ifTrue: [	
+						ifTrue: [
 							tempValue <= 16r37D
 								ifFalse: [^ tempValue >= 16r37F].
 							^ tempValue >= 16r370]
@@ -89,7 +90,7 @@ Character >> isXMLWriterNameChar [
 						ifFalse: [
 							tempValue >= 16r10000
 								ifFalse: [^ false].
-							^ tempValue <= 16rEFFFF]]].
+							^ tempValue <= 16rEFFFF]]]
 ]
 
 { #category : #'*XML-Writer-Core' }
@@ -97,7 +98,7 @@ Character >> isXMLWriterNameStartChar [
 	"Range tests are faster and use less memory than a BitmapCharacterSet, and
 	a temp is used because Character in newer SpurVM images has no 'value'
 	inst var.
-	
+
 	NameStartChar ::=
 		':' | [A-Z] | '_' | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] |
 		[#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] |
@@ -116,7 +117,7 @@ Character >> isXMLWriterNameStartChar [
 					tempValue <= 16r5A "$Z asciiValue hex"
 						ifTrue: [^ true].
 					^ tempValue == 16r5F]. "$_ asciiValue hex"
-	
+
 			^ tempValue == 16r3A]. "$: asciiValue hex"
 
 	tempValue <= 16r200D
@@ -163,5 +164,5 @@ Character >> isXMLWriterNameStartChar [
 					ifFalse: [
 						tempValue <= 16rFDCF
 							ifFalse: [^ false].
-						^ tempValue >= 16rF900]]].
+						^ tempValue >= 16rF900]]]
 ]

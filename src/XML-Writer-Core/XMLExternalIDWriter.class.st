@@ -13,51 +13,58 @@ Class {
 
 { #category : #testing }
 XMLExternalIDWriter >> hasPublicID [
+
 	^ self publicID notEmpty
 ]
 
 { #category : #testing }
 XMLExternalIDWriter >> hasSystemID [
+
 	^ self systemID notEmpty
 ]
 
 { #category : #testing }
 XMLExternalIDWriter >> isOmittable [
-	^ self hasPublicID not
-		and: [self hasSystemID not]
+
+	^ self hasPublicID not and: [ self hasSystemID not ]
 ]
 
 { #category : #accessing }
 XMLExternalIDWriter >> publicID [
-	^ publicID ifNil: [publicID := '']
+
+	^ publicID ifNil: [ publicID := '' ]
 ]
 
 { #category : #accessing }
 XMLExternalIDWriter >> publicID: aPublicID [
+
 	publicID := aPublicID
 ]
 
 { #category : #accessing }
 XMLExternalIDWriter >> systemID [
-	^ systemID ifNil: [systemID := '']
+
+	^ systemID ifNil: [ systemID := '' ]
 ]
 
 { #category : #accessing }
 XMLExternalIDWriter >> systemID: aSystemID [
+
 	systemID := aSystemID
 ]
 
 { #category : #writing }
 XMLExternalIDWriter >> writeOn: aWriter [
+
 	self hasPublicID
-		ifTrue: [self writePublicExternalIDOn: aWriter]
+		ifTrue: [ self writePublicExternalIDOn: aWriter ]
 		ifFalse: [
-			self hasSystemID
-				ifTrue: [self writeSystemExternalIDOn: aWriter]]
+		self hasSystemID ifTrue: [ self writeSystemExternalIDOn: aWriter ] ]
 ]
 
 { #category : #writing }
 XMLExternalIDWriter >> writePublicExternalIDOn: aWriter [
+
 	aWriter
 		nextPutAll: 'PUBLIC';
 		space;
@@ -68,6 +75,7 @@ XMLExternalIDWriter >> writePublicExternalIDOn: aWriter [
 
 { #category : #writing }
 XMLExternalIDWriter >> writeSystemExternalIDOn: aWriter [
+
 	aWriter
 		nextPutAll: 'SYSTEM';
 		space;

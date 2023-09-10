@@ -9,11 +9,13 @@ Class {
 
 { #category : #private }
 XMLUnsafeEndTagWriter >> writeBody [
+
 	self writer writeName: self name
 ]
 
 { #category : #private }
 XMLUnsafeEndTagWriter >> writeEpilogue [
+
 	self writer
 		nextPut: $>;
 		formatAfterEndTag: self
@@ -21,6 +23,7 @@ XMLUnsafeEndTagWriter >> writeEpilogue [
 
 { #category : #private }
 XMLUnsafeEndTagWriter >> writePrologue [
+
 	self writer
 		formatBeforeEndTag: self;
 		nextPut: $<;

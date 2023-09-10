@@ -2,10 +2,11 @@ Extension { #name : #StandardOrderedDictionary }
 
 { #category : #'*XML-Writer-Core' }
 StandardOrderedDictionary >> writeAttributesOn: aWriter [
-	self keysDo: [:attributeName |
+
+	self keysDo: [ :attributeName |
 		aWriter
 			writeAttributeName: attributeName
-			value: (self at: attributeName ifAbsent: '')]
+			value: (self at: attributeName ifAbsent: '') ]
 ]
 
 { #category : #'*XML-Writer-Core' }
@@ -39,5 +40,5 @@ StandardOrderedDictionary >> writeCanonicalAttributesOn: aWriter [
 		attributeName := sortedAttributeNames at: i.
 		aWriter
 			writeAttributeName: attributeName
-			value: (self at: attributeName)].
+			value: (self at: attributeName)]
 ]

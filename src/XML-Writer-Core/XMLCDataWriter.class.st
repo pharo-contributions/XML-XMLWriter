@@ -12,38 +12,41 @@ Class {
 
 { #category : #accessing }
 XMLCDataWriter >> string [
-	^ string ifNil: [string := '']
+
+	^ string ifNil: [ string := '' ]
 ]
 
 { #category : #accessing }
 XMLCDataWriter >> string: aString [
+
 	string := aString
 ]
 
 { #category : #private }
 XMLCDataWriter >> writeBody [
+
 	self writer isCanonical
 		ifTrue: [
-			self parent
-				ifNotNil: [:parent | parent newStringMarkupBeingWritten].
-			self writer writeEscapedContent: self string]
-		ifFalse: [self writer nextPutAll: self string]
+			self parent ifNotNil: [ :parent |
+				parent newStringMarkupBeingWritten ].
+			self writer writeEscapedContent: self string ]
+		ifFalse: [ self writer nextPutAll: self string ]
 ]
 
 { #category : #private }
 XMLCDataWriter >> writeEpilogue [
-	self isCanonical
-		ifFalse: [
-			self writer
-				nextPutAll: ']]>';
-				formatAfterCData: self]
+
+	self isCanonical ifFalse: [
+		self writer
+			nextPutAll: ']]>';
+			formatAfterCData: self ]
 ]
 
 { #category : #private }
 XMLCDataWriter >> writePrologue [
-	self isCanonical
-		ifFalse: [
-			self writer
-				formatBeforeCData: self;
-				nextPutAll: '<![CDATA[']
+
+	self isCanonical ifFalse: [
+		self writer
+			formatBeforeCData: self;
+			nextPutAll: '<![CDATA[' ]
 ]

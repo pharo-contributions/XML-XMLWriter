@@ -9,26 +9,28 @@ Class {
 
 { #category : #formatting }
 XMLCanonicalWriterFormatter >> formatAfterComment: aCommentWriter [
-	self writer hadActiveTagWriter
-		ifFalse: [self writeLineBreak]
+
+	self writer hadActiveTagWriter ifFalse: [ self writeLineBreak ]
 ]
 
 { #category : #formatting }
 XMLCanonicalWriterFormatter >> formatAfterPI: aPIWriter [
-	self writer hadActiveTagWriter
-		ifFalse: [self writeLineBreak]
+
+	self writer hadActiveTagWriter ifFalse: [ self writeLineBreak ]
 ]
 
 { #category : #formatting }
 XMLCanonicalWriterFormatter >> formatBeforeComment: aCommentWriter [
-	(self writer hadActiveTagWriter
-		and: [self writer hasActiveTagWriter not])
-		ifTrue: [self writeLineBreak]
+
+	(self writer hadActiveTagWriter and: [
+		 self writer hasActiveTagWriter not ]) ifTrue: [
+		self writeLineBreak ]
 ]
 
 { #category : #formatting }
 XMLCanonicalWriterFormatter >> formatBeforePI: aPIWriter [
-	(self writer hadActiveTagWriter
-		and: [self writer hasActiveTagWriter not])
-		ifTrue: [self writeLineBreak]
+
+	(self writer hadActiveTagWriter and: [
+		 self writer hasActiveTagWriter not ]) ifTrue: [
+		self writeLineBreak ]
 ]
