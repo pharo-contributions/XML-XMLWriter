@@ -72,14 +72,6 @@ XMLDoctypeDeclarationWriter >> systemID: aSystemID [
 	self externalIDWriter systemID: aSystemID
 ]
 
-{ #category : #deprecated }
-XMLDoctypeDeclarationWriter >> withInternalSubset: aStringOrCollectionOrBlock [
-
-	self deprecated: 'use #with: instead'.
-
-	self with: aStringOrCollectionOrBlock
-]
-
 { #category : #private }
 XMLDoctypeDeclarationWriter >> writeBody: aStringOrCollectionOrBlock [
 
