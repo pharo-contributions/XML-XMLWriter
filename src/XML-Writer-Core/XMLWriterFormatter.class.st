@@ -24,6 +24,12 @@ XMLWriterFormatter class >> defaultIndentString [
 	^ '    '
 ]
 
+{ #category : #testing }
+XMLWriterFormatter class >> isAbstract [
+
+	^ self == XMLWriterFormatter
+]
+
 { #category : #'instance creation' }
 XMLWriterFormatter class >> writer: aWriter [
 
