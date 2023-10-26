@@ -35,7 +35,7 @@ XMLWriterRecordingFormatterProxy >> receivedNextAll: aNameCollection with: anArg
 
 	aNameCollection do: [ :each |
 		| message |
-		(messageQueue notEmpty and: [
+		(messageQueue isNotEmpty and: [
 			 (message := messageQueue first) selector == each asSymbol and: [
 				 message arguments asArray = (Array with: anArgument) ] ])
 			ifFalse: [ ^ false ].

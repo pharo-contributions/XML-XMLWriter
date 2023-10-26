@@ -49,7 +49,7 @@ XMLEntityDeclarationWriter >> isParameter: aBoolean [
 { #category : #testing }
 XMLEntityDeclarationWriter >> isUnparsed [
 
-	^ self ndata notEmpty
+	^ self ndata isNotEmpty
 ]
 
 { #category : #accessing }

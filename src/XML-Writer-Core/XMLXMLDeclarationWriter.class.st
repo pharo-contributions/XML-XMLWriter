@@ -27,7 +27,7 @@ XMLXMLDeclarationWriter >> encoding: anEncoding [
 { #category : #testing }
 XMLXMLDeclarationWriter >> hasEncoding [
 
-	^ self encoding notEmpty
+	^ self encoding isNotEmpty
 ]
 
 { #category : #testing }

@@ -41,7 +41,7 @@ XMLAttributeDeclarationWriter >> defaultPragma [
 XMLAttributeDeclarationWriter >> defaultPragma: aDefaultPragma [
 
 	defaultPragma := (aDefaultPragma isNotNil and: [
-		                  aDefaultPragma notEmpty and: [
+		                  aDefaultPragma isNotEmpty and: [
 			                  aDefaultPragma first == $# ] ])
 		                 ifTrue: [ aDefaultPragma allButFirst ]
 		                 ifFalse: [ aDefaultPragma ]
@@ -105,7 +105,7 @@ XMLAttributeDeclarationWriter >> writeBody [
 { #category : #writing }
 XMLAttributeDeclarationWriter >> writeDefaultPragma [
 
-	self defaultPragma notEmpty ifTrue: [
+	self defaultPragma isNotEmpty ifTrue: [
 		self writer
 			space;
 			nextPut: $#;

@@ -26,7 +26,7 @@ XMLPIWriter >> data: aString [
 { #category : #testing }
 XMLPIWriter >> hasData [
 
-	^ self data notEmpty
+	^ self data isNotEmpty
 ]
 
 { #category : #testing }

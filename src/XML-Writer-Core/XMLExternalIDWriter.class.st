@@ -14,13 +14,13 @@ Class {
 { #category : #testing }
 XMLExternalIDWriter >> hasPublicID [
 
-	^ self publicID notEmpty
+	^ self publicID isNotEmpty
 ]
 
 { #category : #testing }
 XMLExternalIDWriter >> hasSystemID [
 
-	^ self systemID notEmpty
+	^ self systemID isNotEmpty
 ]
 
 { #category : #testing }
