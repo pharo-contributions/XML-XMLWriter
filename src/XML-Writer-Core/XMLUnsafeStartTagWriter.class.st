@@ -52,13 +52,13 @@ XMLUnsafeStartTagWriter >> attributes: anAssociationCollection [
 { #category : #testing }
 XMLUnsafeStartTagWriter >> hasAttributes [
 
-	^ attributes notNil and: [ attributes notEmpty ]
+	^ attributes isNotNil and: [ attributes notEmpty ]
 ]
 
 { #category : #testing }
 XMLUnsafeStartTagWriter >> hasXMLNSDeclarations [
 
-	^ xmlnsDeclarations notNil and: [ xmlnsDeclarations notEmpty ]
+	^ xmlnsDeclarations isNotNil and: [ xmlnsDeclarations notEmpty ]
 ]
 
 { #category : #testing }

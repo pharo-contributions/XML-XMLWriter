@@ -104,7 +104,7 @@ XMLMarkupWriter >> isDoctypeDeclarationWriter [
 { #category : #testing }
 XMLMarkupWriter >> isEmbedded [
 
-	^ self parent notNil
+	^ self parent isNotNil
 ]
 
 { #category : #testing }

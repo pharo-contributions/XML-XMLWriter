@@ -634,8 +634,8 @@ XMLWriter >> entityValueEscapes [
 { #category : #testing }
 XMLWriter >> escapesContentEntityReferences [
 	^ self isEscaping
-		and: [(contentEscapes at: $& asciiValue) notNil
-			and: [(contentStringEscapes at: $& asciiValue) notNil]]
+		and: [(contentEscapes at: $& asciiValue) isNotNil
+			and: [(contentStringEscapes at: $& asciiValue) isNotNil]]
 ]
 
 { #category : #accessing }
@@ -792,12 +792,12 @@ XMLWriter >> hadActiveTagWriter [
 
 { #category : #testing }
 XMLWriter >> hasActiveTagWriter [
-	^ self activeTagWriter notNil
+	^ self activeTagWriter isNotNil
 ]
 
 { #category : #testing }
 XMLWriter >> hasFormatter [
-	^ formatter notNil
+	^ formatter isNotNil
 ]
 
 { #category : #testing }
@@ -1175,7 +1175,7 @@ XMLWriter >> write: aString escapedWith: anEscapeTable [
 		| nextChar asciiValue |
 		((asciiValue := (nextChar := aString at: i) asciiValue) > 0 and: [
 			 asciiValue <= tableSize and: [
-				 (anEscapeTable at: asciiValue) notNil ] ])
+				 (anEscapeTable at: asciiValue) isNotNil ] ])
 			ifTrue: [
 				| replacement |
 				(replacement := anEscapeTable at: asciiValue) == #LineBreak

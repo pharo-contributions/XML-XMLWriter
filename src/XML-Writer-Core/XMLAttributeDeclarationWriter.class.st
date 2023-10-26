@@ -40,7 +40,7 @@ XMLAttributeDeclarationWriter >> defaultPragma [
 { #category : #accessing }
 XMLAttributeDeclarationWriter >> defaultPragma: aDefaultPragma [
 
-	defaultPragma := (aDefaultPragma notNil and: [
+	defaultPragma := (aDefaultPragma isNotNil and: [
 		                  aDefaultPragma notEmpty and: [
 			                  aDefaultPragma first == $# ] ])
 		                 ifTrue: [ aDefaultPragma allButFirst ]

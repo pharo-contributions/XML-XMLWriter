@@ -57,13 +57,13 @@ XMLTagWriter >> attributes: anAssociationCollection [
 { #category : #testing }
 XMLTagWriter >> hasAttributes [
 
-	^ attributes notNil and: [ attributes notEmpty ]
+	^ attributes isNotNil and: [ attributes notEmpty ]
 ]
 
 { #category : #testing }
 XMLTagWriter >> hasXMLNSDeclarations [
 
-	^ xmlnsDeclarations notNil and: [ xmlnsDeclarations notEmpty ]
+	^ xmlnsDeclarations isNotNil and: [ xmlnsDeclarations notEmpty ]
 ]
 
 { #category : #testing }
