@@ -27,10 +27,10 @@ BaselineOfXMLWriter >> baseline: spec [
 			"Groups"
 			spec
 				group: 'Core' with: #('XML-Writer-Core');
-				group: 'Tools' with: #('OrderPreservingDictionary Tools');  
-				group: 'Tests' with: #('XML-Writer-Tests');
+				group: 'Tools' with: #('OrderPreservingDictionary Tools' 'Core');  
+				group: 'Tests' with: #('Core' 'XML-Writer-Tests');
 				group: 'CI' with: #('Tests');	
-				group: 'all' with: #('Core' 'Tools' 'Tests');
+				group: 'all' with: #('Tools' 'Tests');
 				group: 'default' with: #('all') ].
 
 	"load gemstone compatibility methods"
